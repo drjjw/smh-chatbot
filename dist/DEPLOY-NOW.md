@@ -63,7 +63,7 @@ pm2 logs manual-bot --lines 5
 
 ```bash
 # From server
-curl http://localhost:3000/api/health
+curl http://localhost:3456/api/health
 
 # From browser
 https://bot.ukidney.com
