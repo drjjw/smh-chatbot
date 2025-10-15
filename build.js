@@ -18,17 +18,17 @@ if (!fs.existsSync(publicDistDir)) {
     console.log('✓ Created dist/public/ directory');
 }
 
-// Files to copy
+// Files to copy (production essentials only)
 const filesToCopy = [
     { from: 'server.js', to: 'server.js' },
     { from: 'package.json', to: 'package.json' },
+    { from: 'package-lock.json', to: 'package-lock.json' },
     { from: 'public/index.html', to: 'public/index.html' },
     { from: 'smh-manual-2023.pdf', to: 'smh-manual-2023.pdf' },
     { from: 'uhn-manual-2025.pdf', to: 'uhn-manual-2025.pdf' },
     { from: 'embed-smh-manual.html', to: 'embed-smh-manual.html' },
     { from: 'embed-uhn-manual.html', to: 'embed-uhn-manual.html' },
-    { from: 'README.md', to: 'README.md', optional: true },
-    { from: 'DEPLOYMENT.md', to: 'DEPLOYMENT.md', optional: true }
+    { from: '.htaccess', to: '.htaccess', optional: true }
 ];
 
 let copiedCount = 0;
