@@ -56,7 +56,7 @@ Create a `.env` file with your credentials:
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
 XAI_API_KEY=your_xai_api_key_here
-PORT=3000
+PORT=3456
 
 SUPABASE_URL=your_supabase_url_here
 SUPABASE_ANON_KEY=your_supabase_anon_key_here
@@ -90,7 +90,7 @@ Add this to your Nginx configuration:
 ```nginx
 # In your ukidney.com nginx config
 location /content/manuals/bot/ {
-    proxy_pass http://localhost:3000/;
+    proxy_pass http://localhost:3456/;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection 'upgrade';
@@ -99,7 +99,7 @@ location /content/manuals/bot/ {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
     proxy_cache_bypass $http_upgrade;
-    
+
     # Allow iframe embedding
     add_header X-Frame-Options "ALLOWALL" always;
 }
@@ -219,7 +219,7 @@ Before deploying:
 ### **1. Test Locally with Production URL**
 Update your local `.env` temporarily:
 ```env
-PORT=3000
+PORT=3456
 BASE_URL=https://ukidney.com/content/manuals/bot/
 ```
 
@@ -230,7 +230,7 @@ cd /var/www/ukidney.com/content/manuals/bot/
 npm start
 
 # Test from browser
-curl http://localhost:3000/api/health
+curl http://localhost:3456/api/health
 ```
 
 ### **3. Test Through Nginx**
@@ -296,13 +296,13 @@ pm2 monit  # Real-time monitoring
 ### **Chatbot not loading:**
 1. Check PM2: `pm2 status`
 2. Check logs: `pm2 logs manual-bot`
-3. Test direct: `curl localhost:3000/api/health`
+3. Test direct: `curl localhost:3456/api/health`
 4. Check Nginx: `sudo nginx -t`
 
 ### **Analytics not working:**
 1. Verify Supabase connection
 2. Check RLS policies
-3. Test: `curl http://localhost:3000/api/analytics`
+3. Test: `curl http://localhost:3456/api/analytics`
 
 ### **PDF not loading:**
 1. Check file path in `server.js`
