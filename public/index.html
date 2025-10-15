@@ -377,8 +377,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>UKidney Manual Assistant</h1>
-            <p>AI-powered search for SMH Nephrology Manual</p>
+            <h1 id="headerTitle">UKidney Manual Assistant</h1>
+            <p id="headerSubtitle">AI-powered search for Nephrology Manual</p>
             <div class="model-selector">
                 <button id="geminiBtn" class="model-btn active">🤖 Gemini 2.5</button>
                 <button id="grokBtn" class="model-btn">🚀 Grok 4</button>
@@ -394,9 +394,9 @@
         <div id="status" class="status">Connecting...</div>
         
         <div id="chatContainer" class="chat-container">
-            <div class="message assistant">
+            <div class="message assistant" id="welcomeMessage">
                 <div class="message-content">
-                    <strong>Welcome to the SMH Nephrology Manual Assistant</strong>
+                    <strong id="welcomeTitle">Welcome to the Manual Assistant</strong>
                     <br><br>
                     Ask any question about the manual and choose your preferred AI model:
                     <br>
@@ -442,11 +442,56 @@
         let isLoading = false;
         let selectedModel = 'gemini';
         let sessionId = generateSessionId();
+        let selectedDocument = 'smh'; // Default to SMH
+
+        // Document configuration
+        const docConfig = {
+            'smh': {
+                title: 'UKidney Manual Assistant',
+                subtitle: 'AI-powered search for SMH Nephrology Manual',
+                backLink: 'https://ukidney.com/nephrology-publications/nephrology-manuals/st-michael-s-hospital-nephrology-manual',
+                welcomeMessage: 'SMH Housestaff Manual'
+            },
+            'uhn': {
+                title: 'UHN Manual Assistant',
+                subtitle: 'AI-powered search for UHN Nephrology Manual',
+                backLink: 'https://ukidney.com/nephrology-publications/nephrology-manuals/university-health-network-nephrology-manual',
+                welcomeMessage: 'UHN Nephrology Manual'
+            }
+        };
         
         console.log('🔍 URL Detection:');
         console.log('  - Current path:', window.location.pathname);
         console.log('  - API Base URL:', API_URL);
         console.log('  - Health endpoint:', `${API_URL}/api/health`);
+
+        // Initialize document selection from URL parameter
+        function initializeDocument() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const docParam = urlParams.get('doc');
+
+            if (docParam && (docParam === 'smh' || docParam === 'uhn')) {
+                selectedDocument = docParam;
+            }
+
+            // Update UI based on selected document
+            updateDocumentUI();
+        }
+
+        function updateDocumentUI() {
+            const config = docConfig[selectedDocument];
+            document.getElementById('headerTitle').textContent = config.title;
+            document.getElementById('headerSubtitle').textContent = config.subtitle;
+            document.getElementById('welcomeTitle').textContent = `Welcome to the ${config.welcomeMessage} Assistant`;
+
+            // Update back link
+            const backLink = document.querySelector('.back-link');
+            if (backLink) {
+                backLink.href = config.backLink;
+            }
+
+            console.log(`📄 Document set to: ${selectedDocument.toUpperCase()} - ${config.welcomeMessage}`);
+        }
 
         // Generate a unique session ID for this browser session
         function generateSessionId() {
@@ -478,13 +523,14 @@
         // Check server health on load
         async function checkHealth() {
             try {
-                const response = await fetch(`${API_URL}/api/health`);
+                const response = await fetch(`${API_URL}/api/health?doc=${selectedDocument}`);
                 const data = await response.json();
-                if (data.status === 'ok' && data.pdfLoaded) {
-                    statusDiv.textContent = `✓ Ready - ${data.pdfPages} pages loaded`;
+                if (data.status === 'ok' && data.loadedDocuments && data.loadedDocuments.length > 0) {
+                    const currentDoc = data.documentDetails[data.currentDocumentType];
+                    statusDiv.textContent = `✓ Ready - ${currentDoc.pages} pages loaded (${data.currentDocumentType.toUpperCase()})`;
                     statusDiv.className = 'status online';
                 } else {
-                    statusDiv.textContent = '⚠ PDF not loaded';
+                    statusDiv.textContent = '⚠ Documents not loaded';
                     statusDiv.className = 'status';
                 }
             } catch (error) {
@@ -571,7 +617,8 @@
                         message,
                         history: conversationHistory.slice(0, -1),
                         model: selectedModel,
-                        sessionId: sessionId
+                        sessionId: sessionId,
+                        doc: selectedDocument
                     })
                 });
 
@@ -603,6 +650,7 @@
         });
 
         // Initialize
+        initializeDocument();
         checkHealth();
         messageInput.focus();
     </script>

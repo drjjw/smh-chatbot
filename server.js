@@ -41,13 +41,13 @@ const supabase = createClient(
     process.env.SUPABASE_ANON_KEY
 );
 
-// Store PDF content in memory
-let pdfContent = '';
-let pdfMetadata = {};
+// Store PDF content in memory (now supports multiple documents)
+let documents = {};
 let currentDocument = {
     name: '',
     path: '',
-    version: ''
+    version: '',
+    type: 'smh' // 'smh' or 'uhn'
 };
 
 // Clean PDF text to reduce token usage
@@ -69,49 +69,96 @@ function cleanPDFText(text) {
     return cleaned;
 }
 
-// Load and parse PDF on startup
-async function loadPDF() {
+// Load and parse PDF documents
+async function loadPDF(documentType = 'smh') {
     try {
-        const pdfFilename = 'smh-manual-2023.pdf';
+        let pdfFilename, docType, version;
+
+        if (documentType === 'uhn') {
+            pdfFilename = 'uhn-manual-2025.pdf';
+            docType = 'uhn';
+            version = '2025';
+        } else {
+            pdfFilename = 'smh-manual-2023.pdf';
+            docType = 'smh';
+            version = '2023';
+        }
+
         const pdfPath = path.join(__dirname, pdfFilename);
+
+        // Check if document is already loaded
+        if (documents[documentType]) {
+            console.log(`✓ Document ${documentType} already loaded`);
+            return documents[documentType];
+        }
+
+        console.log(`Loading ${documentType} document...`);
+
         const dataBuffer = fs.readFileSync(pdfPath);
         const data = await pdf(dataBuffer);
-        
+
         // Clean the PDF text to reduce tokens
         const originalSize = data.text.length;
-        pdfContent = cleanPDFText(data.text);
-        const savedChars = originalSize - pdfContent.length;
+        const cleanedContent = cleanPDFText(data.text);
+        const savedChars = originalSize - cleanedContent.length;
         const percentSaved = ((savedChars / originalSize) * 100).toFixed(1);
-        
-        pdfMetadata = {
+
+        const docMetadata = {
             pages: data.numpages,
             info: data.info
         };
-        
+
         // Store document information
-        currentDocument = {
+        const docInfo = {
             name: pdfFilename,
             path: pdfPath,
-            version: '2023'
+            version: version,
+            type: docType,
+            content: cleanedContent,
+            metadata: docMetadata
         };
-        
+
+        // Store in documents cache
+        documents[documentType] = docInfo;
+
         console.log('✓ PDF loaded successfully');
-        console.log(`  - Document: ${currentDocument.name}`);
-        console.log(`  - Pages: ${pdfMetadata.pages}`);
-        console.log(`  - Characters: ${pdfContent.length} (saved ${savedChars} / ${percentSaved}%)`);
-        console.log(`  - Est. tokens: ~${Math.round(pdfContent.length / 4)}`);
+        console.log(`  - Document: ${docInfo.name} (${docType.toUpperCase()})`);
+        console.log(`  - Pages: ${docMetadata.pages}`);
+        console.log(`  - Characters: ${cleanedContent.length} (saved ${savedChars} / ${percentSaved}%)`);
+        console.log(`  - Est. tokens: ~${Math.round(cleanedContent.length / 4)}`);
+
+        return docInfo;
     } catch (error) {
-        console.error('Error loading PDF:', error);
-        process.exit(1);
+        console.error(`Error loading PDF ${documentType}:`, error);
+        throw error;
     }
 }
 
-// System prompt - Base for both models
-const getBaseSystemPrompt = () => `You are a helpful assistant that answers questions ONLY based on the SMH Housestaff Manual provided below.
+// Set current document context
+function setCurrentDocument(documentType) {
+    if (documents[documentType]) {
+        currentDocument = documents[documentType];
+        console.log(`✓ Switched to document: ${currentDocument.name}`);
+    } else {
+        console.error(`Document ${documentType} not loaded`);
+    }
+}
+
+// System prompt - Base for both models (now document-aware)
+const getBaseSystemPrompt = (documentType = 'smh') => {
+    const docNames = {
+        'smh': 'SMH Housestaff Manual',
+        'uhn': 'UHN Nephrology Manual'
+    };
+
+    const docName = docNames[documentType] || docNames['smh'];
+    const docContent = documents[documentType]?.content || '';
+
+    return `You are a helpful assistant that answers questions ONLY based on the ${docName} provided below.
 
 IMPORTANT RULES:
 1. Answer questions ONLY using information from the manual
-2. If the answer is not in the manual, say "I don't have that information in the SMH Housestaff Manual"
+2. If the answer is not in the manual, say "I don't have that information in the ${docName}"
 3. Always cite the relevant section or page when possible
 4. Do not use external knowledge or information from the internet
 5. Be concise and professional
@@ -125,13 +172,14 @@ FORMATTING RULES:
 - Cite sections like this: *(Reference: Section Name, Page X)*
 - Keep paragraphs short and scannable
 
-SMH HOUSESTAFF MANUAL CONTENT:
+${docName.toUpperCase()} CONTENT:
 ---
-${pdfContent}
+${docContent}
 ---`;
+};
 
 // Gemini-specific prompt (structured, organized)
-const getGeminiPrompt = () => getBaseSystemPrompt() + `
+const getGeminiPrompt = (documentType = 'smh') => getBaseSystemPrompt(documentType) + `
 
 RESPONSE STYLE - STRICTLY FOLLOW:
 - Use markdown tables when presenting structured data with multiple conditions
@@ -144,7 +192,7 @@ RESPONSE STYLE - STRICTLY FOLLOW:
   | X         | YES/NO     |`;
 
 // Grok-specific prompt (analytical, contextual)
-const getGrokPrompt = () => getBaseSystemPrompt() + `
+const getGrokPrompt = (documentType = 'smh') => getBaseSystemPrompt(documentType) + `
 
 RESPONSE STYLE - STRICTLY FOLLOW:
 - ALWAYS add a brief introductory sentence explaining the purpose or context
@@ -155,21 +203,27 @@ RESPONSE STYLE - STRICTLY FOLLOW:
 - Connect facts to their clinical rationale from the manual when available`;
 
 // Chat with Gemini
-async function chatWithGemini(message, history) {
-    const model = genAI.getGenerativeModel({ 
+async function chatWithGemini(message, history, documentType = 'smh') {
+    const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash"
     });
 
-    const systemMessage = getGeminiPrompt();
+    const systemMessage = getGeminiPrompt(documentType);
     
+    const docNames = {
+        'smh': 'SMH Housestaff Manual',
+        'uhn': 'UHN Nephrology Manual'
+    };
+    const docName = docNames[documentType] || docNames['smh'];
+
     const fullHistory = [
         {
             role: 'user',
-            parts: [{ text: systemMessage + "\n\nI understand. I will only answer questions based on the SMH Housestaff Manual content you provided." }]
+            parts: [{ text: systemMessage + `\n\nI understand. I will only answer questions based on the ${docName} content you provided.` }]
         },
         {
             role: 'model',
-            parts: [{ text: "I understand. I will only answer questions based on the SMH Housestaff Manual content you provided. What would you like to know?" }]
+            parts: [{ text: `I understand. I will only answer questions based on the ${docName} content you provided. What would you like to know?` }]
         },
         ...history.map(msg => ({
             role: msg.role === 'user' ? 'user' : 'model',
@@ -187,8 +241,8 @@ async function chatWithGemini(message, history) {
 }
 
 // Chat with Grok
-async function chatWithGrok(message, history) {
-    const systemMessage = getGrokPrompt();
+async function chatWithGrok(message, history, documentType = 'smh') {
+    const systemMessage = getGrokPrompt(documentType);
     
     const messages = [
         {
@@ -233,22 +287,32 @@ async function logConversation(data) {
 app.post('/api/chat', async (req, res) => {
     const startTime = Date.now();
     const sessionId = req.body.sessionId || uuidv4();
-    
+
     try {
-        const { message, history = [], model = 'gemini' } = req.body;
+        const { message, history = [], model = 'gemini', doc = 'smh' } = req.body;
 
         if (!message) {
             return res.status(400).json({ error: 'Message is required' });
         }
 
+        // Validate document type
+        const validDocs = ['smh', 'uhn'];
+        const documentType = validDocs.includes(doc) ? doc : 'smh';
+
+        // Ensure document is loaded
+        if (!documents[documentType]) {
+            await loadPDF(documentType);
+            setCurrentDocument(documentType);
+        }
+
         let responseText;
         let errorOccurred = null;
-        
+
         try {
             if (model === 'grok') {
-                responseText = await chatWithGrok(message, history);
+                responseText = await chatWithGrok(message, history, documentType);
             } else {
-                responseText = await chatWithGemini(message, history);
+                responseText = await chatWithGemini(message, history, documentType);
             }
         } catch (chatError) {
             errorOccurred = chatError.message;
@@ -267,12 +331,13 @@ app.post('/api/chat', async (req, res) => {
                 document_path: currentDocument.path,
                 document_version: currentDocument.version,
                 pdf_name: currentDocument.name, // Legacy field
-                pdf_pages: pdfMetadata.pages,
+                pdf_pages: currentDocument.metadata.pages,
                 error: errorOccurred,
                 metadata: {
                     history_length: history.length,
                     timestamp: new Date().toISOString(),
-                    document_title: pdfMetadata.info?.Title
+                    document_title: currentDocument.metadata.info?.Title,
+                    document_type: currentDocument.type
                 }
             });
         }
@@ -284,8 +349,9 @@ app.post('/api/chat', async (req, res) => {
             metadata: {
                 document: currentDocument.name,
                 documentVersion: currentDocument.version,
-                pdfPages: pdfMetadata.pages,
-                pdfTitle: pdfMetadata.info?.Title || currentDocument.name,
+                documentType: currentDocument.type,
+                pdfPages: currentDocument.metadata.pages,
+                pdfTitle: currentDocument.metadata.info?.Title || currentDocument.name,
                 responseTime: Date.now() - startTime
             }
         });
@@ -316,13 +382,29 @@ app.get('*.php', (req, res) => {
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
+    const loadedDocs = Object.keys(documents);
+    const docStatus = {};
+    const requestedDoc = req.query.doc || 'smh';
+    const validDocs = ['smh', 'uhn'];
+    const docType = validDocs.includes(requestedDoc) ? requestedDoc : 'smh';
+
+    loadedDocs.forEach(doc => {
+        docStatus[doc] = {
+            loaded: true,
+            name: documents[doc].name,
+            version: documents[doc].version,
+            pages: documents[doc].metadata.pages,
+            characters: documents[doc].content.length
+        };
+    });
+
     res.json({
         status: 'ok',
-        pdfLoaded: !!pdfContent,
-        document: currentDocument.name,
-        documentVersion: currentDocument.version,
-        pdfPages: pdfMetadata.pages,
-        pdfCharacters: pdfContent.length
+        currentDocument: documents[docType].name,
+        currentDocumentType: docType,
+        loadedDocuments: loadedDocs,
+        documentDetails: docStatus,
+        requestedDoc: requestedDoc
     });
 });
 
@@ -410,10 +492,16 @@ app.get('/api/analytics', async (req, res) => {
 
 // Start server
 async function start() {
-    await loadPDF();
+    console.log('Loading documents...');
+    await loadPDF('smh'); // Load SMH document
+    await loadPDF('uhn'); // Load UHN document
+    setCurrentDocument('smh'); // Default to SMH
+
     app.listen(PORT, () => {
         console.log(`\n🚀 Server running at http://localhost:${PORT}`);
-        console.log(`📄 PDF-based chatbot ready!\n`);
+        console.log(`📄 Multi-document chatbot ready!`);
+        console.log(`   - Supports: SMH Manual (2023), UHN Manual (2025)`);
+        console.log(`   - Use ?doc=smh or ?doc=uhn URL parameter\n`);
     });
 }
 
