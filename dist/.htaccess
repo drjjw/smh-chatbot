@@ -1,46 +1,20 @@
-# UKidney Manual Assistant .htaccess
-# This file proxies all requests to the Node.js server
-
-# Enable Rewrite Engine
+# UKidney Manual Assistant - Proxy to Node.js
 RewriteEngine On
 
-# Get the base path dynamically
-RewriteBase /nephrology-publications/nephrology-manuals/st-michael-s-hospital-nephrology-manual/bot/
+# Don't proxy if directly accessing these (would create loops)
+RewriteCond %{REQUEST_URI} !^/\.well-known/
 
-# Proxy all requests to Node.js server running on port 3000
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ http://localhost:3000/$1 [P,QSA,L]
+# Proxy everything to Node.js on port 3456
+RewriteRule ^(.*)$ http://127.0.0.1:3456/$1 [P,L,QSA]
 
-# Proxy Module Configuration
-<IfModule mod_proxy.c>
-    ProxyPreserveHost On
-    ProxyPass / http://localhost:3000/
-    ProxyPassReverse / http://localhost:3000/
-
-    # Timeout settings
-    ProxyTimeout 300
-</IfModule>
-
-# CORS Headers for iframe embedding
+# CORS Headers
 <IfModule mod_headers.c>
-    Header always set Access-Control-Allow-Origin "*"
-    Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS"
-    Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
-    Header always set Access-Control-Allow-Credentials "true"
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type"
 </IfModule>
 
-# Security: Deny direct access to sensitive files
-<FilesMatch "^(\.env|server\.js|package\.json|package-lock\.json|\.git)">
-    Require all denied
-</FilesMatch>
-
-# Deny access to node_modules
-<IfModule mod_rewrite.c>
-    RewriteRule ^node_modules/ - [F,L]
-</IfModule>
-
-# Protect the PDF from direct access (only Node.js should serve it)
-<FilesMatch "\.pdf$">
+# Security
+<FilesMatch "^(\.env|server\.js|package.*|\.git)">
     Require all denied
 </FilesMatch>
