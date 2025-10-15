@@ -1,8 +1,8 @@
 # 🚀 Deploy Now - Simple Steps
 
-## ✅ **Updated for Port 3456**
+## ✅ **Updated for Port 3000**
 
-All files in `dist/` are now configured to use port 3456.
+All files in `dist/` are now configured to use port 3000.
 
 ---
 
@@ -14,8 +14,8 @@ Upload entire `dist/` folder contents to:
 ```
 
 **Files to upload:**
-- ✅ `.htaccess` (configured for port 3456)
-- ✅ `.env` (configured for port 3456)
+- ✅ `.htaccess` (configured for port 3000)
+- ✅ `.env` (configured for port 3000)
 - ✅ `server.js`
 - ✅ `package.json`
 - ✅ `smh-manual-2023.pdf`
@@ -37,7 +37,7 @@ cd /home/ukidney/bot.ukidney.com/
 # 3. Install dependencies
 npm install --production
 
-# 4. Start on port 3456
+# 4. Start on port 3000
 pm2 start server.js --name "manual-bot" --watch false --max-restarts 1
 pm2 save
 
@@ -51,7 +51,7 @@ pm2 logs manual-bot --lines 5
 
 ```
 ✓ PDF loaded successfully
-🚀 Server running at http://localhost:3456
+🚀 Server running at http://localhost:3000
 📄 PDF-based chatbot ready!
 ```
 
@@ -63,7 +63,7 @@ pm2 logs manual-bot --lines 5
 
 ```bash
 # From server
-curl http://localhost:3456/api/health
+curl http://localhost:3000/api/health
 
 # From browser
 https://bot.ukidney.com
