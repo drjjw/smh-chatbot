@@ -20,18 +20,18 @@
 
 ### **1. Upload to Server**
 
-Upload these files to: `/var/www/ukidney.com/content/manuals/bot/`
+Upload these files to: `/home/ukidney/bot.ukidney.com/` (web root of bot.ukidney.com)
 
 **Method A - SCP:**
 ```bash
-scp -r /Users/jordanweinstein/Downloads/chat/* user@ukidney.com:/var/www/ukidney.com/content/manuals/bot/
+scp -r /Users/jordanweinstein/Downloads/chat/* root@bot.ukidney.com:/home/ukidney/bot.ukidney.com/
 ```
 
 **Method B - RSYNC (preferred):**
 ```bash
 rsync -avz --exclude 'node_modules' \
   /Users/jordanweinstein/Downloads/chat/ \
-  user@ukidney.com:/var/www/ukidney.com/content/manuals/bot/
+  root@bot.ukidney.com:/home/ukidney/bot.ukidney.com/
 ```
 
 **Method C - FTP/SFTP:**
@@ -43,8 +43,8 @@ Use your FTP client (FileZilla, Transmit, etc.)
 
 SSH into your server:
 ```bash
-ssh user@ukidney.com
-cd /var/www/ukidney.com/content/manuals/bot/
+ssh root@bot.ukidney.com
+cd /home/ukidney/bot.ukidney.com/
 ```
 
 Install dependencies:
@@ -179,12 +179,12 @@ Edit your ukidney.com page template and add:
 
 Secure the .env file:
 ```bash
-chmod 600 /var/www/ukidney.com/content/manuals/bot/.env
+chmod 600 /home/ukidney/bot.ukidney.com/.env
 ```
 
 Set proper ownership:
 ```bash
-sudo chown -R www-data:www-data /var/www/ukidney.com/content/manuals/bot/
+sudo chown -R www-data:www-data /home/ukidney/bot.ukidney.com/
 ```
 
 Configure firewall (if UFW):
@@ -250,11 +250,11 @@ https://supabase.com/dashboard/project/mlxctdgnojvkgfqldaob/editor
 ### **To Update PDF:**
 ```bash
 # Upload new PDF to server
-scp "New Manual.pdf" user@ukidney.com:/var/www/ukidney.com/content/manuals/bot/
+scp "New Manual.pdf" root@bot.ukidney.com:/home/ukidney/bot.ukidney.com/
 
 # SSH to server
-ssh user@ukidney.com
-cd /var/www/ukidney.com/content/manuals/bot/
+ssh root@bot.ukidney.com
+cd /home/ukidney/bot.ukidney.com/
 
 # Update server.js with new filename
 nano server.js  # Change line 75
@@ -266,7 +266,7 @@ pm2 restart manual-bot
 ### **To Update Code:**
 ```bash
 # Upload changed files
-scp server.js user@ukidney.com:/var/www/ukidney.com/content/manuals/bot/
+scp server.js root@bot.ukidney.com:/home/ukidney/bot.ukidney.com/
 
 # Restart
 pm2 restart manual-bot

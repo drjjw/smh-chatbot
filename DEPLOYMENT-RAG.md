@@ -129,22 +129,22 @@ Test these URLs on production:
 
 1. **Full Doc mode (default):**
    ```
-   https://ukidney.com/chat
+   https://bot.ukidney.com
    ```
 
 2. **RAG mode:**
    ```
-   https://ukidney.com/chat?method=rag
+   https://bot.ukidney.com?method=rag
    ```
 
 3. **UHN + RAG:**
    ```
-   https://ukidney.com/chat?doc=uhn&method=rag
+   https://bot.ukidney.com?doc=uhn&method=rag
    ```
 
 4. **Health check:**
    ```
-   https://ukidney.com/chat/api/health
+   https://bot.ukidney.com/api/health
    ```
 
 ### Step 5: Verify Database Connection
@@ -166,14 +166,14 @@ Should return a response with chunks retrieved.
 ## 🔍 Post-Deployment Verification
 
 ### 1. Test Full Doc Mode
-- [ ] Open: `https://ukidney.com/chat`
+- [ ] Open: `https://bot.ukidney.com`
 - [ ] Toggle buttons should be **HIDDEN**
 - [ ] Ask a question
 - [ ] Verify response shows: `Response time: XXXms`
 - [ ] Check browser console for no errors
 
 ### 2. Test RAG Mode
-- [ ] Open: `https://ukidney.com/chat?method=rag`
+- [ ] Open: `https://bot.ukidney.com?method=rag`
 - [ ] Ask the same question
 - [ ] Verify response shows: `Response time: XXXms` (no RAG details)
 - [ ] Check server logs for: `RAG: Found X relevant chunks`
@@ -209,7 +209,7 @@ sudo journalctl -u chat-app -f
 
 ### Check Analytics
 ```bash
-curl https://ukidney.com/chat/api/analytics
+curl https://bot.ukidney.com/api/analytics
 ```
 
 Should show:
@@ -319,7 +319,7 @@ Full Doc mode is **completely unchanged**, so your existing functionality is saf
 **Full Doc Mode (default):**
 ```html
 <iframe 
-  src="https://ukidney.com/chat?doc=smh" 
+  src="https://bot.ukidney.com?doc=smh" 
   width="100%" 
   height="600px" 
   frameborder="0">
@@ -329,7 +329,7 @@ Full Doc mode is **completely unchanged**, so your existing functionality is saf
 **RAG Mode:**
 ```html
 <iframe 
-  src="https://ukidney.com/chat?doc=smh&method=rag" 
+  src="https://bot.ukidney.com?doc=smh&method=rag" 
   width="100%" 
   height="600px" 
   frameborder="0">
@@ -339,7 +339,7 @@ Full Doc mode is **completely unchanged**, so your existing functionality is saf
 **UHN Manual with RAG:**
 ```html
 <iframe 
-  src="https://ukidney.com/chat?doc=uhn&method=rag" 
+  src="https://bot.ukidney.com?doc=uhn&method=rag" 
   width="100%" 
   height="600px" 
   frameborder="0">

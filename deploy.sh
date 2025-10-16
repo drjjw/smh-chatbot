@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# Deployment script for ukidney.com Manual Assistant
+# Deployment script for bot.ukidney.com Manual Assistant
 # Usage: ./deploy.sh
 
 set -e
 
-echo "🚀 Deploying Manual Assistant to ukidney.com"
+echo "🚀 Deploying Manual Assistant to bot.ukidney.com"
 echo "=============================================="
 
 # Configuration
-SERVER_USER="your-username"
-SERVER_HOST="ukidney.com"
-DEPLOY_PATH="/var/www/ukidney.com/content/manuals/bot"
+SERVER_USER="root"
+SERVER_HOST="bot.ukidney.com"
+DEPLOY_PATH="/home/ukidney/bot.ukidney.com"
 LOCAL_PATH="/Users/jordanweinstein/Downloads/chat"
 
 echo ""
@@ -71,7 +71,7 @@ echo "pm2 save"
 echo ""
 
 echo "📊 After deployment, test with:"
-echo "curl https://ukidney.com/content/manuals/bot/api/health"
+echo "curl https://bot.ukidney.com/api/health"
 echo ""
 
 # Cleanup

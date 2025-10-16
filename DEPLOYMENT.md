@@ -2,17 +2,17 @@
 
 ## 🚀 Deployment Location
 
-**Target URL**: `https://ukidney.com/content/manuals/bot/`
+**Target URL**: `https://bot.ukidney.com/`
 
 ---
 
 ## 📦 **Files to Upload**
 
-Upload these files to your server at `/content/manuals/bot/`:
+Upload these files to your server at `/home/ukidney/bot.ukidney.com/` (web root of bot.ukidney.com):
 
 ### **Required Files:**
 ```
-/content/manuals/bot/
+/home/ukidney/bot.ukidney.com/ (web root of bot.ukidney.com)
 ├── server.js                                   # Node.js server
 ├── package.json                                # Dependencies
 ├── .env                                        # Environment variables (secure!)
@@ -42,12 +42,12 @@ node --version  # Should be v18 or higher
 ### **Step 2: Upload Files**
 ```bash
 # Upload all files to the server
-scp -r /Users/jordanweinstein/Downloads/chat/* user@ukidney.com:/var/www/ukidney.com/content/manuals/bot/
+scp -r /Users/jordanweinstein/Downloads/chat/* root@bot.ukidney.com:/home/ukidney/bot.ukidney.com/
 ```
 
 ### **Step 3: Install Dependencies**
 ```bash
-cd /var/www/ukidney.com/content/manuals/bot/
+cd /home/ukidney/bot.ukidney.com/
 npm install --production
 ```
 
@@ -129,8 +129,8 @@ Add this to any page on ukidney.com:
 <div id="manual-assistant-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body" style="width: 95vw; height: 95vh; max-width: 95vw; padding: 0;">
         <button class="uk-modal-close-default" type="button" uk-close></button>
-        <iframe 
-            src="https://ukidney.com/content/manuals/bot/"
+        <iframe
+            src="https://bot.ukidney.com/"
             style="width: 100%; height: 100%; border: none;"
             title="UKidney Manual Assistant"
             allow="clipboard-write">
@@ -172,8 +172,8 @@ Add this to any page on ukidney.com:
 <div class="manual-modal-overlay" id="manualModalOverlay"></div>
 <div class="manual-modal-container" id="manualModalContainer">
     <button class="manual-modal-close" id="closeManualModal">&times;</button>
-    <iframe 
-        src="https://ukidney.com/content/manuals/bot/"
+    <iframe
+        src="https://bot.ukidney.com/"
         style="width: 100%; height: 100%; border: none; border-radius: 8px;">
     </iframe>
 </div>
@@ -220,13 +220,13 @@ Before deploying:
 Update your local `.env` temporarily:
 ```env
 PORT=3456
-BASE_URL=https://ukidney.com/content/manuals/bot/
+BASE_URL=https://bot.ukidney.com/
 ```
 
 ### **2. Test on Server**
 ```bash
 # SSH to server
-cd /var/www/ukidney.com/content/manuals/bot/
+cd /home/ukidney/bot.ukidney.com/
 npm start
 
 # Test from browser
@@ -235,7 +235,7 @@ curl http://localhost:3456/api/health
 
 ### **3. Test Through Nginx**
 ```bash
-curl https://ukidney.com/content/manuals/bot/api/health
+curl https://bot.ukidney.com/api/health
 ```
 
 ### **4. Test Modal Integration**
@@ -259,7 +259,7 @@ tail -f /var/log/nginx/access.log | grep "manuals/bot"
 
 ### **Analytics:**
 ```bash
-curl https://ukidney.com/content/manuals/bot/api/analytics?timeframe=24h
+curl https://bot.ukidney.com/api/analytics?timeframe=24h
 ```
 
 ### **Database:**
@@ -272,7 +272,7 @@ https://supabase.com/dashboard/project/mlxctdgnojvkgfqldaob
 
 ### **Update PDF:**
 ```bash
-cd /var/www/ukidney.com/content/manuals/bot/
+cd /home/ukidney/bot.ukidney.com/
 # Upload new PDF (keep same filename or update server.js)
 pm2 restart manual-bot
 ```
@@ -318,7 +318,7 @@ pm2 monit  # Real-time monitoring
 - [ ] Configure `.env` file
 - [ ] Start with PM2: `pm2 start server.js --name manual-bot`
 - [ ] Configure Nginx reverse proxy
-- [ ] Test: `curl https://ukidney.com/content/manuals/bot/api/health`
+- [ ] Test: `curl https://bot.ukidney.com/api/health`
 - [ ] Add modal code to ukidney.com page
 - [ ] Test modal from live site
 - [ ] Monitor logs and analytics
@@ -327,9 +327,9 @@ pm2 monit  # Real-time monitoring
 
 ## 🎯 **Final URLs**
 
-- **Chatbot**: https://ukidney.com/content/manuals/bot/
-- **Health Check**: https://ukidney.com/content/manuals/bot/api/health
-- **Analytics**: https://ukidney.com/content/manuals/bot/api/analytics
+- **Chatbot**: https://bot.ukidney.com/
+- **Health Check**: https://bot.ukidney.com/api/health
+- **Analytics**: https://bot.ukidney.com/api/analytics
 - **Supabase Dashboard**: https://supabase.com/dashboard/project/mlxctdgnojvkgfqldaob
 
 ---
