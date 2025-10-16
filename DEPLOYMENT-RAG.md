@@ -92,7 +92,7 @@ env: {
 }
 
 # Restart
-pm2 restart all
+pm2 restart manual-bot
 ```
 
 ### Step 3: Deploy Code
@@ -112,7 +112,7 @@ git pull origin main
 npm install
 
 # Restart application
-pm2 restart chat-app
+pm2 restart manual-bot
 # OR
 sudo systemctl restart chat-app
 ```
@@ -188,7 +188,7 @@ Should return a response with chunks retrieved.
 ### 4. Monitor Server Logs
 ```bash
 # For PM2
-pm2 logs chat-app
+pm2 logs manual-bot
 
 # For systemd
 sudo journalctl -u chat-app -f
