@@ -12,21 +12,18 @@ echo "=============================================="
 SERVER_USER="root"
 SERVER_HOST="bot.ukidney.com"
 DEPLOY_PATH="/home/ukidney/bot.ukidney.com"
-LOCAL_PATH="/Users/jordanweinstein/Downloads/chat"
+LOCAL_PATH="$(pwd)"
+
+echo ""
+echo "📦 Building production files..."
+node build.js
 
 echo ""
 echo "📦 Preparing files for deployment..."
 
-# Create temporary deployment directory
-TEMP_DIR=$(mktemp -d)
-echo "   Creating temp directory: $TEMP_DIR"
-
-# Copy necessary files
-cp -r "$LOCAL_PATH/public" "$TEMP_DIR/"
-cp "$LOCAL_PATH/server.js" "$TEMP_DIR/"
-cp "$LOCAL_PATH/package.json" "$TEMP_DIR/"
-cp "$LOCAL_PATH/.env" "$TEMP_DIR/"
-cp "$LOCAL_PATH/SMH Nephrology Housestaff Manual.- 2023.pdf" "$TEMP_DIR/"
+# Use dist directory (already built with hashed files)
+TEMP_DIR="$(pwd)/dist"
+echo "   Using dist directory: $TEMP_DIR"
 
 # Optional documentation
 cp "$LOCAL_PATH/README.md" "$TEMP_DIR/" 2>/dev/null || true
@@ -66,7 +63,7 @@ echo "Run these commands on your server:"
 echo ""
 echo "cd $DEPLOY_PATH"
 echo "npm install --production"
-echo "pm2 start server.js --name manual-bot"
+echo "pm2 restart manual-bot || pm2 start server.js --name manual-bot"
 echo "pm2 save"
 echo ""
 
@@ -74,7 +71,7 @@ echo "📊 After deployment, test with:"
 echo "curl https://bot.ukidney.com/api/health"
 echo ""
 
-# Cleanup
-rm -rf "$TEMP_DIR"
 echo "✅ Deployment preparation complete!"
+echo ""
+echo "💡 Note: dist/ directory contains hashed files for cache busting"
 
