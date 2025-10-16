@@ -417,6 +417,56 @@
             color: #166534;
             border-bottom-color: #d1fae5;
         }
+
+        /* Rating buttons */
+        .rating-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            justify-content: flex-end;
+            opacity: 0.4;
+            transition: opacity 0.2s;
+        }
+
+        .message.assistant:hover .rating-buttons {
+            opacity: 1;
+        }
+
+        .rating-btn {
+            padding: 4px 8px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            color: #666;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .rating-btn:hover {
+            background: #f5f5f5;
+            border-color: #d32f2f;
+            color: #d32f2f;
+        }
+
+        .rating-btn.rated {
+            background: #d32f2f;
+            color: white;
+            border-color: #d32f2f;
+        }
+
+        .rating-btn.thumbs-up.rated {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+
+        .rating-btn.thumbs-down.rated {
+            background: #f44336;
+            border-color: #f44336;
+        }
     </style>
 </head>
 <body>
@@ -504,6 +554,7 @@
         let sessionId = generateSessionId();
         let selectedDocument = 'smh'; // Default to SMH
         let isLocalEnv = false; // Track if running on localhost
+        let conversationIds = []; // Store conversation IDs for rating
 
         // Document configuration
         const docConfig = {
@@ -646,17 +697,17 @@
             }
         }
 
-        function addMessage(content, role, model = null) {
+        function addMessage(content, role, model = null, conversationId = null) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
-            
+
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
-            
+
             // Render markdown for assistant messages, plain text for user
             if (role === 'assistant') {
                 contentDiv.innerHTML = marked.parse(content);
-                
+
                 // Add subtle model badge
                 if (model) {
                     const badge = document.createElement('div');
@@ -664,13 +715,35 @@
                     badge.textContent = model === 'gemini' ? '🤖 Gemini' : '🚀 Grok';
                     contentDiv.appendChild(badge);
                 }
+
+                // Add rating buttons for assistant messages
+                if (conversationId) {
+                    const ratingButtons = document.createElement('div');
+                    ratingButtons.className = 'rating-buttons';
+
+                    const thumbsUpBtn = document.createElement('button');
+                    thumbsUpBtn.className = 'rating-btn thumbs-up';
+                    thumbsUpBtn.innerHTML = '👍';
+                    thumbsUpBtn.title = 'Rate this response as helpful';
+                    thumbsUpBtn.onclick = () => submitRating(conversationId, 'thumbs_up', thumbsUpBtn);
+
+                    const thumbsDownBtn = document.createElement('button');
+                    thumbsDownBtn.className = 'rating-btn thumbs-down';
+                    thumbsDownBtn.innerHTML = '👎';
+                    thumbsDownBtn.title = 'Rate this response as not helpful';
+                    thumbsDownBtn.onclick = () => submitRating(conversationId, 'thumbs_down', thumbsDownBtn);
+
+                    ratingButtons.appendChild(thumbsUpBtn);
+                    ratingButtons.appendChild(thumbsDownBtn);
+                    contentDiv.appendChild(ratingButtons);
+                }
             } else {
                 contentDiv.textContent = content;
             }
-            
+
             messageDiv.appendChild(contentDiv);
             chatContainer.appendChild(messageDiv);
-            
+
             // Scroll to show the top of the new message (not the bottom)
             if (role === 'assistant') {
                 messageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -699,6 +772,46 @@
         function removeLoading() {
             const loading = document.getElementById('loading');
             if (loading) loading.remove();
+        }
+
+        // Submit rating for a conversation
+        async function submitRating(conversationId, rating, buttonElement) {
+            try {
+                const response = await fetch(`${API_URL}/api/rate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        conversationId: conversationId,
+                        rating: rating
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update button appearance
+                    buttonElement.classList.add('rated');
+                    buttonElement.title = 'Thank you for your feedback!';
+
+                    // Disable both buttons in this message
+                    const ratingButtons = buttonElement.parentElement;
+                    const buttons = ratingButtons.querySelectorAll('.rating-btn');
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        if (btn !== buttonElement) {
+                            btn.style.opacity = '0.3';
+                        }
+                    });
+
+                    console.log(`✓ Rating submitted: ${rating} for conversation ${conversationId}`);
+                } else {
+                    console.error('Failed to submit rating:', data.error);
+                    alert('Failed to submit rating. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error submitting rating:', error);
+                alert('Failed to submit rating. Please check your connection and try again.');
+            }
         }
 
         async function sendMessage() {
@@ -781,7 +894,7 @@
                         });
                     }
                     
-                    addMessage(responseText, 'assistant', data.model);
+                    addMessage(responseText, 'assistant', data.model, data.conversationId);
                     conversationHistory.push({ role: 'assistant', content: data.response });
                 } else {
                     addMessage(`Error: ${data.error}`, 'assistant');

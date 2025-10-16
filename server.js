@@ -306,13 +306,16 @@ async function embedQuery(text) {
 /**
  * Find relevant chunks from Supabase using vector similarity
  */
-async function findRelevantChunks(embedding, documentType, limit = 5) {
+async function findRelevantChunks(embedding, documentType, limit = 5, threshold = null) {
     try {
+        // Use configurable threshold from environment or default
+        const defaultThreshold = threshold || parseFloat(process.env.RAG_SIMILARITY_THRESHOLD) || 0.15;
+
         // Call the match_document_chunks function we created in Supabase
         const { data, error } = await supabase.rpc('match_document_chunks', {
             query_embedding: embedding,
             doc_type: documentType,
-            match_threshold: 0.5,
+            match_threshold: defaultThreshold,
             match_count: limit
         });
 
@@ -461,7 +464,7 @@ async function logConversation(data) {
         const { error } = await supabase
             .from('chat_conversations')
             .insert([data]);
-        
+
         if (error) {
             console.error('Failed to log conversation:', error);
         }
@@ -470,10 +473,34 @@ async function logConversation(data) {
     }
 }
 
+// Helper function to update conversation rating
+async function updateConversationRating(conversationId, rating) {
+    try {
+        const { error } = await supabase
+            .from('chat_conversations')
+            .update({ user_rating: rating })
+            .eq('id', conversationId);
+
+        if (error) {
+            console.error('Failed to update conversation rating:', error);
+            throw error;
+        }
+
+        return { success: true };
+    } catch (err) {
+        console.error('Error updating conversation rating:', err);
+        throw err;
+    }
+}
+
 // Chat endpoint
 app.post('/api/chat', async (req, res) => {
     const startTime = Date.now();
-    const sessionId = req.body.sessionId || uuidv4();
+    // Ensure sessionId is a valid UUID
+    let sessionId = req.body.sessionId;
+    if (!sessionId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
+        sessionId = uuidv4();
+    }
 
     try {
         const { message, history = [], model = 'gemini', doc = 'smh' } = req.body;
@@ -506,9 +533,9 @@ app.post('/api/chat', async (req, res) => {
             throw chatError;
         } finally {
             const responseTime = Date.now() - startTime;
-            
+
             // Log to Supabase
-            await logConversation({
+            const conversationData = {
                 session_id: sessionId,
                 question: message,
                 response: responseText || '',
@@ -526,13 +553,22 @@ app.post('/api/chat', async (req, res) => {
                     document_title: currentDocument.metadata.info?.Title,
                     document_type: currentDocument.type
                 }
-            });
+            };
+
+            const { data: loggedConversation } = await supabase
+                .from('chat_conversations')
+                .insert([conversationData])
+                .select('id')
+                .single();
+
+            res.locals.conversationId = loggedConversation?.id;
         }
 
         res.json({
             response: responseText,
             model: model,
             sessionId: sessionId,
+            conversationId: res.locals.conversationId,
             metadata: {
                 document: currentDocument.name,
                 documentVersion: currentDocument.version,
@@ -555,7 +591,11 @@ app.post('/api/chat', async (req, res) => {
 // RAG Chat endpoint
 app.post('/api/chat-rag', async (req, res) => {
     const startTime = Date.now();
-    const sessionId = req.body.sessionId || uuidv4();
+    // Ensure sessionId is a valid UUID
+    let sessionId = req.body.sessionId;
+    if (!sessionId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
+        sessionId = uuidv4();
+    }
 
     try {
         const { message, history = [], model = 'gemini', doc = 'smh' } = req.body;
@@ -597,9 +637,9 @@ app.post('/api/chat-rag', async (req, res) => {
             throw chatError;
         } finally {
             const responseTime = Date.now() - startTime;
-            
+
             // Log to Supabase with RAG metadata
-            await logConversation({
+            const conversationData = {
                 session_id: sessionId,
                 question: message,
                 response: responseText || '',
@@ -620,13 +660,22 @@ app.post('/api/chat-rag', async (req, res) => {
                     document_type: documentType,
                     chunk_similarities: retrievedChunks.map(c => c.similarity)
                 }
-            });
+            };
+
+            const { data: loggedConversation } = await supabase
+                .from('chat_conversations')
+                .insert([conversationData])
+                .select('id')
+                .single();
+
+            res.locals.conversationId = loggedConversation?.id;
         }
 
         res.json({
             response: responseText,
             model: model,
             sessionId: sessionId,
+            conversationId: res.locals.conversationId,
             metadata: {
                 document: documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf',
                 documentType: documentType,
@@ -691,6 +740,31 @@ app.get('/api/health', (req, res) => {
         documentDetails: docStatus,
         requestedDoc: requestedDoc
     });
+});
+
+// Rating endpoint
+app.post('/api/rate', async (req, res) => {
+    try {
+        const { conversationId, rating } = req.body;
+
+        if (!conversationId) {
+            return res.status(400).json({ error: 'conversationId is required' });
+        }
+
+        if (!['thumbs_up', 'thumbs_down'].includes(rating)) {
+            return res.status(400).json({ error: 'rating must be either "thumbs_up" or "thumbs_down"' });
+        }
+
+        await updateConversationRating(conversationId, rating);
+
+        res.json({ success: true, message: 'Rating submitted successfully' });
+    } catch (error) {
+        console.error('Rating error:', error);
+        res.status(500).json({
+            error: 'Failed to submit rating',
+            details: error.message
+        });
+    }
 });
 
 // Analytics endpoint

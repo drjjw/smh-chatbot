@@ -35,6 +35,17 @@ const xai = new OpenAI({
     baseURL: 'https://api.x.ai/v1'
 });
 
+// Initialize OpenAI client for embeddings (RAG)
+let openaiClient = null;
+if (process.env.OPENAI_API_KEY) {
+    openaiClient = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY
+    });
+    console.log('✓ OpenAI client initialized for RAG embeddings');
+} else {
+    console.warn('⚠️  OPENAI_API_KEY not found - RAG mode will not work');
+}
+
 // Initialize Supabase client
 const supabase = createClient(
     process.env.SUPABASE_URL,
@@ -268,13 +279,192 @@ async function chatWithGrok(message, history, documentType = 'smh') {
     return completion.choices[0].message.content;
 }
 
+// ==================== RAG ENHANCEMENT ====================
+
+/**
+ * Generate embedding for a query using OpenAI text-embedding-3-small
+ */
+async function embedQuery(text) {
+    try {
+        if (!openaiClient) {
+            throw new Error('OpenAI client not initialized. OPENAI_API_KEY environment variable is required for RAG mode.');
+        }
+        
+        const response = await openaiClient.embeddings.create({
+            model: 'text-embedding-3-small',
+            input: text,
+            encoding_format: 'float'
+        });
+        
+        return response.data[0].embedding;
+    } catch (error) {
+        console.error('Error generating query embedding:', error.message);
+        throw error;
+    }
+}
+
+/**
+ * Find relevant chunks from Supabase using vector similarity
+ */
+async function findRelevantChunks(embedding, documentType, limit = 5, threshold = null) {
+    try {
+        // Use configurable threshold from environment or default
+        const defaultThreshold = threshold || parseFloat(process.env.RAG_SIMILARITY_THRESHOLD) || 0.15;
+
+        // Call the match_document_chunks function we created in Supabase
+        const { data, error } = await supabase.rpc('match_document_chunks', {
+            query_embedding: embedding,
+            doc_type: documentType,
+            match_threshold: defaultThreshold,
+            match_count: limit
+        });
+
+        if (error) {
+            console.error('Error finding relevant chunks:', error);
+            throw error;
+        }
+
+        return data || [];
+    } catch (error) {
+        console.error('Error in findRelevantChunks:', error);
+        throw error;
+    }
+}
+
+/**
+ * Build RAG system prompt with retrieved chunks
+ */
+const getRAGSystemPrompt = (documentType = 'smh', chunks = []) => {
+    const docNames = {
+        'smh': 'SMH Housestaff Manual',
+        'uhn': 'UHN Nephrology Manual'
+    };
+
+    const docName = docNames[documentType] || docNames['smh'];
+    
+    // Combine chunk content (without chunk labels)
+    const context = chunks.map(chunk => chunk.content).join('\n\n---\n\n');
+
+    return `You are a helpful assistant that answers questions based on the ${docName}.
+
+IMPORTANT RULES:
+1. Answer questions ONLY using information from the provided relevant excerpts below
+2. If the answer is not in the excerpts, say "I don't have that information in the provided sections of the ${docName}"
+3. Be concise and professional
+4. If you're unsure, admit it rather than guessing
+5. Do NOT mention chunk numbers or reference which excerpt information came from
+
+FORMATTING RULES:
+- Use **bold** for important terms and section titles
+- Use bullet points (- or *) for lists
+- Use numbered lists (1., 2., 3.) for sequential steps
+- Use line breaks between different topics
+- Keep paragraphs short and scannable
+
+RELEVANT EXCERPTS FROM ${docName.toUpperCase()}:
+---
+${context}
+---`;
+};
+
+/**
+ * Get model-specific RAG prompt
+ */
+const getRAGGeminiPrompt = (documentType, chunks) => getRAGSystemPrompt(documentType, chunks) + `
+
+RESPONSE STYLE - STRICTLY FOLLOW:
+- Use markdown tables when presenting structured data
+- Present information in the most compact, scannable format
+- Lead with the direct answer, then provide details
+- Use minimal explanatory text - let the structure speak`;
+
+const getRAGGrokPrompt = (documentType, chunks) => getRAGSystemPrompt(documentType, chunks) + `
+
+RESPONSE STYLE - STRICTLY FOLLOW:
+- ALWAYS add a brief introductory sentence explaining the context
+- When presenting factual data, include WHY it matters
+- Add a short concluding note with clinical significance when relevant
+- Use more descriptive language - explain, don't just list`;
+
+/**
+ * Chat with RAG using Gemini
+ */
+async function chatWithRAGGemini(message, history, documentType, chunks) {
+    const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash"
+    });
+
+    const systemMessage = getRAGGeminiPrompt(documentType, chunks);
+    
+    const docNames = {
+        'smh': 'SMH Housestaff Manual',
+        'uhn': 'UHN Nephrology Manual'
+    };
+    const docName = docNames[documentType] || docNames['smh'];
+
+    const fullHistory = [
+        {
+            role: 'user',
+            parts: [{ text: systemMessage + `\n\nI understand. I will only answer questions based on the ${docName} excerpts you provided.` }]
+        },
+        {
+            role: 'model',
+            parts: [{ text: `I understand. I will only answer questions based on the ${docName} excerpts you provided. What would you like to know?` }]
+        },
+        ...history.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.content }]
+        }))
+    ];
+
+    const chat = model.startChat({
+        history: fullHistory
+    });
+
+    const result = await chat.sendMessage(message);
+    const response = await result.response;
+    return response.text();
+}
+
+/**
+ * Chat with RAG using Grok
+ */
+async function chatWithRAGGrok(message, history, documentType, chunks) {
+    const systemMessage = getRAGGrokPrompt(documentType, chunks);
+    
+    const messages = [
+        {
+            role: 'system',
+            content: systemMessage
+        },
+        ...history.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'assistant',
+            content: msg.content
+        })),
+        {
+            role: 'user',
+            content: message
+        }
+    ];
+
+    const completion = await xai.chat.completions.create({
+        model: 'grok-2-1212',
+        messages: messages,
+        temperature: 0.7
+    });
+
+    return completion.choices[0].message.content;
+}
+
+// ==================== END RAG ENHANCEMENT ====================
+
 // Helper function to log conversation to Supabase
 async function logConversation(data) {
     try {
         const { error } = await supabase
             .from('chat_conversations')
             .insert([data]);
-        
+
         if (error) {
             console.error('Failed to log conversation:', error);
         }
@@ -283,10 +473,34 @@ async function logConversation(data) {
     }
 }
 
+// Helper function to update conversation rating
+async function updateConversationRating(conversationId, rating) {
+    try {
+        const { error } = await supabase
+            .from('chat_conversations')
+            .update({ user_rating: rating })
+            .eq('id', conversationId);
+
+        if (error) {
+            console.error('Failed to update conversation rating:', error);
+            throw error;
+        }
+
+        return { success: true };
+    } catch (err) {
+        console.error('Error updating conversation rating:', err);
+        throw err;
+    }
+}
+
 // Chat endpoint
 app.post('/api/chat', async (req, res) => {
     const startTime = Date.now();
-    const sessionId = req.body.sessionId || uuidv4();
+    // Ensure sessionId is a valid UUID
+    let sessionId = req.body.sessionId;
+    if (!sessionId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
+        sessionId = uuidv4();
+    }
 
     try {
         const { message, history = [], model = 'gemini', doc = 'smh' } = req.body;
@@ -319,9 +533,9 @@ app.post('/api/chat', async (req, res) => {
             throw chatError;
         } finally {
             const responseTime = Date.now() - startTime;
-            
+
             // Log to Supabase
-            await logConversation({
+            const conversationData = {
                 session_id: sessionId,
                 question: message,
                 response: responseText || '',
@@ -339,13 +553,22 @@ app.post('/api/chat', async (req, res) => {
                     document_title: currentDocument.metadata.info?.Title,
                     document_type: currentDocument.type
                 }
-            });
+            };
+
+            const { data: loggedConversation } = await supabase
+                .from('chat_conversations')
+                .insert([conversationData])
+                .select('id')
+                .single();
+
+            res.locals.conversationId = loggedConversation?.id;
         }
 
         res.json({
             response: responseText,
             model: model,
             sessionId: sessionId,
+            conversationId: res.locals.conversationId,
             metadata: {
                 document: currentDocument.name,
                 documentVersion: currentDocument.version,
@@ -360,6 +583,117 @@ app.post('/api/chat', async (req, res) => {
         console.error('Chat error:', error);
         res.status(500).json({ 
             error: 'Failed to process chat message',
+            details: error.message 
+        });
+    }
+});
+
+// RAG Chat endpoint
+app.post('/api/chat-rag', async (req, res) => {
+    const startTime = Date.now();
+    // Ensure sessionId is a valid UUID
+    let sessionId = req.body.sessionId;
+    if (!sessionId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
+        sessionId = uuidv4();
+    }
+
+    try {
+        const { message, history = [], model = 'gemini', doc = 'smh' } = req.body;
+
+        if (!message) {
+            return res.status(400).json({ error: 'Message is required' });
+        }
+
+        // Validate document type
+        const validDocs = ['smh', 'uhn'];
+        const documentType = validDocs.includes(doc) ? doc : 'smh';
+
+        let responseText;
+        let retrievalTimeMs = 0;
+        let chunksUsed = 0;
+        let errorOccurred = null;
+        let retrievedChunks = [];
+
+        try {
+            // Step 1: Embed the query
+            const retrievalStart = Date.now();
+            const queryEmbedding = await embedQuery(message);
+            
+            // Step 2: Find relevant chunks
+            retrievedChunks = await findRelevantChunks(queryEmbedding, documentType, 5);
+            retrievalTimeMs = Date.now() - retrievalStart;
+            chunksUsed = retrievedChunks.length;
+
+            console.log(`RAG: Found ${chunksUsed} relevant chunks in ${retrievalTimeMs}ms`);
+
+            // Step 3: Generate response using RAG
+            if (model === 'grok') {
+                responseText = await chatWithRAGGrok(message, history, documentType, retrievedChunks);
+            } else {
+                responseText = await chatWithRAGGemini(message, history, documentType, retrievedChunks);
+            }
+        } catch (chatError) {
+            errorOccurred = chatError.message;
+            throw chatError;
+        } finally {
+            const responseTime = Date.now() - startTime;
+
+            // Log to Supabase with RAG metadata
+            const conversationData = {
+                session_id: sessionId,
+                question: message,
+                response: responseText || '',
+                model: model,
+                response_time_ms: responseTime,
+                document_name: documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf',
+                document_path: path.join(__dirname, documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf'),
+                document_version: documentType === 'smh' ? '2023' : '2025',
+                pdf_name: documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf',
+                pdf_pages: 0, // Not applicable for RAG
+                error: errorOccurred,
+                retrieval_method: 'rag',
+                chunks_used: chunksUsed,
+                retrieval_time_ms: retrievalTimeMs,
+                metadata: {
+                    history_length: history.length,
+                    timestamp: new Date().toISOString(),
+                    document_type: documentType,
+                    chunk_similarities: retrievedChunks.map(c => c.similarity)
+                }
+            };
+
+            const { data: loggedConversation } = await supabase
+                .from('chat_conversations')
+                .insert([conversationData])
+                .select('id')
+                .single();
+
+            res.locals.conversationId = loggedConversation?.id;
+        }
+
+        res.json({
+            response: responseText,
+            model: model,
+            sessionId: sessionId,
+            conversationId: res.locals.conversationId,
+            metadata: {
+                document: documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf',
+                documentType: documentType,
+                responseTime: Date.now() - startTime,
+                retrievalMethod: 'rag',
+                chunksUsed: chunksUsed,
+                retrievalTime: retrievalTimeMs,
+                chunkSimilarities: retrievedChunks.map(c => ({
+                    index: c.chunk_index,
+                    similarity: c.similarity
+                }))
+            }
+        });
+
+    } catch (error) {
+        console.error('RAG Chat error:', error);
+        res.status(500).json({ 
+            error: 'Failed to process RAG chat message',
             details: error.message 
         });
     }
@@ -406,6 +740,31 @@ app.get('/api/health', (req, res) => {
         documentDetails: docStatus,
         requestedDoc: requestedDoc
     });
+});
+
+// Rating endpoint
+app.post('/api/rate', async (req, res) => {
+    try {
+        const { conversationId, rating } = req.body;
+
+        if (!conversationId) {
+            return res.status(400).json({ error: 'conversationId is required' });
+        }
+
+        if (!['thumbs_up', 'thumbs_down'].includes(rating)) {
+            return res.status(400).json({ error: 'rating must be either "thumbs_up" or "thumbs_down"' });
+        }
+
+        await updateConversationRating(conversationId, rating);
+
+        res.json({ success: true, message: 'Rating submitted successfully' });
+    } catch (error) {
+        console.error('Rating error:', error);
+        res.status(500).json({
+            error: 'Failed to submit rating',
+            details: error.message
+        });
+    }
 });
 
 // Analytics endpoint

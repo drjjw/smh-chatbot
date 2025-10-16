@@ -51,17 +51,26 @@ TO authenticated
 WITH CHECK (true);
 
 -- Allow service role full access (for maintenance)
-CREATE POLICY "Allow service role full access" 
-ON document_chunks 
-FOR ALL 
-TO service_role 
+CREATE POLICY "Allow service role full access"
+ON document_chunks
+FOR ALL
+TO service_role
 USING (true);
 
+-- Allow anonymous users to update ratings (for rating functionality)
+CREATE POLICY "Allow anonymous update ratings"
+ON chat_conversations
+FOR UPDATE
+TO anon
+USING (true)
+WITH CHECK (true);
+
 -- Update chat_conversations table to support RAG logging
-ALTER TABLE chat_conversations 
+ALTER TABLE chat_conversations
 ADD COLUMN IF NOT EXISTS retrieval_method TEXT DEFAULT 'full' CHECK (retrieval_method IN ('full', 'rag')),
 ADD COLUMN IF NOT EXISTS chunks_used INTEGER DEFAULT 0,
-ADD COLUMN IF NOT EXISTS retrieval_time_ms INTEGER DEFAULT 0;
+ADD COLUMN IF NOT EXISTS retrieval_time_ms INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS user_rating TEXT DEFAULT NULL CHECK (user_rating IN ('thumbs_up', 'thumbs_down', NULL));
 
 -- Create function for similarity search (helper for application)
 CREATE OR REPLACE FUNCTION match_document_chunks(
