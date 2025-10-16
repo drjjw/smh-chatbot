@@ -1,6 +1,6 @@
 // UI updates, messages, and loading states
-import { docConfig } from './config.js';
-import { getRandomFact } from './facts.js';
+import { docConfig } from './config.6e33e3e5.js';
+import { getRandomFact } from './facts.cfc24041.js';
 
 // Update document UI based on selected document
 export function updateDocumentUI(selectedDocument) {
@@ -15,22 +15,7 @@ export function updateDocumentUI(selectedDocument) {
         backLink.href = config.backLink;
     }
 
-    // Update about tooltip document name
-    const documentNameElement = document.getElementById('documentName');
-    if (documentNameElement) {
-        documentNameElement.textContent = config.welcomeMessage;
-    }
-
     console.log(`📄 Document set to: ${selectedDocument.toUpperCase()} - ${config.welcomeMessage}`);
-}
-
-// Update model name in about tooltip
-export function updateModelInTooltip(selectedModel) {
-    const modelNameElement = document.getElementById('modelName');
-    if (modelNameElement) {
-        const modelDisplayName = selectedModel === 'gemini' ? 'Gemini 2.5' : 'Grok 4';
-        modelNameElement.textContent = modelDisplayName;
-    }
 }
 
 // Add a message to the chat
@@ -125,7 +110,7 @@ export function addLoading(chatContainer) {
     // Fun fact display
     const factDiv = document.createElement('div');
     factDiv.className = 'fun-fact';
-    factDiv.innerHTML = getRandomFact();
+    factDiv.textContent = getRandomFact();
     
     contentDiv.appendChild(dotsDiv);
     contentDiv.appendChild(factDiv);
@@ -160,7 +145,7 @@ function startFactRotation() {
         
         // Change text and fade in after fade out completes
         setTimeout(() => {
-            factElement.innerHTML = getRandomFact();
+            factElement.textContent = getRandomFact();
             factElement.classList.remove('fade-out');
             factElement.classList.add('fade-in');
             
@@ -169,7 +154,7 @@ function startFactRotation() {
                 factElement.classList.remove('fade-in');
             }, 600);
         }, 600);
-    }, 8000); // Change fact every 8 seconds
+    }, 5000); // Change fact every 5 seconds
 }
 
 // Remove loading indicator

@@ -15,11 +15,23 @@ Upload these files to your server at `/home/ukidney/bot.ukidney.com/` (web root 
 /home/ukidney/bot.ukidney.com/ (web root of bot.ukidney.com)
 ├── server.js                                   # Node.js server
 ├── package.json                                # Dependencies
+├── package-lock.json                           # Locked dependencies
 ├── .env                                        # Environment variables (secure!)
+├── lib/
+│   └── local-embeddings.js                    # Local embedding module
 ├── public/
-│   └── index.html                             # Chat interface
-└── SMH Nephrology Housestaff Manual.- 2023.pdf # PDF document
+│   ├── index.html                             # Chat interface
+│   ├── css/
+│   │   └── styles.*.css                       # Hashed CSS files
+│   └── js/
+│       └── *.js                               # Hashed JS modules
+├── smh-manual-2023.pdf                        # SMH PDF document
+├── uhn-manual-2025.pdf                        # UHN PDF document
+├── embed-smh-manual.html                      # SMH embed page
+└── embed-uhn-manual.html                      # UHN embed page
 ```
+
+**Note**: The `.cache/` directory will be created automatically when using local embeddings.
 
 ### **Optional Files:**
 ```
@@ -54,19 +66,32 @@ npm install --production
 ### **Step 4: Configure Environment**
 Create a `.env` file with your credentials:
 ```env
+# AI Model API Keys
 GEMINI_API_KEY=your_gemini_api_key_here
 XAI_API_KEY=your_xai_api_key_here
+
+# OpenAI (for RAG embeddings - optional if using local embeddings only)
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Server Configuration
 PORT=3456
 
+# Supabase Configuration
 SUPABASE_URL=your_supabase_url_here
 SUPABASE_ANON_KEY=your_supabase_anon_key_here
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
+
+# RAG Configuration (optional)
+RAG_SIMILARITY_THRESHOLD=0.15
 ```
 
 Get your API keys from:
 - **Gemini**: [Google AI Studio](https://makersuite.google.com/)
 - **Grok/xAI**: [xAI Console](https://console.x.ai/)
+- **OpenAI**: [OpenAI Platform](https://platform.openai.com/)
 - **Supabase**: [Supabase Dashboard](https://supabase.com/dashboard)
+
+**Note**: `OPENAI_API_KEY` is optional if you're using local embeddings exclusively
 
 ### **Step 5: Start with PM2 (Process Manager)**
 ```bash
@@ -110,6 +135,86 @@ Then reload Nginx:
 sudo nginx -t
 sudo systemctl reload nginx
 ```
+
+---
+
+## ⚙️ **URL Parameters & Configuration**
+
+The chatbot supports multiple URL parameters for customization:
+
+### **Available Parameters**
+
+| Parameter | Values | Default | Description |
+|-----------|--------|---------|-------------|
+| `doc` | `smh`, `uhn` | `smh` | Select document (SMH Manual or UHN Manual) |
+| `model` | `gemini`, `grok` | `gemini` | Select AI model |
+| `method` | `full`, `rag` | `full` | Search mode (Comprehensive or Targeted) |
+| `embedding` | `openai`, `local` | `openai` | Embedding type for RAG mode |
+
+### **Usage Examples**
+
+**Basic document selection:**
+```
+https://bot.ukidney.com/?doc=uhn
+```
+
+**Select model:**
+```
+https://bot.ukidney.com/?model=grok
+```
+
+**Use RAG mode with local embeddings:**
+```
+https://bot.ukidney.com/?method=rag&embedding=local
+```
+
+**Full configuration:**
+```
+https://bot.ukidney.com/?doc=uhn&model=grok&method=rag&embedding=local
+```
+
+### **Search Modes Explained**
+
+**Comprehensive (Full Doc)** - `method=full` (default):
+- Sends entire PDF to AI model
+- Best for broad context questions
+- More expensive (uses more tokens)
+- Slower response times
+
+**Targeted (RAG)** - `method=rag`:
+- Uses vector similarity search
+- Retrieves only top 5 relevant chunks
+- Faster and more cost-effective
+- Better for specific questions
+
+### **Embedding Types (RAG Mode Only)**
+
+**OpenAI** - `embedding=openai` (default):
+- Uses OpenAI text-embedding-3-small API
+- 1536-dimensional vectors
+- Cost: ~$0.00002 per query
+- Requires internet connection
+
+**Local** - `embedding=local`:
+- Uses all-MiniLM-L6-v2 model
+- 384-dimensional vectors
+- Cost: $0 (runs on server)
+- Works offline after initial model download
+
+### **Local Embeddings Setup** (Optional)
+
+If using `embedding=local`, the server will:
+1. Download the model (~23MB) on first request
+2. Cache in `.cache/transformers/` directory
+3. Use cached model for all subsequent requests
+
+**First-time setup** (optional, speeds up first request):
+```bash
+cd /home/ukidney/bot.ukidney.com/
+npm run embed:local
+```
+
+This pre-downloads the model and generates embeddings (~5-10 minutes).
 
 ---
 
@@ -309,6 +414,26 @@ pm2 monit  # Real-time monitoring
 2. Verify file permissions
 3. Check server logs on startup
 
+### **Local embeddings not working:**
+1. Check if `.cache/transformers/` directory exists
+2. Verify internet connection for initial model download
+3. Check disk space (~25MB needed for model)
+4. Check logs: `pm2 logs manual-bot | grep "embedding"`
+5. Try pre-downloading: `npm run embed:local`
+
+### **RAG mode timeout errors:**
+1. Check if using `?method=rag` URL parameter
+2. Verify Supabase connection
+3. Check if `document_chunks` or `document_chunks_local` tables have data
+4. Increase timeout if needed (currently 60s for RAG)
+5. Check OpenAI API key if using OpenAI embeddings
+
+### **URL parameters not working:**
+1. Clear browser cache
+2. Check console for URL parameter log
+3. Verify format: `?param1=value1&param2=value2`
+4. Make sure using supported values (e.g., `model=gemini` not `model=chatgpt`)
+
 ---
 
 ## 📋 **Quick Deploy Checklist**
@@ -331,6 +456,60 @@ pm2 monit  # Real-time monitoring
 - **Health Check**: https://bot.ukidney.com/api/health
 - **Analytics**: https://bot.ukidney.com/api/analytics
 - **Supabase Dashboard**: https://supabase.com/dashboard/project/mlxctdgnojvkgfqldaob
+
+---
+
+## 🆕 **New Features & Enhancements**
+
+### **Recent Updates** (October 2025)
+
+1. **Dual Embedding System**
+   - OpenAI embeddings (1536D) for high accuracy
+   - Local embeddings (384D) for zero-cost operation
+   - Switchable via `?embedding=` URL parameter
+   - 100% chunk overlap proven in testing
+
+2. **URL Parameter Control**
+   - Full configuration via URL parameters
+   - Model selection (`?model=grok` or `?model=gemini`)
+   - Document selection (`?doc=smh` or `?doc=uhn`)
+   - Method selection (`?method=rag` or `?method=full`)
+   - Embedding selection (`?embedding=local` or `?embedding=openai`)
+
+3. **Enhanced Error Handling**
+   - 60-second timeout for RAG queries
+   - 30-second timeout for full document queries
+   - Clear, actionable error messages
+   - Detailed server-side logging
+
+4. **Console Debugging**
+   - URL parameters displayed on page load
+   - Embedding type and dimensions shown
+   - Search mode clearly indicated
+   - Model selection logged
+
+5. **Performance Improvements**
+   - Comprehensive server logging for debugging
+   - Response time tracking
+   - Chunk retrieval metrics
+   - Error tracking with timestamps
+
+### **For Developers**
+
+**Test comparison between embeddings:**
+```bash
+npm run compare
+```
+
+**Generate local embeddings:**
+```bash
+npm run embed:local
+```
+
+**Build for production:**
+```bash
+npm run build
+```
 
 ---
 

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Facts Loading Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f8f8f8;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .demo-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px 24px;
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        .loading-dots {
+            display: flex;
+            gap: 5px;
+        }
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        .fun-fact {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #666;
+            font-style: italic;
+            max-width: 100%;
+            padding: 12px 16px;
+            background: #f9f9f9;
+            border-left: 3px solid #cc0000;
+            border-radius: 4px;
+            transition: opacity 0.6s ease-in-out;
+            opacity: 1;
+        }
+        .fun-fact.fade-out {
+            opacity: 0;
+        }
+        .fun-fact.fade-in {
+            opacity: 1;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        button {
+            padding: 10px 20px;
+            background: #cc0000;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        button:hover {
+            background: #b30000;
+        }
+        .info {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Fun Facts Loading Feature Demo</h1>
+    
+    <div class="demo-container">
+        <h2>Preview</h2>
+        <p>This is how users will see the loading indicator while waiting for AI responses:</p>
+        
+        <div id="loadingDemo" class="loading-container">
+            <div class="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="fun-fact" id="factDisplay">
+                Loading fact...
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="startDemo()">Start Demo</button>
+            <button onclick="stopDemo()">Stop Demo</button>
+        </div>
+        
+        <div class="info">
+            <strong>✨ Features:</strong><br>
+            • 55 medically-accurate facts about kidneys and urine<br>
+            • Facts rotate every 8 seconds with smooth fade transitions<br>
+            • Random bold prefixes: <strong>Fun fact:</strong> or <strong>Did you know?</strong><br>
+            • Automatic cleanup when loading completes<br>
+            • Mobile responsive design<br>
+            <br>
+            <strong>📊 Behavior:</strong><br>
+            • Initial fact appears immediately with random prefix<br>
+            • Fade out (600ms) → New fact → Fade in (600ms)<br>
+            • Random selection from fact pool<br>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import facts
+        const kidneyFacts = [
+            "Renal function can be maintained with a single kidney – unilateral nephrectomy patients typically experience normal renal capacity.",
+            "The kidneys process approximately 180-200 liters of blood daily – filtering plasma through glomerular capillaries continuously.",
+            "Adult kidneys measure 10-12 cm in length and weigh approximately 125-170 grams – roughly the size of a clenched fist.",
+            "Each kidney contains approximately 1-1.5 million functional nephrons – the fundamental filtration units of renal tissue.",
+            "Kidneys produce erythropoietin in response to hypoxia – stimulating erythropoiesis in bone marrow to increase red blood cell production."
+        ];
+
+        const urineFacts = [
+            "Average daily urine output ranges from 1-2 liters – representing normal renal excretory function in euvolemic adults.",
+            "Urine composition is approximately 95% water – with the remaining 5% consisting of urea, creatinine, electrolytes, and metabolic byproducts.",
+            "Fresh urine is sterile in healthy individuals – bacterial colonization occurs only after voiding or in cases of urinary tract infection.",
+            "Bladder capacity typically ranges from 400-600 milliliters – though functional capacity varies with individual physiology.",
+            "Urine contains over 3,000 distinct metabolites – reflecting comprehensive renal filtration and metabolic excretion."
+        ];
+
+        const allFacts = [...kidneyFacts, ...urineFacts];
+        let rotationInterval = null;
+
+        function getRandomPrefix() {
+            const prefixes = ["<strong>Fun fact:</strong> ", "<strong>Did you know?</strong> "];
+            return prefixes[Math.floor(Math.random() * prefixes.length)];
+        }
+
+        function getRandomFact() {
+            const fact = allFacts[Math.floor(Math.random() * allFacts.length)];
+            return getRandomPrefix() + fact;
+        }
+
+        function rotateFact() {
+            const factElement = document.getElementById('factDisplay');
+            
+            // Fade out
+            factElement.classList.add('fade-out');
+            
+            // Change text and fade in after fade out completes
+            setTimeout(() => {
+                factElement.innerHTML = getRandomFact();
+                factElement.classList.remove('fade-out');
+                factElement.classList.add('fade-in');
+                
+                // Remove fade-in class after animation
+                setTimeout(() => {
+                    factElement.classList.remove('fade-in');
+                }, 600);
+            }, 600);
+        }
+
+        window.startDemo = function() {
+            if (rotationInterval) {
+                clearInterval(rotationInterval);
+            }
+            
+            // Set initial fact
+            document.getElementById('factDisplay').innerHTML = getRandomFact();
+            
+            // Start rotation
+            rotationInterval = setInterval(rotateFact, 8000);
+        };
+
+        window.stopDemo = function() {
+            if (rotationInterval) {
+                clearInterval(rotationInterval);
+                rotationInterval = null;
+            }
+        };
+
+        // Auto-start demo
+        window.addEventListener('load', () => {
+            setTimeout(startDemo, 500);
+        });
+    </script>
+</body>
+</html>
+

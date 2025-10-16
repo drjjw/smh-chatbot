@@ -1,6 +1,6 @@
 // UI updates, messages, and loading states
-import { docConfig } from './config.js';
-import { getRandomFact } from './facts.js';
+import { docConfig } from './config.6e33e3e5.js';
+import { getRandomFact } from './facts.64f2b87f.js';
 
 // Update document UI based on selected document
 export function updateDocumentUI(selectedDocument) {

@@ -52,6 +52,7 @@ const cssFiles = {
 
 const jsFiles = {
     'public/js/config.js': 'js',
+    'public/js/facts.js': 'js',
     'public/js/api.js': 'js',
     'public/js/ui.js': 'js',
     'public/js/chat.js': 'js',
@@ -188,6 +189,27 @@ const otherFiles = [
     { from: 'embed-uhn-manual.html', to: 'embed-uhn-manual.html' },
     { from: '.htaccess', to: '.htaccess', optional: true }
 ];
+
+// Copy lib directory (for local embeddings module)
+console.log('\n📦 Copying lib directory:');
+const libSourceDir = path.join(__dirname, 'lib');
+const libDestDir = path.join(distDir, 'lib');
+if (fs.existsSync(libSourceDir)) {
+    if (!fs.existsSync(libDestDir)) {
+        fs.mkdirSync(libDestDir, { recursive: true });
+    }
+    const libFiles = fs.readdirSync(libSourceDir);
+    libFiles.forEach(file => {
+        const sourcePath = path.join(libSourceDir, file);
+        const destPath = path.join(libDestDir, file);
+        if (fs.statSync(sourcePath).isFile()) {
+            fs.copyFileSync(sourcePath, destPath);
+            console.log(`✓ Copied lib/${file}`);
+        }
+    });
+} else {
+    console.log('⊘ No lib directory found (optional)');
+}
 
 let copiedCount = 0;
 let skippedCount = 0;

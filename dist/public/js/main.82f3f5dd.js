@@ -1,9 +1,9 @@
 // Main initialization and event wiring
-import { API_URL, generateSessionId, getEmbeddingType } from './config.js';
-import { checkHealth } from './api.js';
-import { updateDocumentUI, updateModelInTooltip } from './ui.js';
-import { sendMessage } from './chat.js';
-import { submitRating } from './rating.js';
+import { API_URL, generateSessionId, getEmbeddingType } from './config.6e33e3e5.js';
+import { checkHealth } from './api.9da9e38f.js';
+import { updateDocumentUI } from './ui.d3392480.js';
+import { sendMessage } from './chat.c13605ab.js';
+import { submitRating } from './rating.fea410db.js';
 
 // Configure marked for better formatting
 marked.setOptions({
@@ -48,31 +48,11 @@ function initializeDocument() {
     const docParam = urlParams.get('doc');
     const methodParam = urlParams.get('method');
     const embeddingParam = getEmbeddingType();
-    const modelParam = urlParams.get('model');
-
-    // Set model from URL parameter
-    if (modelParam && (modelParam === 'gemini' || modelParam === 'grok')) {
-        state.selectedModel = modelParam;
-        // Update button states
-        if (modelParam === 'grok') {
-            elements.grokBtn.classList.add('active');
-            elements.geminiBtn.classList.remove('active');
-        } else {
-            elements.geminiBtn.classList.add('active');
-            elements.grokBtn.classList.remove('active');
-        }
-        // Update tooltip
-        updateModelInTooltip(modelParam);
-    } else {
-        // Default model - update tooltip
-        updateModelInTooltip(state.selectedModel);
-    }
 
     // Log all URL parameters
     console.log('\n📋 URL Parameters Applied:');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log(`  Document:        ${docParam || 'smh (default)'}`);
-    console.log(`  Model:           ${state.selectedModel}`);
     console.log(`  Search Mode:     ${methodParam === 'rag' ? 'Targeted (RAG)' : 'Comprehensive (Full Doc)'}`);
     console.log(`  Embedding Type:  ${embeddingParam} ${embeddingParam === 'openai' ? '(1536D)' : '(384D)'}`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
@@ -119,14 +99,12 @@ elements.geminiBtn.addEventListener('click', () => {
     state.selectedModel = 'gemini';
     elements.geminiBtn.classList.add('active');
     elements.grokBtn.classList.remove('active');
-    updateModelInTooltip('gemini');
 });
 
 elements.grokBtn.addEventListener('click', () => {
     state.selectedModel = 'grok';
     elements.grokBtn.classList.add('active');
     elements.geminiBtn.classList.remove('active');
-    updateModelInTooltip('grok');
 });
 
 // Retrieval method selector event listeners

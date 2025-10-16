@@ -1,6 +1,6 @@
 // UI updates, messages, and loading states
-import { docConfig } from './config.js';
-import { getRandomFact } from './facts.js';
+import { docConfig } from './config.6e33e3e5.js';
+import { getRandomFact } from './facts.64f2b87f.js';
 
 // Update document UI based on selected document
 export function updateDocumentUI(selectedDocument) {
@@ -15,22 +15,7 @@ export function updateDocumentUI(selectedDocument) {
         backLink.href = config.backLink;
     }
 
-    // Update about tooltip document name
-    const documentNameElement = document.getElementById('documentName');
-    if (documentNameElement) {
-        documentNameElement.textContent = config.welcomeMessage;
-    }
-
     console.log(`📄 Document set to: ${selectedDocument.toUpperCase()} - ${config.welcomeMessage}`);
-}
-
-// Update model name in about tooltip
-export function updateModelInTooltip(selectedModel) {
-    const modelNameElement = document.getElementById('modelName');
-    if (modelNameElement) {
-        const modelDisplayName = selectedModel === 'gemini' ? 'Gemini 2.5' : 'Grok 4';
-        modelNameElement.textContent = modelDisplayName;
-    }
 }
 
 // Add a message to the chat

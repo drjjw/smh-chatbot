@@ -33,7 +33,7 @@ body {
     transition: padding 0.3s ease;
 }
 
-/* Header Title Row - Title with Icons Beside It */
+/* Header Title Row - Title Centered with Icons Beside It */
 .header-title-row {
     display: flex;
     align-items: center;
@@ -41,8 +41,14 @@ body {
     gap: 8px;
 }
 
+.header-title-row::before {
+    content: '';
+    flex: 1;
+}
+
 .header-title-row h1 {
-    margin-right: 12px;
+    flex: 0 0 auto;
+    margin-right: 16px;
 }
 
 .header-icons {
@@ -797,8 +803,7 @@ body:not(.local-env) .retrieval-selector {
     border-radius: 8px;
     font-size: 13px;
     line-height: 1.5;
-    white-space: normal;
-    word-wrap: break-word;
+    white-space: nowrap;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -806,9 +811,7 @@ body:not(.local-env) .retrieval-selector {
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     z-index: 1000;
     margin-top: 8px;
-    max-width: 280px;
-    width: max-content;
-    min-width: 200px;
+    max-width: 300px;
 }
 
 .about-tooltip::after {

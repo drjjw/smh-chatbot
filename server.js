@@ -43,7 +43,26 @@ if (process.env.OPENAI_API_KEY) {
     });
     console.log('✓ OpenAI client initialized for RAG embeddings');
 } else {
-    console.warn('⚠️  OPENAI_API_KEY not found - RAG mode will not work');
+    console.warn('⚠️  OPENAI_API_KEY not found - OpenAI RAG mode will not work');
+}
+
+// Initialize local embeddings
+const { generateLocalEmbedding, initializeModel: initLocalModel, getModelInfo } = require('./lib/local-embeddings');
+let localEmbeddingsReady = false;
+
+// Lazy-load local embedding model
+async function ensureLocalEmbeddings() {
+    if (!localEmbeddingsReady) {
+        try {
+            await initLocalModel();
+            localEmbeddingsReady = true;
+            const info = getModelInfo();
+            console.log(`✓ Local embeddings ready: ${info.name} (${info.dimensions}D)`);
+        } catch (error) {
+            console.error('⚠️  Failed to initialize local embeddings:', error.message);
+            throw error;
+        }
+    }
 }
 
 // Initialize Supabase client
@@ -332,6 +351,34 @@ async function findRelevantChunks(embedding, documentType, limit = 5, threshold 
 }
 
 /**
+ * Find relevant chunks from Supabase using local embeddings
+ */
+async function findRelevantChunksLocal(embedding, documentType, limit = 5, threshold = null) {
+    try {
+        // Use configurable threshold from environment or default
+        const defaultThreshold = threshold || parseFloat(process.env.RAG_SIMILARITY_THRESHOLD) || 0.15;
+
+        // Call the match_document_chunks_local function for local embeddings
+        const { data, error } = await supabase.rpc('match_document_chunks_local', {
+            query_embedding: embedding,
+            doc_type: documentType,
+            match_threshold: defaultThreshold,
+            match_count: limit
+        });
+
+        if (error) {
+            console.error('Error finding relevant chunks (local):', error);
+            throw error;
+        }
+
+        return data || [];
+    } catch (error) {
+        console.error('Error in findRelevantChunksLocal:', error);
+        throw error;
+    }
+}
+
+/**
  * Build RAG system prompt with retrieved chunks
  */
 const getRAGSystemPrompt = (documentType = 'smh', chunks = []) => {
@@ -601,7 +648,10 @@ app.post('/api/chat-rag', async (req, res) => {
 
     try {
         const { message, history = [], model = 'gemini', doc = 'smh' } = req.body;
-        console.log(`RAG: Message length: ${message.length} chars, Model: ${model}, Doc: ${doc}`);
+        
+        // Get embedding type from query parameter (openai or local)
+        const embeddingType = req.query.embedding || 'openai';
+        console.log(`RAG: Message length: ${message.length} chars, Model: ${model}, Doc: ${doc}, Embedding: ${embeddingType}`);
 
         if (!message) {
             return res.status(400).json({ error: 'Message is required' });
@@ -618,28 +668,40 @@ app.post('/api/chat-rag', async (req, res) => {
         let retrievedChunks = [];
 
         try {
-            // Step 1: Embed the query
+            // Step 1: Embed the query (using selected embedding type)
             const retrievalStart = Date.now();
             console.log(`RAG: Embedding query: "${message.substring(0, 50)}..."`);
             
             let queryEmbedding;
             try {
-                queryEmbedding = await embedQuery(message);
-                console.log(`RAG: Query embedded successfully`);
+                if (embeddingType === 'local') {
+                    // Ensure local model is loaded
+                    await ensureLocalEmbeddings();
+                    queryEmbedding = await generateLocalEmbedding(message);
+                    console.log(`RAG: Query embedded successfully (local model, ${queryEmbedding.length}D)`);
+                } else {
+                    // Use OpenAI embeddings
+                    queryEmbedding = await embedQuery(message);
+                    console.log(`RAG: Query embedded successfully (OpenAI, 1536D)`);
+                }
             } catch (embedError) {
                 console.error('RAG: Error embedding query:', embedError.message);
-                throw new Error(`Failed to embed query: ${embedError.message}`);
+                throw new Error(`Failed to embed query with ${embeddingType}: ${embedError.message}`);
             }
             
-            // Step 2: Find relevant chunks
+            // Step 2: Find relevant chunks (from appropriate table)
             try {
-                retrievedChunks = await findRelevantChunks(queryEmbedding, documentType, 5);
+                if (embeddingType === 'local') {
+                    retrievedChunks = await findRelevantChunksLocal(queryEmbedding, documentType, 5);
+                } else {
+                    retrievedChunks = await findRelevantChunks(queryEmbedding, documentType, 5);
+                }
                 retrievalTimeMs = Date.now() - retrievalStart;
                 chunksUsed = retrievedChunks.length;
-                console.log(`RAG: Found ${chunksUsed} relevant chunks in ${retrievalTimeMs}ms`);
+                console.log(`RAG: Found ${chunksUsed} relevant chunks in ${retrievalTimeMs}ms (${embeddingType})`);
             } catch (chunkError) {
                 console.error('RAG: Error finding chunks:', chunkError.message);
-                throw new Error(`Failed to find relevant chunks: ${chunkError.message}`);
+                throw new Error(`Failed to find relevant chunks with ${embeddingType}: ${chunkError.message}`);
             }
 
             // Step 3: Generate response using RAG
@@ -682,7 +744,9 @@ app.post('/api/chat-rag', async (req, res) => {
                     history_length: history.length,
                     timestamp: new Date().toISOString(),
                     document_type: documentType,
-                    chunk_similarities: retrievedChunks.map(c => c.similarity)
+                    chunk_similarities: retrievedChunks.map(c => c.similarity),
+                    embedding_type: embeddingType,
+                    embedding_dimensions: embeddingType === 'local' ? 384 : 1536
                 }
             };
 
@@ -711,6 +775,8 @@ app.post('/api/chat-rag', async (req, res) => {
                 retrievalMethod: 'rag',
                 chunksUsed: chunksUsed,
                 retrievalTime: retrievalTimeMs,
+                embedding_type: embeddingType,
+                embedding_dimensions: embeddingType === 'local' ? 384 : 1536,
                 chunkSimilarities: retrievedChunks.map(c => ({
                     index: c.chunk_index,
                     similarity: c.similarity

@@ -93,7 +93,7 @@
     function openChatModal() {
         // On mobile: redirect to bot.ukidney.com (can use browser back button)
         if (isMobileDevice()) {
-            window.location.href = 'https://bot.ukidney.com/?doc=smh&method=rag';
+            window.location.href = 'https://bot.ukidney.com/?method=rag&doc=smh&embedding=local';
             return;
         }
         
@@ -104,7 +104,7 @@
         
         // Load iframe src only when opening (performance optimization)
         if (!iframe.src || iframe.src === '' || iframe.src === window.location.href || iframe.src.endsWith('/')) {
-            iframe.src = 'https://bot.ukidney.com/?doc=smh&method=rag';
+            iframe.src = 'https://bot.ukidney.com/?method=rag&doc=smh&embedding=local';
         }
         
         // Show modal with display flex first, then add active class for animation
@@ -254,27 +254,15 @@
         visibility: visible;
     }
     
-    /* Modal Container - Optimized for Desktop */
+    /* Modal Container - Full Screen */
     .chat-modal-container {
         position: relative;
-        width: 95%;
-        height: 90%;
-        max-width: 1400px;
-        max-height: 900px;
+        width: 100%;
+        height: 100%;
         background: #ffffff;
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        border-radius: 16px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-        
-        /* Transform for smooth animation */
-        transform: scale(0.95);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .chat-modal-overlay.active .chat-modal-container {
-        transform: scale(1);
     }
     
     /* Chat Iframe */

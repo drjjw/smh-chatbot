@@ -1,9 +1,9 @@
 // Main initialization and event wiring
-import { API_URL, generateSessionId, getEmbeddingType } from './config.js';
-import { checkHealth } from './api.js';
-import { updateDocumentUI, updateModelInTooltip } from './ui.js';
-import { sendMessage } from './chat.js';
-import { submitRating } from './rating.js';
+import { API_URL, generateSessionId, getEmbeddingType } from './config.6e33e3e5.js';
+import { checkHealth } from './api.9da9e38f.js';
+import { updateDocumentUI } from './ui.eeac4482.js';
+import { sendMessage } from './chat.c13605ab.js';
+import { submitRating } from './rating.fea410db.js';
 
 // Configure marked for better formatting
 marked.setOptions({
@@ -61,11 +61,6 @@ function initializeDocument() {
             elements.geminiBtn.classList.add('active');
             elements.grokBtn.classList.remove('active');
         }
-        // Update tooltip
-        updateModelInTooltip(modelParam);
-    } else {
-        // Default model - update tooltip
-        updateModelInTooltip(state.selectedModel);
     }
 
     // Log all URL parameters
@@ -119,14 +114,12 @@ elements.geminiBtn.addEventListener('click', () => {
     state.selectedModel = 'gemini';
     elements.geminiBtn.classList.add('active');
     elements.grokBtn.classList.remove('active');
-    updateModelInTooltip('gemini');
 });
 
 elements.grokBtn.addEventListener('click', () => {
     state.selectedModel = 'grok';
     elements.grokBtn.classList.add('active');
     elements.geminiBtn.classList.remove('active');
-    updateModelInTooltip('grok');
 });
 
 // Retrieval method selector event listeners

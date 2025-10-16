@@ -1,9 +1,9 @@
 // Main initialization and event wiring
-import { API_URL, generateSessionId, getEmbeddingType } from './config.js';
-import { checkHealth } from './api.js';
-import { updateDocumentUI, updateModelInTooltip } from './ui.js';
-import { sendMessage } from './chat.js';
-import { submitRating } from './rating.js';
+import { API_URL, generateSessionId, getEmbeddingType } from './config.6e33e3e5.js';
+import { checkHealth } from './api.9da9e38f.js';
+import { updateDocumentUI, updateModelInTooltip } from './ui.9feb8e6c.js';
+import { sendMessage } from './chat.c13605ab.js';
+import { submitRating } from './rating.fea410db.js';
 
 // Configure marked for better formatting
 marked.setOptions({

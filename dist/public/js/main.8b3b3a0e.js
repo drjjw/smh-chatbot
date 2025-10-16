@@ -1,7 +1,7 @@
 // Main initialization and event wiring
-import { API_URL, generateSessionId } from './config.2ce01fdb.js';
-import { checkHealth } from './api.aa2c8d95.js';
-import { updateDocumentUI } from './ui.eed37fae.js';
+import { API_URL, generateSessionId } from './config.6e33e3e5.js';
+import { checkHealth } from './api.9da9e38f.js';
+import { updateDocumentUI } from './ui.d3392480.js';
 import { sendMessage } from './chat.c13605ab.js';
 import { submitRating } from './rating.fea410db.js';
 
