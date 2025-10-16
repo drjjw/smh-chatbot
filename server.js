@@ -268,6 +268,184 @@ async function chatWithGrok(message, history, documentType = 'smh') {
     return completion.choices[0].message.content;
 }
 
+// ==================== RAG ENHANCEMENT ====================
+
+/**
+ * Generate embedding for a query using OpenAI text-embedding-3-small
+ */
+async function embedQuery(text) {
+    try {
+        const openaiEmbeddings = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY || process.env.XAI_API_KEY
+        });
+        
+        const response = await openaiEmbeddings.embeddings.create({
+            model: 'text-embedding-3-small',
+            input: text,
+            encoding_format: 'float'
+        });
+        
+        return response.data[0].embedding;
+    } catch (error) {
+        console.error('Error generating query embedding:', error);
+        throw error;
+    }
+}
+
+/**
+ * Find relevant chunks from Supabase using vector similarity
+ */
+async function findRelevantChunks(embedding, documentType, limit = 5) {
+    try {
+        // Call the match_document_chunks function we created in Supabase
+        const { data, error } = await supabase.rpc('match_document_chunks', {
+            query_embedding: embedding,
+            doc_type: documentType,
+            match_threshold: 0.5,
+            match_count: limit
+        });
+
+        if (error) {
+            console.error('Error finding relevant chunks:', error);
+            throw error;
+        }
+
+        return data || [];
+    } catch (error) {
+        console.error('Error in findRelevantChunks:', error);
+        throw error;
+    }
+}
+
+/**
+ * Build RAG system prompt with retrieved chunks
+ */
+const getRAGSystemPrompt = (documentType = 'smh', chunks = []) => {
+    const docNames = {
+        'smh': 'SMH Housestaff Manual',
+        'uhn': 'UHN Nephrology Manual'
+    };
+
+    const docName = docNames[documentType] || docNames['smh'];
+    
+    // Combine chunk content
+    const context = chunks.map((chunk, idx) => 
+        `[Chunk ${idx + 1}]\n${chunk.content}\n`
+    ).join('\n');
+
+    return `You are a helpful assistant that answers questions based on the ${docName}.
+
+IMPORTANT RULES:
+1. Answer questions ONLY using information from the provided relevant excerpts below
+2. If the answer is not in the excerpts, say "I don't have that information in the provided sections of the ${docName}"
+3. Cite the chunk number when referencing information (e.g., "According to Chunk 1...")
+4. Be concise and professional
+5. If you're unsure, admit it rather than guessing
+
+FORMATTING RULES:
+- Use **bold** for important terms and section titles
+- Use bullet points (- or *) for lists
+- Use numbered lists (1., 2., 3.) for sequential steps
+- Use line breaks between different topics
+- Keep paragraphs short and scannable
+
+RELEVANT EXCERPTS FROM ${docName.toUpperCase()}:
+---
+${context}
+---`;
+};
+
+/**
+ * Get model-specific RAG prompt
+ */
+const getRAGGeminiPrompt = (documentType, chunks) => getRAGSystemPrompt(documentType, chunks) + `
+
+RESPONSE STYLE - STRICTLY FOLLOW:
+- Use markdown tables when presenting structured data
+- Present information in the most compact, scannable format
+- Lead with the direct answer, then provide details
+- Use minimal explanatory text - let the structure speak`;
+
+const getRAGGrokPrompt = (documentType, chunks) => getRAGSystemPrompt(documentType, chunks) + `
+
+RESPONSE STYLE - STRICTLY FOLLOW:
+- ALWAYS add a brief introductory sentence explaining the context
+- When presenting factual data, include WHY it matters
+- Add a short concluding note with clinical significance when relevant
+- Use more descriptive language - explain, don't just list`;
+
+/**
+ * Chat with RAG using Gemini
+ */
+async function chatWithRAGGemini(message, history, documentType, chunks) {
+    const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash"
+    });
+
+    const systemMessage = getRAGGeminiPrompt(documentType, chunks);
+    
+    const docNames = {
+        'smh': 'SMH Housestaff Manual',
+        'uhn': 'UHN Nephrology Manual'
+    };
+    const docName = docNames[documentType] || docNames['smh'];
+
+    const fullHistory = [
+        {
+            role: 'user',
+            parts: [{ text: systemMessage + `\n\nI understand. I will only answer questions based on the ${docName} excerpts you provided.` }]
+        },
+        {
+            role: 'model',
+            parts: [{ text: `I understand. I will only answer questions based on the ${docName} excerpts you provided. What would you like to know?` }]
+        },
+        ...history.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.content }]
+        }))
+    ];
+
+    const chat = model.startChat({
+        history: fullHistory
+    });
+
+    const result = await chat.sendMessage(message);
+    const response = await result.response;
+    return response.text();
+}
+
+/**
+ * Chat with RAG using Grok
+ */
+async function chatWithRAGGrok(message, history, documentType, chunks) {
+    const systemMessage = getRAGGrokPrompt(documentType, chunks);
+    
+    const messages = [
+        {
+            role: 'system',
+            content: systemMessage
+        },
+        ...history.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'assistant',
+            content: msg.content
+        })),
+        {
+            role: 'user',
+            content: message
+        }
+    ];
+
+    const completion = await xai.chat.completions.create({
+        model: 'grok-2-1212',
+        messages: messages,
+        temperature: 0.7
+    });
+
+    return completion.choices[0].message.content;
+}
+
+// ==================== END RAG ENHANCEMENT ====================
+
 // Helper function to log conversation to Supabase
 async function logConversation(data) {
     try {
@@ -360,6 +538,104 @@ app.post('/api/chat', async (req, res) => {
         console.error('Chat error:', error);
         res.status(500).json({ 
             error: 'Failed to process chat message',
+            details: error.message 
+        });
+    }
+});
+
+// RAG Chat endpoint
+app.post('/api/chat-rag', async (req, res) => {
+    const startTime = Date.now();
+    const sessionId = req.body.sessionId || uuidv4();
+
+    try {
+        const { message, history = [], model = 'gemini', doc = 'smh' } = req.body;
+
+        if (!message) {
+            return res.status(400).json({ error: 'Message is required' });
+        }
+
+        // Validate document type
+        const validDocs = ['smh', 'uhn'];
+        const documentType = validDocs.includes(doc) ? doc : 'smh';
+
+        let responseText;
+        let retrievalTimeMs = 0;
+        let chunksUsed = 0;
+        let errorOccurred = null;
+        let retrievedChunks = [];
+
+        try {
+            // Step 1: Embed the query
+            const retrievalStart = Date.now();
+            const queryEmbedding = await embedQuery(message);
+            
+            // Step 2: Find relevant chunks
+            retrievedChunks = await findRelevantChunks(queryEmbedding, documentType, 5);
+            retrievalTimeMs = Date.now() - retrievalStart;
+            chunksUsed = retrievedChunks.length;
+
+            console.log(`RAG: Found ${chunksUsed} relevant chunks in ${retrievalTimeMs}ms`);
+
+            // Step 3: Generate response using RAG
+            if (model === 'grok') {
+                responseText = await chatWithRAGGrok(message, history, documentType, retrievedChunks);
+            } else {
+                responseText = await chatWithRAGGemini(message, history, documentType, retrievedChunks);
+            }
+        } catch (chatError) {
+            errorOccurred = chatError.message;
+            throw chatError;
+        } finally {
+            const responseTime = Date.now() - startTime;
+            
+            // Log to Supabase with RAG metadata
+            await logConversation({
+                session_id: sessionId,
+                question: message,
+                response: responseText || '',
+                model: model,
+                response_time_ms: responseTime,
+                document_name: documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf',
+                document_path: path.join(__dirname, documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf'),
+                document_version: documentType === 'smh' ? '2023' : '2025',
+                pdf_name: documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf',
+                pdf_pages: 0, // Not applicable for RAG
+                error: errorOccurred,
+                retrieval_method: 'rag',
+                chunks_used: chunksUsed,
+                retrieval_time_ms: retrievalTimeMs,
+                metadata: {
+                    history_length: history.length,
+                    timestamp: new Date().toISOString(),
+                    document_type: documentType,
+                    chunk_similarities: retrievedChunks.map(c => c.similarity)
+                }
+            });
+        }
+
+        res.json({
+            response: responseText,
+            model: model,
+            sessionId: sessionId,
+            metadata: {
+                document: documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf',
+                documentType: documentType,
+                responseTime: Date.now() - startTime,
+                retrievalMethod: 'rag',
+                chunksUsed: chunksUsed,
+                retrievalTime: retrievalTimeMs,
+                chunkSimilarities: retrievedChunks.map(c => ({
+                    index: c.chunk_index,
+                    similarity: c.similarity
+                }))
+            }
+        });
+
+    } catch (error) {
+        console.error('RAG Chat error:', error);
+        res.status(500).json({ 
+            error: 'Failed to process RAG chat message',
             details: error.message 
         });
     }
