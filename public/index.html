@@ -453,11 +453,13 @@
                     <br>• <strong>Gemini 2.5</strong> provides structured, organized responses
                     <br>• <strong>Grok 4</strong> offers analytical, contextual explanations
                     <br><br>
-                    <strong>URL Parameters:</strong>
-                    <br>• <code>?doc=smh</code> or <code>?doc=uhn</code> to select manual
-                    <br>• <code>?method=rag</code> to use RAG retrieval mode
-                    <br>• Example: <code>?doc=uhn&method=rag</code>
-                    <br><br>
+                    <span id="urlParamsInfo" style="display: none;">
+                        <strong>URL Parameters:</strong>
+                        <br>• <code>?doc=smh</code> or <code>?doc=uhn</code> to select manual
+                        <br>• <code>?method=rag</code> to use RAG retrieval mode
+                        <br>• Example: <code>?doc=uhn&method=rag</code>
+                        <br><br>
+                    </span>
                     <em>Example questions: "What are the dialysis indications?" or "Compare HD vs PD approaches"</em>
                 </div>
             </div>
@@ -554,6 +556,12 @@
             if (isLocalEnv) {
                 document.body.classList.add('local-env');
                 console.log('🏠 Local environment detected - retrieval controls visible');
+                
+                // Show URL parameters info in welcome message
+                const urlParamsInfo = document.getElementById('urlParamsInfo');
+                if (urlParamsInfo) {
+                    urlParamsInfo.style.display = 'inline';
+                }
             } else {
                 console.log('🌐 Production environment - retrieval controls hidden');
             }
