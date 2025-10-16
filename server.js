@@ -35,6 +35,17 @@ const xai = new OpenAI({
     baseURL: 'https://api.x.ai/v1'
 });
 
+// Initialize OpenAI client for embeddings (RAG)
+let openaiClient = null;
+if (process.env.OPENAI_API_KEY) {
+    openaiClient = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY
+    });
+    console.log('✓ OpenAI client initialized for RAG embeddings');
+} else {
+    console.warn('⚠️  OPENAI_API_KEY not found - RAG mode will not work');
+}
+
 // Initialize Supabase client
 const supabase = createClient(
     process.env.SUPABASE_URL,
@@ -275,11 +286,11 @@ async function chatWithGrok(message, history, documentType = 'smh') {
  */
 async function embedQuery(text) {
     try {
-        const openaiEmbeddings = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY || process.env.XAI_API_KEY
-        });
+        if (!openaiClient) {
+            throw new Error('OpenAI client not initialized. OPENAI_API_KEY environment variable is required for RAG mode.');
+        }
         
-        const response = await openaiEmbeddings.embeddings.create({
+        const response = await openaiClient.embeddings.create({
             model: 'text-embedding-3-small',
             input: text,
             encoding_format: 'float'
@@ -287,7 +298,7 @@ async function embedQuery(text) {
         
         return response.data[0].embedding;
     } catch (error) {
-        console.error('Error generating query embedding:', error);
+        console.error('Error generating query embedding:', error.message);
         throw error;
     }
 }
