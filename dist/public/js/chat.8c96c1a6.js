@@ -1,6 +1,6 @@
 // Chat logic and conversation management
-import { sendMessageToAPI } from './api.js';
-import { addMessage, addLoading, removeLoading, buildResponseWithMetadata } from './ui.js';
+import { sendMessageToAPI } from './api.199e8f71.js';
+import { addMessage, addLoading, removeLoading, buildResponseWithMetadata } from './ui.eed37fae.js';
 
 // Send a message
 export async function sendMessage(state, elements) {
@@ -28,18 +28,7 @@ export async function sendMessage(state, elements) {
             state.ragMode
         );
 
-        let data;
-        try {
-            data = await response.json();
-        } catch (jsonError) {
-            console.error('Failed to parse response as JSON:', jsonError);
-            removeLoading();
-            addMessage('Server returned an invalid response. Please try again.', 'assistant', null, null, elements.chatContainer);
-            state.isLoading = false;
-            elements.sendButton.disabled = false;
-            elements.messageInput.focus();
-            return;
-        }
+        const data = await response.json();
 
         removeLoading();
 
@@ -50,14 +39,11 @@ export async function sendMessage(state, elements) {
             addMessage(responseText, 'assistant', data.model, data.conversationId, elements.chatContainer);
             state.conversationHistory.push({ role: 'assistant', content: data.response });
         } else {
-            const errorMsg = data.error || 'Unknown error occurred';
-            const details = data.details ? ` (${data.details})` : '';
-            addMessage(`Error: ${errorMsg}${details}`, 'assistant', null, null, elements.chatContainer);
+            addMessage(`Error: ${data.error}`, 'assistant', null, null, elements.chatContainer);
         }
     } catch (error) {
         removeLoading();
-        const errorMessage = error.message || 'Failed to connect to server. Please try again.';
-        addMessage(errorMessage, 'assistant', null, null, elements.chatContainer);
+        addMessage('Failed to connect to server. Please try again.', 'assistant', null, null, elements.chatContainer);
         console.error('Error:', error);
     }
 

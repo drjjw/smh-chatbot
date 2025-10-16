@@ -1,5 +1,5 @@
 // API communication and health checks
-import { API_URL } from './config.js';
+import { API_URL } from './config.2ce01fdb.js';
 
 // Check server health on load
 export async function checkHealth(selectedDocument, statusDiv) {

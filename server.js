@@ -591,6 +591,8 @@ app.post('/api/chat', async (req, res) => {
 // RAG Chat endpoint
 app.post('/api/chat-rag', async (req, res) => {
     const startTime = Date.now();
+    console.log(`\n=== RAG Request received ===`);
+    
     // Ensure sessionId is a valid UUID
     let sessionId = req.body.sessionId;
     if (!sessionId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
@@ -599,6 +601,7 @@ app.post('/api/chat-rag', async (req, res) => {
 
     try {
         const { message, history = [], model = 'gemini', doc = 'smh' } = req.body;
+        console.log(`RAG: Message length: ${message.length} chars, Model: ${model}, Doc: ${doc}`);
 
         if (!message) {
             return res.status(400).json({ error: 'Message is required' });
@@ -617,23 +620,44 @@ app.post('/api/chat-rag', async (req, res) => {
         try {
             // Step 1: Embed the query
             const retrievalStart = Date.now();
-            const queryEmbedding = await embedQuery(message);
+            console.log(`RAG: Embedding query: "${message.substring(0, 50)}..."`);
+            
+            let queryEmbedding;
+            try {
+                queryEmbedding = await embedQuery(message);
+                console.log(`RAG: Query embedded successfully`);
+            } catch (embedError) {
+                console.error('RAG: Error embedding query:', embedError.message);
+                throw new Error(`Failed to embed query: ${embedError.message}`);
+            }
             
             // Step 2: Find relevant chunks
-            retrievedChunks = await findRelevantChunks(queryEmbedding, documentType, 5);
-            retrievalTimeMs = Date.now() - retrievalStart;
-            chunksUsed = retrievedChunks.length;
-
-            console.log(`RAG: Found ${chunksUsed} relevant chunks in ${retrievalTimeMs}ms`);
+            try {
+                retrievedChunks = await findRelevantChunks(queryEmbedding, documentType, 5);
+                retrievalTimeMs = Date.now() - retrievalStart;
+                chunksUsed = retrievedChunks.length;
+                console.log(`RAG: Found ${chunksUsed} relevant chunks in ${retrievalTimeMs}ms`);
+            } catch (chunkError) {
+                console.error('RAG: Error finding chunks:', chunkError.message);
+                throw new Error(`Failed to find relevant chunks: ${chunkError.message}`);
+            }
 
             // Step 3: Generate response using RAG
-            if (model === 'grok') {
-                responseText = await chatWithRAGGrok(message, history, documentType, retrievedChunks);
-            } else {
-                responseText = await chatWithRAGGemini(message, history, documentType, retrievedChunks);
+            try {
+                console.log(`RAG: Generating response using ${model}...`);
+                if (model === 'grok') {
+                    responseText = await chatWithRAGGrok(message, history, documentType, retrievedChunks);
+                } else {
+                    responseText = await chatWithRAGGemini(message, history, documentType, retrievedChunks);
+                }
+                console.log(`RAG: Response generated (${responseText.length} chars)`);
+            } catch (genError) {
+                console.error('RAG: Error generating response:', genError.message);
+                throw new Error(`Failed to generate response: ${genError.message}`);
             }
         } catch (chatError) {
             errorOccurred = chatError.message;
+            console.error('RAG Chat Error:', chatError);
             throw chatError;
         } finally {
             const responseTime = Date.now() - startTime;
@@ -671,6 +695,10 @@ app.post('/api/chat-rag', async (req, res) => {
             res.locals.conversationId = loggedConversation?.id;
         }
 
+        const finalResponseTime = Date.now() - startTime;
+        console.log(`RAG: Total response time: ${finalResponseTime}ms`);
+        console.log(`=== RAG Request completed ===\n`);
+        
         res.json({
             response: responseText,
             model: model,
@@ -679,7 +707,7 @@ app.post('/api/chat-rag', async (req, res) => {
             metadata: {
                 document: documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf',
                 documentType: documentType,
-                responseTime: Date.now() - startTime,
+                responseTime: finalResponseTime,
                 retrievalMethod: 'rag',
                 chunksUsed: chunksUsed,
                 retrievalTime: retrievalTimeMs,
@@ -691,7 +719,9 @@ app.post('/api/chat-rag', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('RAG Chat error:', error);
+        const errorTime = Date.now() - startTime;
+        console.error(`RAG Chat error after ${errorTime}ms:`, error);
+        console.log(`=== RAG Request failed ===\n`);
         res.status(500).json({ 
             error: 'Failed to process RAG chat message',
             details: error.message 

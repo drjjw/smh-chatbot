@@ -1,9 +1,9 @@
 // Main initialization and event wiring
-import { API_URL, generateSessionId } from './config.js';
-import { checkHealth } from './api.js';
-import { updateDocumentUI } from './ui.js';
-import { sendMessage } from './chat.js';
-import { submitRating } from './rating.js';
+import { API_URL, generateSessionId } from './config.2ce01fdb.js';
+import { checkHealth } from './api.aa2c8d95.js';
+import { updateDocumentUI } from './ui.eed37fae.js';
+import { sendMessage } from './chat.c13605ab.js';
+import { submitRating } from './rating.fea410db.js';
 
 // Configure marked for better formatting
 marked.setOptions({

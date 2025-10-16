@@ -1,9 +1,9 @@
 // Main initialization and event wiring
-import { API_URL, generateSessionId } from './config.js';
-import { checkHealth } from './api.js';
-import { updateDocumentUI } from './ui.js';
-import { sendMessage } from './chat.js';
-import { submitRating } from './rating.js';
+import { API_URL, generateSessionId } from './config.2ce01fdb.js';
+import { checkHealth } from './api.aa2c8d95.js';
+import { updateDocumentUI } from './ui.eed37fae.js';
+import { sendMessage } from './chat.c13605ab.js';
+import { submitRating } from './rating.fea410db.js';
 
 // Configure marked for better formatting
 marked.setOptions({
@@ -124,18 +124,11 @@ elements.messageInput.addEventListener('keypress', (e) => {
 function initializeHeaderToggle() {
     const STORAGE_KEY = 'ukidney-header-collapsed';
     
-    // Load saved state from localStorage (defaults to false/expanded if not set)
-    const savedState = localStorage.getItem(STORAGE_KEY);
-    const isCollapsed = savedState === 'true';
+    // Load saved state from localStorage
+    const isCollapsed = localStorage.getItem(STORAGE_KEY) === 'true';
     
-    // Apply collapsed state only if explicitly saved as collapsed
     if (isCollapsed && elements.mainHeader && elements.headerContent) {
         elements.mainHeader.classList.add('collapsed');
-        console.log('Header initialized as collapsed (from localStorage)');
-    } else {
-        // Ensure it starts expanded (remove any collapsed class that might exist)
-        elements.mainHeader?.classList.remove('collapsed');
-        console.log('Header initialized as expanded (default)');
     }
     
     // Toggle header on button click

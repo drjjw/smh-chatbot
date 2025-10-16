@@ -15,7 +15,7 @@
     
     <div class="option-card">
         <div class="option-icon"><i class="fa-solid fa-message"></i></div>
-        <h3>Chat with Manual (Powered by AI!)</h3>
+        <h3>Chat with Manual (Powered by AI)</h3>
         <p>Ask questions with AI assistant</p>
         <button class="uk-button uk-button-primary" onclick="openChatModal()">
             <i class="fa-solid fa-message"></i> Open Chat
@@ -79,10 +79,21 @@
             || (window.innerWidth <= 768);
     }
 
+    // Listen for header collapse messages from iframe
+    window.addEventListener('message', function(event) {
+        // Verify origin for security
+        if (event.origin !== 'https://bot.ukidney.com') return;
+        
+        if (event.data.type === 'headerCollapsed') {
+            // Could add parent-level handling here if needed
+            console.log('Header collapsed state:', event.data.collapsed);
+        }
+    });
+
     function openChatModal() {
         // On mobile: redirect to bot.ukidney.com (can use browser back button)
         if (isMobileDevice()) {
-            window.location.href = 'https://bot.ukidney.com/';
+            window.location.href = 'https://bot.ukidney.com/?doc=smh&method=rag';
             return;
         }
         
@@ -93,7 +104,7 @@
         
         // Load iframe src only when opening (performance optimization)
         if (!iframe.src || iframe.src === '' || iframe.src === window.location.href || iframe.src.endsWith('/')) {
-            iframe.src = 'https://bot.ukidney.com/';
+            iframe.src = 'https://bot.ukidney.com/?doc=smh&method=rag';
         }
         
         // Show modal with display flex first, then add active class for animation

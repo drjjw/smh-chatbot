@@ -1,5 +1,5 @@
 // UI updates, messages, and loading states
-import { docConfig } from './config.77794265.js';
+import { docConfig } from './config.2ce01fdb.js';
 
 // Update document UI based on selected document
 export function updateDocumentUI(selectedDocument) {

@@ -79,6 +79,17 @@
             || (window.innerWidth <= 768);
     }
 
+    // Listen for header collapse messages from iframe
+    window.addEventListener('message', function(event) {
+        // Verify origin for security
+        if (event.origin !== 'https://bot.ukidney.com') return;
+        
+        if (event.data.type === 'headerCollapsed') {
+            // Could add parent-level handling here if needed
+            console.log('Header collapsed state:', event.data.collapsed);
+        }
+    });
+
     function openChatModal() {
         // On mobile: redirect to bot.ukidney.com (can use browser back button)
         if (isMobileDevice()) {
