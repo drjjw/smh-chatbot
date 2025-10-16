@@ -339,19 +339,17 @@ const getRAGSystemPrompt = (documentType = 'smh', chunks = []) => {
 
     const docName = docNames[documentType] || docNames['smh'];
     
-    // Combine chunk content
-    const context = chunks.map((chunk, idx) => 
-        `[Chunk ${idx + 1}]\n${chunk.content}\n`
-    ).join('\n');
+    // Combine chunk content (without chunk labels)
+    const context = chunks.map(chunk => chunk.content).join('\n\n---\n\n');
 
     return `You are a helpful assistant that answers questions based on the ${docName}.
 
 IMPORTANT RULES:
 1. Answer questions ONLY using information from the provided relevant excerpts below
 2. If the answer is not in the excerpts, say "I don't have that information in the provided sections of the ${docName}"
-3. Cite the chunk number when referencing information (e.g., "According to Chunk 1...")
-4. Be concise and professional
-5. If you're unsure, admit it rather than guessing
+3. Be concise and professional
+4. If you're unsure, admit it rather than guessing
+5. Do NOT mention chunk numbers or reference which excerpt information came from
 
 FORMATTING RULES:
 - Use **bold** for important terms and section titles
