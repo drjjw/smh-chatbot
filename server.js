@@ -82,8 +82,8 @@ let currentDocument = null; // Will be set from registry
 function cleanPDFText(text) {
     let cleaned = text;
     
-    // Remove "Page X" headers (appears on every page)
-    cleaned = cleaned.replace(/\s*Page \d+\s*/g, '\n');
+    // Convert "Page X" headers to citation markers
+    cleaned = cleaned.replace(/\s*Page (\d+)\s*/g, '\n[Page $1]\n');
     
     // Remove excessive whitespace (3+ blank lines -> 2)
     cleaned = cleaned.replace(/\n\n\n+/g, '\n\n');
@@ -184,6 +184,8 @@ const getBaseSystemPrompt = (documentSlug = 'smh') => {
 
     return `You are a helpful assistant that answers questions ONLY based on the ${docName} provided below.
 
+***CRITICAL FORMATTING REQUIREMENT: You MUST include footnotes [1], [2], etc. for EVERY claim/fact in your response, with references at the end. Look for [Page X] markers in the text and use them for page numbers in your references. Example: "Drug X is indicated[1]. Dosage is 100mg[2]. [1] Section 3.2, Page 15 [2] Page 45"***
+
 IMPORTANT RULES:
 1. Answer questions ONLY using information from the manual
 2. If the answer is not in the manual, say "I don't have that information in the ${docName}"
@@ -200,6 +202,11 @@ FORMATTING RULES:
 - Use line breaks between different topics
 - Cite sections like this: *(Reference: Section Name, Page X)*
 - Keep paragraphs short and scannable
+- **MANDATORY**: Use footnotes [1], [2], etc. for EVERY claim or fact: place superscript [number] immediately after each claim
+- **MANDATORY**: Provide numbered references at the end of EVERY response (do not skip this step)
+- Number footnotes sequentially starting from [1] for each response
+- Extract page numbers from [Page X] markers in the text for accurate citations
+- Example: "Drug X is indicated[1]. Dosage is 100mg[2]. [1] Reference: Section 3.2, Page 15 [2] Reference: Page 45"
 
 ${docName.toUpperCase()} CONTENT:
 ---
@@ -215,10 +222,13 @@ RESPONSE STYLE - STRICTLY FOLLOW:
 - Present information in the most compact, scannable format
 - Lead with the direct answer, then provide details
 - Use minimal explanatory text - let the structure speak
+- **MANDATORY**: Include footnotes [1], [2], etc. for EVERY claim with references at response end
 - Example format for drug indications:
   | Condition | Indication |
   |-----------|------------|
-  | X         | YES/NO     |`;
+  | X         | YES/NO[1]     |
+
+[1] Reference: Section X.X`;
 
 // Grok-specific prompt (analytical, contextual)
 const getGrokPrompt = (documentType = 'smh') => getBaseSystemPrompt(documentType) + `
@@ -228,7 +238,8 @@ RESPONSE STYLE - STRICTLY FOLLOW:
 - When presenting factual data, include WHY it matters (even briefly)
 - Add a short concluding note with clinical significance when relevant
 - Use more descriptive language - don't just list, explain
-- Example: Instead of just "Indication: YES", write "indicated because..." or "recommended to prevent..."
+- **MANDATORY**: Include footnotes [1], [2], etc. for EVERY claim with references at response end
+- Example: Instead of just "Indication: YES", write "indicated because...[1]" and add "[1] Reference: Section X.X" at end
 - Connect facts to their clinical rationale from the manual when available`;
 
 // Chat with Gemini
@@ -383,10 +394,15 @@ const getRAGSystemPrompt = (documentType = 'smh', chunks = []) => {
     const doc = documents[documentType];
     const docName = doc?.welcomeMessage || 'SMH Housestaff Manual';
     
-    // Combine chunk content (without chunk labels)
-    const context = chunks.map(chunk => chunk.content).join('\n\n---\n\n');
+    // Combine chunk content with page information
+    const context = chunks.map(chunk => {
+        const pageInfo = chunk.metadata?.estimated_page ? ` [Page ${chunk.metadata.estimated_page}]` : '';
+        return chunk.content + pageInfo;
+    }).join('\n\n---\n\n');
 
     return `You are a helpful assistant that answers questions based on the ${docName}.
+
+***CRITICAL FORMATTING REQUIREMENT: You MUST include footnotes [1], [2], etc. for EVERY claim/fact in your response, with references at the end. Look for [Page X] markers in the text and use them for page numbers in your references. Example: "Drug X is indicated[1]. Dosage is 100mg[2]. [1] Section 3.2, Page 15 [2] Page 45"***
 
 IMPORTANT RULES:
 1. Answer questions ONLY using information from the provided relevant excerpts below
@@ -402,6 +418,11 @@ FORMATTING RULES:
 - Use numbered lists (1., 2., 3.) for sequential steps
 - Use line breaks between different topics
 - Keep paragraphs short and scannable
+- **MANDATORY**: Use footnotes [1], [2], etc. for EVERY claim or fact: place superscript [number] immediately after each claim
+- **MANDATORY**: Provide numbered references at the end of EVERY response (do not skip this step)
+- Number footnotes sequentially starting from [1] for each response
+- Extract page numbers from [Page X] markers in the text for accurate citations
+- Example: "Drug X is indicated[1]. Dosage is 100mg[2]. [1] Reference: Section 3.2, Page 15 [2] Reference: Page 45"
 
 RELEVANT EXCERPTS FROM ${docName.toUpperCase()}:
 ---
@@ -418,7 +439,8 @@ RESPONSE STYLE - STRICTLY FOLLOW:
 - Use markdown tables when presenting structured data
 - Present information in the most compact, scannable format
 - Lead with the direct answer, then provide details
-- Use minimal explanatory text - let the structure speak`;
+- Use minimal explanatory text - let the structure speak
+- **MANDATORY**: Include footnotes [1], [2], etc. for EVERY claim with references at response end`;
 
 const getRAGGrokPrompt = (documentType, chunks) => getRAGSystemPrompt(documentType, chunks) + `
 
@@ -426,7 +448,8 @@ RESPONSE STYLE - STRICTLY FOLLOW:
 - ALWAYS add a brief introductory sentence explaining the context
 - When presenting factual data, include WHY it matters
 - Add a short concluding note with clinical significance when relevant
-- Use more descriptive language - explain, don't just list`;
+- Use more descriptive language - explain, don't just list
+- **MANDATORY**: Include footnotes [1], [2], etc. for EVERY claim with references at response end`;
 
 /**
  * Chat with RAG using Gemini

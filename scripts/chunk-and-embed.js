@@ -41,8 +41,8 @@ const BATCH_DELAY_MS = 100; // Small delay between batches
 function cleanPDFText(text) {
     let cleaned = text;
     
-    // Remove "Page X" headers
-    cleaned = cleaned.replace(/\s*Page \d+\s*/g, '\n');
+    // Convert "Page X" headers to citation markers
+    cleaned = cleaned.replace(/\s*Page (\d+)\s*/g, '\n[Page $1]\n');
     
     // Remove excessive whitespace
     cleaned = cleaned.replace(/\n\n\n+/g, '\n\n');
@@ -59,33 +59,38 @@ function cleanPDFText(text) {
 /**
  * Split text into overlapping chunks
  */
-function chunkText(text, chunkSize = CHUNK_SIZE, overlap = CHUNK_OVERLAP) {
+function chunkText(text, chunkSize = CHUNK_SIZE, overlap = CHUNK_OVERLAP, totalPages = 1) {
     const chunks = [];
     const chunkChars = chunkSize * CHARS_PER_TOKEN;
     const overlapChars = overlap * CHARS_PER_TOKEN;
-    
+    const charsPerPage = text.length / totalPages; // Rough estimate
+
     let start = 0;
     let chunkIndex = 0;
-    
+
     while (start < text.length) {
         const end = Math.min(start + chunkChars, text.length);
         const chunk = text.substring(start, end);
-        
+
         // Only include non-empty chunks
         if (chunk.trim().length > 0) {
+            // Estimate page number based on character position
+            const estimatedPage = Math.min(Math.max(1, Math.ceil((start + (end - start) / 2) / charsPerPage)), totalPages);
+
             chunks.push({
                 index: chunkIndex,
                 content: chunk.trim(),
                 charStart: start,
-                charEnd: end
+                charEnd: end,
+                estimatedPage: estimatedPage
             });
             chunkIndex++;
         }
-        
+
         // Move forward by (chunkSize - overlap) to create overlap
         start += chunkChars - overlapChars;
     }
-    
+
     return chunks;
 }
 
@@ -149,6 +154,7 @@ async function storeChunks(documentSlug, documentName, chunksWithEmbeddings) {
     const records = chunksWithEmbeddings
         .filter(item => item.embedding !== null)
         .map(({ chunk, embedding }) => ({
+            document_type: documentSlug, // For backward compatibility
             document_slug: documentSlug,
             document_name: documentName,
             chunk_index: chunk.index,
@@ -157,7 +163,8 @@ async function storeChunks(documentSlug, documentName, chunksWithEmbeddings) {
             metadata: {
                 char_start: chunk.charStart,
                 char_end: chunk.charEnd,
-                tokens_approx: Math.round(chunk.content.length / CHARS_PER_TOKEN)
+                tokens_approx: Math.round(chunk.content.length / CHARS_PER_TOKEN),
+                estimated_page: chunk.estimatedPage
             }
         }));
     
@@ -191,7 +198,20 @@ async function processDocument(docConfig) {
     console.log(`📄 Processing: ${docConfig.title}`);
     console.log(`   Slug: ${docConfig.slug}`);
     console.log(`${'='.repeat(60)}\n`);
-    
+
+    // Delete existing chunks for this document to allow re-chunking
+    console.log('🗑️  Deleting existing chunks...');
+    const { error: deleteError } = await supabase
+        .from('document_chunks')
+        .delete()
+        .eq('document_slug', docConfig.slug);
+
+    if (deleteError) {
+        console.error('❌ Error deleting existing chunks:', deleteError.message);
+        throw deleteError;
+    }
+    console.log('✓ Existing chunks deleted');
+
     const startTime = Date.now();
     
     // 1. Load PDF using registry path
@@ -203,10 +223,11 @@ async function processDocument(docConfig) {
     
     // 2. Chunk text
     console.log('\n✂️  Chunking text...');
-    const chunks = chunkText(pdfData.text);
+    const chunks = chunkText(pdfData.text, CHUNK_SIZE, CHUNK_OVERLAP, pdfData.pages);
     console.log(`  ✓ Created ${chunks.length} chunks`);
     console.log(`  ✓ Chunk size: ~${CHUNK_SIZE} tokens (${CHUNK_SIZE * CHARS_PER_TOKEN} chars)`);
     console.log(`  ✓ Overlap: ~${CHUNK_OVERLAP} tokens (${CHUNK_OVERLAP * CHARS_PER_TOKEN} chars)`);
+    console.log(`  ✓ Page estimation: based on ${pdfData.pages} total pages`);
     
     // 3. Generate embeddings
     console.log('\n🔢 Generating embeddings with OpenAI...');

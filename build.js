@@ -206,6 +206,7 @@ console.log('\n📄 Copying PDF files to registry structure:');
 const pdfFiles = [
     { from: 'PDFs/manuals/smh-manual-2023.pdf', to: 'PDFs/manuals/smh-manual-2023.pdf' },
     { from: 'PDFs/manuals/uhn-manual-2025.pdf', to: 'PDFs/manuals/uhn-manual-2025.pdf' },
+    { from: 'PDFs/manuals/Kidney-Transplant-Medications-Tip-Sheet-Aug-2024.pdf', to: 'PDFs/manuals/Kidney-Transplant-Medications-Tip-Sheet-Aug-2024.pdf' },
     { from: 'PDFs/guidelines/PIIS1499267125000206.pdf', to: 'PDFs/guidelines/PIIS1499267125000206.pdf' }
 ];
 
