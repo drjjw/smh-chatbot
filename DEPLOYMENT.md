@@ -83,6 +83,10 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
 
 # RAG Configuration (optional)
 RAG_SIMILARITY_THRESHOLD=0.3
+RAG_SIMILARITY_THRESHOLD_LOCAL=0.05
+
+# Note: Local embeddings may be less accurate for specialized medical terminology
+# compared to OpenAI embeddings. Use OpenAI embeddings for critical medical queries.
 ```
 
 Get your API keys from:
