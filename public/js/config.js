@@ -23,6 +23,12 @@ export const docConfig = {
         subtitle: 'University Health Network · Interactive search and consultation',
         backLink: 'https://ukidney.com/nephrology-publications/nephrology-manuals/university-health-network-nephrology-manual',
         welcomeMessage: 'UHN Nephrology Manual'
+    },
+    'CKD-dc-2025': {
+        title: 'CKD in Diabetes Guidelines',
+        subtitle: 'Diabetes Canada Clinical Practice Guideline 2025 · Interactive search and consultation',
+        backLink: 'https://ukidney.com/nephrology-publications/nephrology-manuals/ckd-diabetes-guidelines-2025',
+        welcomeMessage: 'CKD in Diabetes: Clinical Practice Guideline 2025'
     }
 };
 
@@ -37,6 +43,13 @@ export function generateSessionId() {
 // Get embedding type from URL parameter (openai or local)
 export function getEmbeddingType() {
     const params = new URLSearchParams(window.location.search);
+    const docParam = params.get('doc');
+
+    // CKD-dc-2025 uses local embeddings, others use OpenAI by default
+    if (docParam === 'CKD-dc-2025') {
+        return params.get('embedding') || 'local';
+    }
+
     return params.get('embedding') || 'openai';
 }
 

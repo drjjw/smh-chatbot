@@ -10,11 +10,13 @@ Selects which manual to use for queries.
 **Options:**
 - `smh` - SMH Housestaff Manual 2023 (default)
 - `uhn` - UHN Nephrology Manual 2025
+- `CKD-dc-2025` - CKD-dc Manual 2025
 
 **Examples:**
 ```
 http://localhost:3456?doc=smh
 http://localhost:3456?doc=uhn
+http://localhost:3456?doc=CKD-dc-2025
 ```
 
 ### 2. `method` - Retrieval Method
@@ -37,6 +39,7 @@ You can combine parameters using `&`:
 ```
 http://localhost:3456?doc=uhn&method=rag
 http://localhost:3456?doc=smh&method=rag
+http://localhost:3456?doc=CKD-dc-2025&method=rag
 ```
 
 ## Production vs Local Behavior

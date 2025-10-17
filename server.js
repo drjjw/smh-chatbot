@@ -108,6 +108,10 @@ async function loadPDF(documentType = 'smh') {
             pdfFilename = 'uhn-manual-2025.pdf';
             docType = 'uhn';
             version = '2025';
+        } else if (documentType === 'CKD-dc-2025') {
+            pdfFilename = 'PIIS1499267125000206.pdf';
+            docType = 'CKD-dc-2025';
+            version = '2025';
         } else {
             pdfFilename = 'smh-manual-2023.pdf';
             docType = 'smh';
@@ -178,7 +182,8 @@ function setCurrentDocument(documentType) {
 const getBaseSystemPrompt = (documentType = 'smh') => {
     const docNames = {
         'smh': 'SMH Housestaff Manual',
-        'uhn': 'UHN Nephrology Manual'
+        'uhn': 'UHN Nephrology Manual',
+        'CKD-dc-2025': 'CKD in Diabetes: Clinical Practice Guideline 2025'
     };
 
     const docName = docNames[documentType] || docNames['smh'];
@@ -243,7 +248,8 @@ async function chatWithGemini(message, history, documentType = 'smh') {
     
     const docNames = {
         'smh': 'SMH Housestaff Manual',
-        'uhn': 'UHN Nephrology Manual'
+        'uhn': 'UHN Nephrology Manual',
+        'CKD-dc-2025': 'CKD in Diabetes: Clinical Practice Guideline 2025'
     };
     const docName = docNames[documentType] || docNames['smh'];
 
@@ -385,7 +391,8 @@ async function findRelevantChunksLocal(embedding, documentType, limit = 5, thres
 const getRAGSystemPrompt = (documentType = 'smh', chunks = []) => {
     const docNames = {
         'smh': 'SMH Housestaff Manual',
-        'uhn': 'UHN Nephrology Manual'
+        'uhn': 'UHN Nephrology Manual',
+        'CKD-dc-2025': 'CKD in Diabetes: Clinical Practice Guideline 2025'
     };
 
     const docName = docNames[documentType] || docNames['smh'];
@@ -447,7 +454,8 @@ async function chatWithRAGGemini(message, history, documentType, chunks) {
     
     const docNames = {
         'smh': 'SMH Housestaff Manual',
-        'uhn': 'UHN Nephrology Manual'
+        'uhn': 'UHN Nephrology Manual',
+        'CKD-dc-2025': 'CKD in Diabetes: Clinical Practice Guideline 2025'
     };
     const docName = docNames[documentType] || docNames['smh'];
 
@@ -559,7 +567,7 @@ app.post('/api/chat', async (req, res) => {
         }
 
         // Validate document type
-        const validDocs = ['smh', 'uhn'];
+        const validDocs = ['smh', 'uhn', 'CKD-dc-2025'];
         const documentType = validDocs.includes(doc) ? doc : 'smh';
 
         // Ensure document is loaded
@@ -660,7 +668,7 @@ app.post('/api/chat-rag', async (req, res) => {
         }
 
         // Validate document type
-        const validDocs = ['smh', 'uhn'];
+        const validDocs = ['smh', 'uhn', 'CKD-dc-2025'];
         const documentType = validDocs.includes(doc) ? doc : 'smh';
 
         let responseText;
@@ -817,7 +825,7 @@ app.get('/api/health', (req, res) => {
     const loadedDocs = Object.keys(documents);
     const docStatus = {};
     const requestedDoc = req.query.doc || 'smh';
-    const validDocs = ['smh', 'uhn'];
+    const validDocs = ['smh', 'uhn', 'CKD-dc-2025'];
     const docType = validDocs.includes(requestedDoc) ? requestedDoc : 'smh';
 
     loadedDocs.forEach(doc => {
@@ -952,13 +960,14 @@ async function start() {
     console.log('Loading documents...');
     await loadPDF('smh'); // Load SMH document
     await loadPDF('uhn'); // Load UHN document
+    await loadPDF('CKD-dc-2025'); // Load CKD-dc-2025 document
     setCurrentDocument('smh'); // Default to SMH
 
     app.listen(PORT, () => {
         console.log(`\n🚀 Server running at http://localhost:${PORT}`);
         console.log(`📄 Multi-document chatbot ready!`);
-        console.log(`   - Supports: SMH Manual (2023), UHN Manual (2025)`);
-        console.log(`   - Use ?doc=smh or ?doc=uhn URL parameter\n`);
+        console.log(`   - Supports: SMH Manual (2023), UHN Manual (2025), CKD in Diabetes Guidelines (2025)`);
+        console.log(`   - Use ?doc=smh, ?doc=uhn, or ?doc=CKD-dc-2025 URL parameter\n`);
     });
 }
 

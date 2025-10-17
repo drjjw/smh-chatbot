@@ -45,6 +45,11 @@ const DOCUMENTS = [
         type: 'uhn',
         filename: 'uhn-manual-2025.pdf',
         name: 'UHN Nephrology Manual 2025'
+    },
+    {
+        type: 'CKD-dc-2025',
+        filename: 'PIIS1499267125000206.pdf',
+        name: 'CKD in Diabetes: Clinical Practice Guideline 2025'
     }
 ];
 
@@ -278,9 +283,13 @@ async function main() {
     console.log(`✓ Target database: ${process.env.SUPABASE_URL}`);
     console.log(`✓ Using OpenAI text-embedding-3-small (1536 dimensions)`);
     
-    // Process each document
-    for (const doc of DOCUMENTS) {
-        await processDocument(doc);
+    // Process only the CKD-dc-2025 document
+    const ckdDoc = DOCUMENTS.find(doc => doc.type === 'CKD-dc-2025');
+    if (ckdDoc) {
+        await processDocument(ckdDoc);
+    } else {
+        console.error('❌ CKD-dc-2025 document configuration not found');
+        process.exit(1);
     }
     
     console.log('\n' + '='.repeat(60));

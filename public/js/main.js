@@ -78,7 +78,7 @@ function initializeDocument() {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
     // Set document type
-    if (docParam && (docParam === 'smh' || docParam === 'uhn')) {
+    if (docParam && (docParam === 'smh' || docParam === 'uhn' || docParam === 'CKD-dc-2025')) {
         state.selectedDocument = docParam;
     }
 
