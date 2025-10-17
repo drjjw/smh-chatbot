@@ -1,10 +1,16 @@
 // UI updates, messages, and loading states
-import { docConfig } from './config.js';
+import { getDocument } from './config.js';
 import { getRandomFact } from './facts.js';
 
-// Update document UI based on selected document
-export function updateDocumentUI(selectedDocument) {
-    const config = docConfig[selectedDocument];
+// Update document UI based on selected document (now async with registry)
+export async function updateDocumentUI(selectedDocument) {
+    const config = await getDocument(selectedDocument);
+    
+    if (!config) {
+        console.error(`Document not found: ${selectedDocument}`);
+        return;
+    }
+    
     document.getElementById('headerTitle').textContent = config.title;
     document.getElementById('headerSubtitle').textContent = config.subtitle;
     document.getElementById('welcomeTitle').textContent = `Welcome to the ${config.welcomeMessage} Assistant`;

@@ -48,6 +48,9 @@ if (process.env.OPENAI_API_KEY) {
 
 // Initialize local embeddings
 const { generateLocalEmbedding, initializeModel: initLocalModel, getModelInfo } = require('./lib/local-embeddings');
+
+// Initialize document registry
+const documentRegistry = require('./lib/document-registry');
 let localEmbeddingsReady = false;
 
 // Lazy-load local embedding model
@@ -71,14 +74,9 @@ const supabase = createClient(
     process.env.SUPABASE_ANON_KEY
 );
 
-// Store PDF content in memory (now supports multiple documents)
+// Store PDF content in memory (now supports multiple documents from registry)
 let documents = {};
-let currentDocument = {
-    name: '',
-    path: '',
-    version: '',
-    type: 'smh' // 'smh' or 'uhn'
-};
+let currentDocument = null; // Will be set from registry
 
 // Clean PDF text to reduce token usage
 function cleanPDFText(text) {
@@ -99,35 +97,29 @@ function cleanPDFText(text) {
     return cleaned;
 }
 
-// Load and parse PDF documents
-async function loadPDF(documentType = 'smh') {
+// Load and parse PDF documents (now using document registry)
+async function loadPDF(documentSlug = 'smh') {
     try {
-        let pdfFilename, docType, version;
-
-        if (documentType === 'uhn') {
-            pdfFilename = 'uhn-manual-2025.pdf';
-            docType = 'uhn';
-            version = '2025';
-        } else if (documentType === 'CKD-dc-2025') {
-            pdfFilename = 'PIIS1499267125000206.pdf';
-            docType = 'CKD-dc-2025';
-            version = '2025';
-        } else {
-            pdfFilename = 'smh-manual-2023.pdf';
-            docType = 'smh';
-            version = '2023';
-        }
-
-        const pdfPath = path.join(__dirname, pdfFilename);
-
         // Check if document is already loaded
-        if (documents[documentType]) {
-            console.log(`✓ Document ${documentType} already loaded`);
-            return documents[documentType];
+        if (documents[documentSlug]) {
+            console.log(`✓ Document ${documentSlug} already loaded`);
+            return documents[documentSlug];
         }
 
-        console.log(`Loading ${documentType} document...`);
+        // Get document metadata from registry
+        const docConfig = await documentRegistry.getDocumentBySlug(documentSlug);
+        if (!docConfig) {
+            throw new Error(`Document not found in registry: ${documentSlug}`);
+        }
 
+        console.log(`Loading ${documentSlug} document from registry...`);
+        console.log(`  - Title: ${docConfig.title}`);
+        console.log(`  - File: ${docConfig.pdf_subdirectory}/${docConfig.pdf_filename}`);
+
+        // Get full path to PDF using registry
+        const pdfPath = documentRegistry.getDocumentPath(docConfig);
+
+        // Load and parse PDF
         const dataBuffer = fs.readFileSync(pdfPath);
         const data = await pdf(dataBuffer);
 
@@ -142,52 +134,53 @@ async function loadPDF(documentType = 'smh') {
             info: data.info
         };
 
-        // Store document information
+        // Store document information with registry metadata
         const docInfo = {
-            name: pdfFilename,
+            slug: documentSlug,
+            name: docConfig.pdf_filename,
             path: pdfPath,
-            version: version,
-            type: docType,
+            title: docConfig.title,
+            welcomeMessage: docConfig.welcome_message,
+            year: docConfig.year,
+            embeddingType: docConfig.embedding_type,
             content: cleanedContent,
-            metadata: docMetadata
+            metadata: docMetadata,
+            registryConfig: docConfig
         };
 
         // Store in documents cache
-        documents[documentType] = docInfo;
+        documents[documentSlug] = docInfo;
 
         console.log('✓ PDF loaded successfully');
-        console.log(`  - Document: ${docInfo.name} (${docType.toUpperCase()})`);
+        console.log(`  - Document: ${docInfo.name} (${documentSlug.toUpperCase()})`);
+        console.log(`  - Title: ${docConfig.title}`);
         console.log(`  - Pages: ${docMetadata.pages}`);
         console.log(`  - Characters: ${cleanedContent.length} (saved ${savedChars} / ${percentSaved}%)`);
         console.log(`  - Est. tokens: ~${Math.round(cleanedContent.length / 4)}`);
+        console.log(`  - Embedding type: ${docConfig.embedding_type}`);
 
         return docInfo;
     } catch (error) {
-        console.error(`Error loading PDF ${documentType}:`, error);
+        console.error(`Error loading PDF ${documentSlug}:`, error);
         throw error;
     }
 }
 
 // Set current document context
-function setCurrentDocument(documentType) {
-    if (documents[documentType]) {
-        currentDocument = documents[documentType];
-        console.log(`✓ Switched to document: ${currentDocument.name}`);
+function setCurrentDocument(documentSlug) {
+    if (documents[documentSlug]) {
+        currentDocument = documents[documentSlug];
+        console.log(`✓ Switched to document: ${currentDocument.title} (${documentSlug})`);
     } else {
-        console.error(`Document ${documentType} not loaded`);
+        console.error(`Document ${documentSlug} not loaded`);
     }
 }
 
-// System prompt - Base for both models (now document-aware)
-const getBaseSystemPrompt = (documentType = 'smh') => {
-    const docNames = {
-        'smh': 'SMH Housestaff Manual',
-        'uhn': 'UHN Nephrology Manual',
-        'CKD-dc-2025': 'CKD in Diabetes: Clinical Practice Guideline 2025'
-    };
-
-    const docName = docNames[documentType] || docNames['smh'];
-    const docContent = documents[documentType]?.content || '';
+// System prompt - Base for both models (now document-aware with registry)
+const getBaseSystemPrompt = (documentSlug = 'smh') => {
+    const doc = documents[documentSlug];
+    const docName = doc?.welcomeMessage || 'SMH Housestaff Manual';
+    const docContent = doc?.content || '';
 
     return `You are a helpful assistant that answers questions ONLY based on the ${docName} provided below.
 
@@ -246,12 +239,9 @@ async function chatWithGemini(message, history, documentType = 'smh') {
 
     const systemMessage = getGeminiPrompt(documentType);
     
-    const docNames = {
-        'smh': 'SMH Housestaff Manual',
-        'uhn': 'UHN Nephrology Manual',
-        'CKD-dc-2025': 'CKD in Diabetes: Clinical Practice Guideline 2025'
-    };
-    const docName = docNames[documentType] || docNames['smh'];
+    // Get document name from registry
+    const doc = documents[documentType];
+    const docName = doc?.welcomeMessage || 'SMH Housestaff Manual';
 
     const fullHistory = [
         {
@@ -340,7 +330,7 @@ async function findRelevantChunks(embedding, documentType, limit = 5, threshold 
         // Call the match_document_chunks function we created in Supabase
         const { data, error } = await supabase.rpc('match_document_chunks', {
             query_embedding: embedding,
-            doc_type: documentType,
+            doc_slug: documentType,
             match_threshold: defaultThreshold,
             match_count: limit
         });
@@ -368,7 +358,7 @@ async function findRelevantChunksLocal(embedding, documentType, limit = 5, thres
         // Call the match_document_chunks_local function for local embeddings
         const { data, error } = await supabase.rpc('match_document_chunks_local', {
             query_embedding: embedding,
-            doc_type: documentType,
+            doc_slug: documentType,
             match_threshold: defaultThreshold,
             match_count: limit
         });
@@ -389,13 +379,9 @@ async function findRelevantChunksLocal(embedding, documentType, limit = 5, thres
  * Build RAG system prompt with retrieved chunks
  */
 const getRAGSystemPrompt = (documentType = 'smh', chunks = []) => {
-    const docNames = {
-        'smh': 'SMH Housestaff Manual',
-        'uhn': 'UHN Nephrology Manual',
-        'CKD-dc-2025': 'CKD in Diabetes: Clinical Practice Guideline 2025'
-    };
-
-    const docName = docNames[documentType] || docNames['smh'];
+    // Get document name from registry
+    const doc = documents[documentType];
+    const docName = doc?.welcomeMessage || 'SMH Housestaff Manual';
     
     // Combine chunk content (without chunk labels)
     const context = chunks.map(chunk => chunk.content).join('\n\n---\n\n');
@@ -452,12 +438,9 @@ async function chatWithRAGGemini(message, history, documentType, chunks) {
 
     const systemMessage = getRAGGeminiPrompt(documentType, chunks);
     
-    const docNames = {
-        'smh': 'SMH Housestaff Manual',
-        'uhn': 'UHN Nephrology Manual',
-        'CKD-dc-2025': 'CKD in Diabetes: Clinical Practice Guideline 2025'
-    };
-    const docName = docNames[documentType] || docNames['smh'];
+    // Get document name from registry
+    const doc = documents[documentType];
+    const docName = doc?.welcomeMessage || 'SMH Housestaff Manual';
 
     const fullHistory = [
         {
@@ -566,9 +549,9 @@ app.post('/api/chat', async (req, res) => {
             return res.status(400).json({ error: 'Message is required' });
         }
 
-        // Validate document type
-        const validDocs = ['smh', 'uhn', 'CKD-dc-2025'];
-        const documentType = validDocs.includes(doc) ? doc : 'smh';
+        // Validate document type using registry
+        const isValid = await documentRegistry.isValidSlug(doc);
+        const documentType = isValid ? doc : 'smh';
 
         // Ensure document is loaded
         if (!documents[documentType]) {
@@ -667,9 +650,9 @@ app.post('/api/chat-rag', async (req, res) => {
             return res.status(400).json({ error: 'Message is required' });
         }
 
-        // Validate document type
-        const validDocs = ['smh', 'uhn', 'CKD-dc-2025'];
-        const documentType = validDocs.includes(doc) ? doc : 'smh';
+        // Validate document type using registry
+        const isValid = await documentRegistry.isValidSlug(doc);
+        const documentType = isValid ? doc : 'smh';
 
         let responseText;
         let retrievalTimeMs = 0;
@@ -820,32 +803,41 @@ app.get('*.php', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-    const loadedDocs = Object.keys(documents);
-    const docStatus = {};
-    const requestedDoc = req.query.doc || 'smh';
-    const validDocs = ['smh', 'uhn', 'CKD-dc-2025'];
-    const docType = validDocs.includes(requestedDoc) ? requestedDoc : 'smh';
+// Health check endpoint (now using registry)
+app.get('/api/health', async (req, res) => {
+    try {
+        const loadedDocs = Object.keys(documents);
+        const docStatus = {};
+        const requestedDoc = req.query.doc || 'smh';
+        
+        // Validate using registry
+        const isValid = await documentRegistry.isValidSlug(requestedDoc);
+        const docType = isValid ? requestedDoc : 'smh';
 
-    loadedDocs.forEach(doc => {
-        docStatus[doc] = {
-            loaded: true,
-            name: documents[doc].name,
-            version: documents[doc].version,
-            pages: documents[doc].metadata.pages,
-            characters: documents[doc].content.length
-        };
-    });
+        loadedDocs.forEach(doc => {
+            docStatus[doc] = {
+                loaded: true,
+                title: documents[doc].title,
+                name: documents[doc].name,
+                year: documents[doc].year,
+                pages: documents[doc].metadata.pages,
+                characters: documents[doc].content.length,
+                embeddingType: documents[doc].embeddingType
+            };
+        });
 
-    res.json({
-        status: 'ok',
-        currentDocument: documents[docType].name,
-        currentDocumentType: docType,
-        loadedDocuments: loadedDocs,
-        documentDetails: docStatus,
-        requestedDoc: requestedDoc
-    });
+        res.json({
+            status: 'ok',
+            currentDocument: documents[docType]?.title || 'Unknown',
+            currentDocumentType: docType,
+            loadedDocuments: loadedDocs,
+            documentDetails: docStatus,
+            requestedDoc: requestedDoc
+        });
+    } catch (error) {
+        console.error('Health check error:', error);
+        res.status(500).json({ status: 'error', message: error.message });
+    }
 });
 
 // Rating endpoint
@@ -955,20 +947,53 @@ app.get('/api/analytics', async (req, res) => {
     }
 });
 
+// Documents registry API endpoint
+app.get('/api/documents', async (req, res) => {
+    try {
+        const docs = await documentRegistry.getDocumentsForAPI();
+        res.json({ documents: docs });
+    } catch (error) {
+        console.error('Error fetching documents:', error);
+        res.status(500).json({ error: 'Failed to fetch documents' });
+    }
+});
+
 // Start server
 async function start() {
-    console.log('Loading documents...');
-    await loadPDF('smh'); // Load SMH document
-    await loadPDF('uhn'); // Load UHN document
-    await loadPDF('CKD-dc-2025'); // Load CKD-dc-2025 document
-    setCurrentDocument('smh'); // Default to SMH
-
-    app.listen(PORT, () => {
-        console.log(`\n🚀 Server running at http://localhost:${PORT}`);
-        console.log(`📄 Multi-document chatbot ready!`);
-        console.log(`   - Supports: SMH Manual (2023), UHN Manual (2025), CKD in Diabetes Guidelines (2025)`);
-        console.log(`   - Use ?doc=smh, ?doc=uhn, or ?doc=CKD-dc-2025 URL parameter\n`);
-    });
+    try {
+        console.log('🔄 Loading document registry from database...');
+        
+        // Load the document registry first
+        await documentRegistry.loadDocuments();
+        const activeDocs = await documentRegistry.getActiveSlugs();
+        
+        console.log(`✓ Document registry loaded: ${activeDocs.length} active documents`);
+        
+        // Load all active documents from registry
+        console.log('📄 Loading PDFs...');
+        for (const slug of activeDocs) {
+            await loadPDF(slug);
+        }
+        
+        // Set default document
+        const defaultDoc = activeDocs.includes('smh') ? 'smh' : activeDocs[0];
+        setCurrentDocument(defaultDoc);
+        
+        app.listen(PORT, () => {
+            console.log(`\n🚀 Server running at http://localhost:${PORT}`);
+            console.log(`📚 Multi-document chatbot ready!`);
+            console.log(`   - Loaded documents:`);
+            activeDocs.forEach(slug => {
+                const doc = documents[slug];
+                console.log(`     • ${slug}: ${doc.title} (${doc.year}, ${doc.embeddingType})`);
+            });
+            console.log(`   - Default document: ${defaultDoc}`);
+            console.log(`   - Use ?doc=<slug> URL parameter to select document\n`);
+        });
+    } catch (error) {
+        console.error('❌ Failed to start server:', error);
+        process.exit(1);
+    }
 }
 
 start();

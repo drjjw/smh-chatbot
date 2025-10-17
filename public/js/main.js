@@ -42,8 +42,8 @@ console.log('  - Current path:', window.location.pathname);
 console.log('  - API Base URL:', API_URL);
 console.log('  - Health endpoint:', `${API_URL}/api/health`);
 
-// Initialize document and method selection from URL parameters
-function initializeDocument() {
+// Initialize document and method selection from URL parameters (now async with registry validation)
+async function initializeDocument() {
     const urlParams = new URLSearchParams(window.location.search);
     const docParam = urlParams.get('doc');
     const methodParam = urlParams.get('method');
@@ -68,19 +68,29 @@ function initializeDocument() {
         updateModelInTooltip(state.selectedModel);
     }
 
+    // Validate document slug using registry
+    let selectedDoc = 'smh'; // default
+    if (docParam) {
+        const { documentExists } = await import('./config.js');
+        const exists = await documentExists(docParam);
+        if (exists) {
+            selectedDoc = docParam;
+        } else {
+            console.warn(`⚠️  Document '${docParam}' not found in registry, using default (smh)`);
+        }
+    }
+    
+    state.selectedDocument = selectedDoc;
+
     // Log all URL parameters
     console.log('\n📋 URL Parameters Applied:');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log(`  Document:        ${docParam || 'smh (default)'}`);
+    console.log(`  Validated as:    ${selectedDoc}`);
     console.log(`  Model:           ${state.selectedModel}`);
     console.log(`  Search Mode:     ${methodParam === 'rag' ? 'Targeted (RAG)' : 'Comprehensive (Full Doc)'}`);
     console.log(`  Embedding Type:  ${embeddingParam} ${embeddingParam === 'openai' ? '(1536D)' : '(384D)'}`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-
-    // Set document type
-    if (docParam && (docParam === 'smh' || docParam === 'uhn' || docParam === 'CKD-dc-2025')) {
-        state.selectedDocument = docParam;
-    }
 
     // Set retrieval method from URL parameter
     if (methodParam && methodParam === 'rag') {
@@ -110,8 +120,8 @@ function initializeDocument() {
         console.log('🌐 Production environment - retrieval controls hidden');
     }
 
-    // Update UI based on selected document
-    updateDocumentUI(state.selectedDocument);
+    // Update UI based on selected document (async)
+    await updateDocumentUI(state.selectedDocument);
 }
 
 // Model selector event listeners

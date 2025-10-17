@@ -15,6 +15,7 @@ const path = require('path');
 const pdf = require('pdf-parse');
 const OpenAI = require('openai');
 const { createClient } = require('@supabase/supabase-js');
+const documentRegistry = require('../lib/document-registry');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 // Initialize clients
@@ -33,25 +34,6 @@ const CHUNK_OVERLAP = 100; // tokens (roughly 400 characters)
 const CHARS_PER_TOKEN = 4; // Rough estimate
 const BATCH_SIZE = 50; // Process embeddings in batches (OpenAI has good rate limits)
 const BATCH_DELAY_MS = 100; // Small delay between batches
-
-// PDF document configurations
-const DOCUMENTS = [
-    {
-        type: 'smh',
-        filename: 'smh-manual-2023.pdf',
-        name: 'SMH Housestaff Manual 2023'
-    },
-    {
-        type: 'uhn',
-        filename: 'uhn-manual-2025.pdf',
-        name: 'UHN Nephrology Manual 2025'
-    },
-    {
-        type: 'CKD-dc-2025',
-        filename: 'PIIS1499267125000206.pdf',
-        name: 'CKD in Diabetes: Clinical Practice Guideline 2025'
-    }
-];
 
 /**
  * Clean PDF text to reduce noise (reuse from server.js)
@@ -161,13 +143,13 @@ async function loadPDF(filepath) {
 }
 
 /**
- * Store chunks with embeddings in Supabase
+ * Store chunks with embeddings in Supabase (now uses document_slug)
  */
-async function storeChunks(documentType, documentName, chunksWithEmbeddings) {
+async function storeChunks(documentSlug, documentName, chunksWithEmbeddings) {
     const records = chunksWithEmbeddings
         .filter(item => item.embedding !== null)
         .map(({ chunk, embedding }) => ({
-            document_type: documentType,
+            document_slug: documentSlug,
             document_name: documentName,
             chunk_index: chunk.index,
             content: chunk.content,
@@ -202,18 +184,19 @@ async function storeChunks(documentType, documentName, chunksWithEmbeddings) {
 }
 
 /**
- * Main processing function
+ * Main processing function (now using registry)
  */
 async function processDocument(docConfig) {
     console.log(`\n${'='.repeat(60)}`);
-    console.log(`📄 Processing: ${docConfig.name}`);
+    console.log(`📄 Processing: ${docConfig.title}`);
+    console.log(`   Slug: ${docConfig.slug}`);
     console.log(`${'='.repeat(60)}\n`);
     
     const startTime = Date.now();
     
-    // 1. Load PDF
+    // 1. Load PDF using registry path
     console.log('📖 Loading PDF...');
-    const filepath = path.join(__dirname, '..', docConfig.filename);
+    const filepath = documentRegistry.getDocumentPath(docConfig);
     const pdfData = await loadPDF(filepath);
     console.log(`  ✓ Loaded ${pdfData.pages} pages`);
     console.log(`  ✓ Total characters: ${pdfData.text.length.toLocaleString()}`);
@@ -250,7 +233,7 @@ async function processDocument(docConfig) {
     
     // 4. Store in Supabase
     console.log('\n💾 Storing in Supabase...');
-    const insertedCount = await storeChunks(docConfig.type, docConfig.name, allEmbeddings);
+    const insertedCount = await storeChunks(docConfig.slug, docConfig.title, allEmbeddings);
     
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
     console.log(`\n✅ Completed in ${duration}s`);
@@ -261,7 +244,7 @@ async function processDocument(docConfig) {
 }
 
 /**
- * Main execution
+ * Main execution (now using document registry)
  */
 async function main() {
     console.log('\n🚀 PDF Chunking & Embedding Script (OpenAI)');
@@ -283,17 +266,61 @@ async function main() {
     console.log(`✓ Target database: ${process.env.SUPABASE_URL}`);
     console.log(`✓ Using OpenAI text-embedding-3-small (1536 dimensions)`);
     
-    // Process only the CKD-dc-2025 document
-    const ckdDoc = DOCUMENTS.find(doc => doc.type === 'CKD-dc-2025');
-    if (ckdDoc) {
-        await processDocument(ckdDoc);
+    // Parse command line arguments
+    const args = process.argv.slice(2);
+    const docArg = args.find(arg => arg.startsWith('--doc='));
+    const allFlag = args.includes('--all');
+    
+    // Load document registry
+    console.log('\n📚 Loading document registry from database...');
+    const allDocs = await documentRegistry.loadDocuments();
+    const openaiDocs = allDocs.filter(doc => doc.embedding_type === 'openai');
+    
+    console.log(`✓ Found ${openaiDocs.length} documents using OpenAI embeddings`);
+    
+    let docsToProcess = [];
+    
+    if (allFlag) {
+        // Process all documents with openai embedding type
+        docsToProcess = openaiDocs;
+        console.log('📝 Processing ALL documents with OpenAI embeddings');
+    } else if (docArg) {
+        // Process specific document
+        const slug = docArg.split('=')[1];
+        const doc = await documentRegistry.getDocumentBySlug(slug);
+        
+        if (!doc) {
+            console.error(`❌ Document not found: ${slug}`);
+            process.exit(1);
+        }
+        
+        if (doc.embedding_type !== 'openai') {
+            console.error(`❌ Document ${slug} uses ${doc.embedding_type} embeddings, not OpenAI`);
+            console.error(`   Use chunk-and-embed-local.js for local embeddings`);
+            process.exit(1);
+        }
+        
+        docsToProcess = [doc];
+        console.log(`📝 Processing single document: ${slug}`);
     } else {
-        console.error('❌ CKD-dc-2025 document configuration not found');
-        process.exit(1);
+        // Default: show usage
+        console.log('\nUsage:');
+        console.log('  node chunk-and-embed.js --all           # Process all OpenAI embedding docs');
+        console.log('  node chunk-and-embed.js --doc=<slug>    # Process specific document');
+        console.log('\nAvailable documents (OpenAI embeddings):');
+        openaiDocs.forEach(doc => {
+            console.log(`  - ${doc.slug}: ${doc.title}`);
+        });
+        process.exit(0);
+    }
+    
+    // Process documents
+    for (const doc of docsToProcess) {
+        await processDocument(doc);
     }
     
     console.log('\n' + '='.repeat(60));
-    console.log('🎉 All documents processed successfully!');
+    console.log(`🎉 Processed ${docsToProcess.length} document(s) successfully!`);
     console.log('='.repeat(60) + '\n');
 }
 
