@@ -1,7 +1,7 @@
 // Main initialization and event wiring
 import { API_URL, generateSessionId, getEmbeddingType } from './config.d8a1ca03.js';
 import { checkHealth } from './api.9da9e38f.js';
-import { updateDocumentUI, updateModelInTooltip } from './ui.29410cc7.js';
+import { updateDocumentUI, updateModelInTooltip } from './ui.3e614ce3.js';
 import { sendMessage } from './chat.24924f8a.js';
 import { submitRating } from './rating.889e6e99.js';
 

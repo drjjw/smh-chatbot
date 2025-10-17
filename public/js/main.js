@@ -7,7 +7,7 @@ import { submitRating } from './rating.js';
 
 // Configure marked for better formatting
 marked.setOptions({
-    breaks: true,
+    breaks: false, // Prevent awkward line breaks in lists
     gfm: true
 });
 

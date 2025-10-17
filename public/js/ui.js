@@ -317,26 +317,119 @@ function handleModelSwitch(userMessage, currentModel, state, chatContainer, send
 function styleReferences(contentDiv) {
     const paragraphs = contentDiv.querySelectorAll('p');
 
+    // Create a references container if we find references
+    let referencesContainer = null;
+    let inReferencesSection = false;
+
     // Simply add classes to paragraphs that look like references
     paragraphs.forEach(p => {
         const text = p.textContent.trim();
+        const hasReferencesHeading = text === 'References' || text === '**References**' ||
+            (p.querySelector('strong') && p.querySelector('strong').textContent === 'References');
+        const referenceMatches = text.match(/\[\d+\]/g) || [];
+        const hasAnyReferences = referenceMatches.length >= 1;
 
-        // Check if this paragraph contains "References" heading
-        if (text === 'References' || text === '**References**' ||
-            (p.querySelector('strong') && p.querySelector('strong').textContent === 'References')) {
+        // Check if this paragraph contains "References" heading AND any references (needs splitting)
+        if (hasReferencesHeading && hasAnyReferences) {
+            inReferencesSection = true;
+            // Create a references container if it doesn't exist
+            if (!referencesContainer) {
+                referencesContainer = document.createElement('div');
+                referencesContainer.className = 'references-container';
+                p.parentNode.insertBefore(referencesContainer, p);
+            }
+            // Split references that are all in one paragraph
+            splitMultipleReferences(p, referencesContainer);
+        }
+        // Check if this paragraph contains ONLY "References" heading (no references at all)
+        else if (hasReferencesHeading && !hasAnyReferences) {
             p.className = (p.className ? p.className + ' ' : '') + 'references-heading';
+            inReferencesSection = true;
+
+            // Create a references container starting from this heading
+            referencesContainer = document.createElement('div');
+            referencesContainer.className = 'references-container';
+            p.parentNode.insertBefore(referencesContainer, p);
+            referencesContainer.appendChild(p);
         }
         // Check if this is a reference item (starts with [number])
         else if (text.match(/^\[\d+\]/)) {
             p.className = (p.className ? p.className + ' ' : '') + 'reference-item';
+            if (referencesContainer && inReferencesSection) {
+                referencesContainer.appendChild(p);
+            }
+        }
+        // If we're in the references section and this doesn't match above, add it to container
+        // BUT exclude metadata paragraphs (contain emojis like 🔍 or 📄)
+        else if (inReferencesSection && referencesContainer && !text.match(/^\d+\./) && text.length > 0 && 
+                 !text.includes('🔍') && !text.includes('📄')) {
+            referencesContainer.appendChild(p);
+        }
+        // If we encounter a metadata paragraph, stop adding to references
+        else if (inReferencesSection && (text.includes('🔍') || text.includes('📄'))) {
+            inReferencesSection = false;
         }
     });
 
-    // Also style horizontal rules that separate content from references
+    // Only style horizontal rules that come BEFORE the references container
     const hrs = contentDiv.querySelectorAll('hr');
     hrs.forEach(hr => {
-        // Add a class to HR elements to style them
-        hr.className = (hr.className ? hr.className + ' ' : '') + 'references-separator';
+        // Check if this HR is followed by a references container
+        let nextElement = hr.nextElementSibling;
+        if (nextElement && nextElement.classList && nextElement.classList.contains('references-container')) {
+            hr.className = (hr.className ? hr.className + ' ' : '') + 'references-separator';
+        }
     });
+}
+
+// Split multiple references that are in one paragraph into separate elements
+function splitMultipleReferences(paragraph, referencesContainer = null) {
+    const text = paragraph.textContent;
+
+    // Check if this paragraph contains both "References" heading and reference items
+    const hasReferencesHeading = text.includes('References') || text.includes('**References**') ||
+                                (paragraph.querySelector('strong') && paragraph.querySelector('strong').textContent === 'References');
+
+    // Use regex to find all references like [1] text [2] text
+    // The regex captures each [number] and all text until the next [number] or end of string
+    // Updated to handle newlines in the text
+    const referenceRegex = /\[(\d+)\]\s*([^\[]*?)(?=\[\d+\]|$)/gs;
+    const references = [];
+    let match;
+
+    // Extract all references
+    while ((match = referenceRegex.exec(text)) !== null) {
+        const refNumber = match[1];
+        const refText = match[2].trim();
+        references.push({ number: refNumber, text: refText });
+    }
+
+    if (references.length >= 1) {
+        // Create separate paragraph elements for each reference
+        const parent = paragraph.parentNode;
+
+        // Remove the original paragraph
+        parent.removeChild(paragraph);
+
+        // If this paragraph contained the References heading, add it back to the container
+        if (hasReferencesHeading && referencesContainer) {
+            const headingP = document.createElement('p');
+            headingP.innerHTML = '<strong>References</strong>';
+            headingP.className = 'references-heading';
+            referencesContainer.appendChild(headingP);
+        }
+
+        // Create new paragraphs for each reference
+        references.forEach(ref => {
+            const newP = document.createElement('p');
+            newP.textContent = `[${ref.number}] ${ref.text}`;
+            newP.className = 'reference-item';
+            if (referencesContainer) {
+                referencesContainer.appendChild(newP);
+            } else {
+                parent.appendChild(newP);
+            }
+        });
+    }
 }
 
