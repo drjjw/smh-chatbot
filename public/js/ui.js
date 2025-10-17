@@ -62,6 +62,9 @@ export function addMessage(content, role, model = null, conversationId = null, c
             }
         });
 
+        // Style references section
+        styleReferences(contentDiv);
+
         // Add subtle model badge
         if (model) {
             const badge = document.createElement('div');
@@ -308,5 +311,32 @@ function handleModelSwitch(userMessage, currentModel, state, chatContainer, send
 
     // Call the callback function with the switched model
     sendMessageCallback(tempState, tempElements);
+}
+
+// Style references section in assistant messages
+function styleReferences(contentDiv) {
+    const paragraphs = contentDiv.querySelectorAll('p');
+
+    // Simply add classes to paragraphs that look like references
+    paragraphs.forEach(p => {
+        const text = p.textContent.trim();
+
+        // Check if this paragraph contains "References" heading
+        if (text === 'References' || text === '**References**' ||
+            (p.querySelector('strong') && p.querySelector('strong').textContent === 'References')) {
+            p.className = (p.className ? p.className + ' ' : '') + 'references-heading';
+        }
+        // Check if this is a reference item (starts with [number])
+        else if (text.match(/^\[\d+\]/)) {
+            p.className = (p.className ? p.className + ' ' : '') + 'reference-item';
+        }
+    });
+
+    // Also style horizontal rules that separate content from references
+    const hrs = contentDiv.querySelectorAll('hr');
+    hrs.forEach(hr => {
+        // Add a class to HR elements to style them
+        hr.className = (hr.className ? hr.className + ' ' : '') + 'references-separator';
+    });
 }
 

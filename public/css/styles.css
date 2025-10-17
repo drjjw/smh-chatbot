@@ -942,16 +942,35 @@ body:not(.local-env) .retrieval-selector {
     display: block;
 }
 
-/* Style individual reference lines that start with [number] */
-.message.assistant .message-content p:only-child,
-.message.assistant .message-content div > p:only-child {
+/* Style references heading */
+.message.assistant .message-content .references-heading {
+    font-size: 0.9em;
+    color: #555;
+    font-weight: 500;
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+    display: block;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 1em;
+}
+
+/* Style references separator */
+.message.assistant .message-content .references-separator {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 1em 0;
+}
+
+/* Style individual reference items */
+.message.assistant .message-content .reference-item {
     font-size: 0.8em;
     color: #777;
     line-height: 1.3;
-    margin-top: 0.25em;
     margin-bottom: 0.25em;
     font-weight: 400;
     text-indent: -0.5em;
     padding-left: 0.5em;
 }
+
+/* References are now properly styled with JavaScript-applied classes */
 
