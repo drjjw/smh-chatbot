@@ -193,6 +193,7 @@ IMPORTANT RULES:
 4. Do not use external knowledge or information from the internet
 5. Be concise and professional
 6. If you're unsure, admit it rather than guessing
+7. For questions about drug dose conversions related to MMF (CellCept) PO, Myfortic PO, MMF IV, Cyclosporine PO, Cyclosporine IV, Envarsus, Advagraf/Astagraf, Prograf, Prednisone, Methylprednisolone IV, Hydrocortisone IV, or Dexamethasone, attempt to answer but include a message directing users to consult https://ukidney.com/drugs
 
 FORMATTING RULES:
 - Use **bold** for important terms and section titles
@@ -327,8 +328,8 @@ async function embedQuery(text) {
  */
 async function findRelevantChunks(embedding, documentType, limit = 5, threshold = null) {
     try {
-        // Use configurable threshold from environment or default
-        const defaultThreshold = threshold || parseFloat(process.env.RAG_SIMILARITY_THRESHOLD) || 0.15;
+        // OpenAI embeddings use higher threshold (0.3), local embeddings use lower (0.1)
+        const defaultThreshold = threshold || parseFloat(process.env.RAG_SIMILARITY_THRESHOLD) || 0.3;
 
         // Call the match_document_chunks function we created in Supabase
         const { data, error } = await supabase.rpc('match_document_chunks', {
@@ -355,8 +356,8 @@ async function findRelevantChunks(embedding, documentType, limit = 5, threshold 
  */
 async function findRelevantChunksLocal(embedding, documentType, limit = 5, threshold = null) {
     try {
-        // Use configurable threshold from environment or default
-        const defaultThreshold = threshold || parseFloat(process.env.RAG_SIMILARITY_THRESHOLD) || 0.15;
+        // Local embeddings use lower threshold (0.05) since they have lower similarity scores
+        const defaultThreshold = threshold || parseFloat(process.env.RAG_SIMILARITY_THRESHOLD_LOCAL) || 0.05;
 
         // Call the match_document_chunks_local function for local embeddings
         const { data, error } = await supabase.rpc('match_document_chunks_local', {
@@ -400,6 +401,7 @@ IMPORTANT RULES:
 3. Be concise and professional
 4. If you're unsure, admit it rather than guessing
 5. Do NOT mention chunk numbers or reference which excerpt information came from
+6. For questions about drug dose conversions related to MMF (CellCept) PO, Myfortic PO, MMF IV, Cyclosporine PO, Cyclosporine IV, Envarsus, Advagraf/Astagraf, Prograf, Prednisone, Methylprednisolone IV, Hydrocortisone IV, or Dexamethasone, attempt to answer but include a message directing users to consult https://ukidney.com/drugs
 
 FORMATTING RULES:
 - Use **bold** for important terms and section titles

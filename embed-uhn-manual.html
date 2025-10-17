@@ -93,7 +93,7 @@
     function openChatModal() {
         // On mobile: redirect to bot.ukidney.com (can use browser back button)
         if (isMobileDevice()) {
-            window.location.href = 'https://bot.ukidney.com/?method=rag&doc=uhn&embedding=local';
+            window.location.href = 'https://bot.ukidney.com/?method=rag&doc=uhn&embedding=openai';
             return;
         }
 
@@ -104,7 +104,7 @@
 
         // Load iframe src only when opening (performance optimization)
         if (!iframe.src || iframe.src === '' || iframe.src === window.location.href || iframe.src.endsWith('/')) {
-            iframe.src = 'https://bot.ukidney.com/?method=rag&doc=uhn&embedding=local';
+            iframe.src = 'https://bot.ukidney.com/?method=rag&doc=uhn&embedding=openai';
         }
 
         // Show modal with display flex first, then add active class for animation
