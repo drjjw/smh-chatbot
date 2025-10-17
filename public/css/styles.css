@@ -922,3 +922,42 @@ body:not(.local-env) .retrieval-selector {
     }
 }
 
+/* Subtle reference styling */
+.message.assistant .message-content p {
+    margin-bottom: 0.5em;
+}
+
+.message.assistant .message-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Style reference lines that start with [number] */
+.message.assistant .message-content p:only-child,
+.message.assistant .message-content div > p:only-child {
+    font-size: 0.85em;
+    color: #666;
+    line-height: 1.4;
+    margin-top: 0.75em;
+    margin-bottom: 0;
+    padding-top: 0.5em;
+    border-top: 1px solid #f0f0f0;
+    font-weight: 400;
+}
+
+/* Make references even more subtle */
+.message.assistant .message-content p:only-child::first-line,
+.message.assistant .message-content div > p:only-child::first-line {
+    font-size: 0.8em;
+    color: #777;
+}
+
+/* Style for any paragraph that starts with reference markers */
+.message.assistant .message-content p:only-child,
+.message.assistant .message-content div > p:only-child {
+    font-size: 0.85em;
+    color: #666;
+    line-height: 1.4;
+    margin-top: 0.75em;
+    font-weight: 400;
+}
+
