@@ -82,7 +82,7 @@ SUPABASE_ANON_KEY=your_supabase_anon_key_here
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
 
 # RAG Configuration (optional)
-RAG_SIMILARITY_THRESHOLD=0.15
+RAG_SIMILARITY_THRESHOLD=0.3
 ```
 
 Get your API keys from:
