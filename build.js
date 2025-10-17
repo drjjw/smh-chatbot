@@ -121,6 +121,9 @@ Object.keys(fileContents).forEach(filePath => {
             
             // Update import statements: from './config.js' to './config.77794265.js'
             const importPattern = new RegExp(`from\\s+['"]\\.\\/([^'"]+)['"]`, 'g');
+            // Also update dynamic imports: import('./config.js') to import('./config.77794265.js')
+            const dynamicImportPattern = new RegExp(`import\\(\\s*['"]\\.\\/([^'"]+)['"]`, 'g');
+            // Update static imports
             const newContent = content.replace(importPattern, (match, importPath) => {
                 const importFile = importPath.split('/').pop();
                 if (importFile === originalFilename) {
@@ -129,8 +132,18 @@ Object.keys(fileContents).forEach(filePath => {
                 }
                 return match;
             });
-            
-            content = newContent;
+
+            // Update dynamic imports
+            const newContent2 = newContent.replace(dynamicImportPattern, (match, importPath) => {
+                const importFile = importPath.split('/').pop();
+                if (importFile === originalFilename) {
+                    updated = true;
+                    return match.replace(originalFilename, hashedFilename);
+                }
+                return match;
+            });
+
+            content = newContent2;
         });
         
         fileContents[filePath] = content;
@@ -183,11 +196,17 @@ const otherFiles = [
     { from: 'server.js', to: 'server.js' },
     { from: 'package.json', to: 'package.json' },
     { from: 'package-lock.json', to: 'package-lock.json' },
-    { from: 'smh-manual-2023.pdf', to: 'smh-manual-2023.pdf' },
-    { from: 'uhn-manual-2025.pdf', to: 'uhn-manual-2025.pdf' },
     { from: 'embed-smh-manual.html', to: 'embed-smh-manual.html' },
     { from: 'embed-uhn-manual.html', to: 'embed-uhn-manual.html' },
     { from: '.htaccess', to: '.htaccess', optional: true }
+];
+
+// Copy PDFs to their proper subdirectories (for document registry system)
+console.log('\n📄 Copying PDF files to registry structure:');
+const pdfFiles = [
+    { from: 'PDFs/manuals/smh-manual-2023.pdf', to: 'PDFs/manuals/smh-manual-2023.pdf' },
+    { from: 'PDFs/manuals/uhn-manual-2025.pdf', to: 'PDFs/manuals/uhn-manual-2025.pdf' },
+    { from: 'PDFs/guidelines/PIIS1499267125000206.pdf', to: 'PDFs/guidelines/PIIS1499267125000206.pdf' }
 ];
 
 // Copy lib directory (for local embeddings module)
@@ -213,6 +232,27 @@ if (fs.existsSync(libSourceDir)) {
 
 let copiedCount = 0;
 let skippedCount = 0;
+
+// Copy PDF files first to ensure directories exist
+pdfFiles.forEach(file => {
+    const sourcePath = path.join(__dirname, file.from);
+    const destPath = path.join(distDir, file.to);
+
+    if (fs.existsSync(sourcePath)) {
+        // Ensure destination directory exists
+        const destDir = path.dirname(destPath);
+        if (!fs.existsSync(destDir)) {
+            fs.mkdirSync(destDir, { recursive: true });
+        }
+
+        fs.copyFileSync(sourcePath, destPath);
+        console.log(`✓ Copied PDF ${file.from}`);
+        copiedCount++;
+    } else {
+        console.log(`✗ Missing PDF file: ${file.from}`);
+        process.exit(1);
+    }
+});
 
 otherFiles.forEach(file => {
     const sourcePath = path.join(__dirname, file.from);
@@ -241,7 +281,8 @@ console.log(`\n📦 Build complete!`);
 console.log(`   - ${Object.keys(cssFiles).length} CSS files hashed and copied`);
 console.log(`   - ${Object.keys(jsFiles).length} JS files hashed and copied`);
 console.log(`   - 1 HTML file processed with hashed references`);
-console.log(`   - ${copiedCount} other files copied`);
+console.log(`   - ${pdfFiles.length} PDF files copied to registry structure`);
+console.log(`   - ${copiedCount - pdfFiles.length} other files copied`);
 if (skippedCount > 0) {
     console.log(`   - ${skippedCount} optional files skipped`);
 }

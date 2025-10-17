@@ -1,6 +1,6 @@
 <script src="/content/pdf/core/lib/webviewer.min.js" type="text/javascript"></script>
 
-<p style="text-align: left;"><span style="font-size: 12pt;"><strong><span>If you are having trouble viewing this resource or to download, please <a href="content/manuals/uhn/UHN%20Nephrology%20Manual%202025.pdf" target="_blank" rel="noopener" class="">click here</a></span></strong></span></p>
+<p style="text-align: left;"><span style="font-size: 12pt;"><strong><span>If you are having trouble viewing this resource or to download, please <a href="https://ukidney.com/content/manuals/uhn/2025/UHN%20house%20staff%20April%202025-UKidney.pdf" target="_blank" rel="noopener" class="">click here</a></span></strong></span></p>
 
 <!-- Two Options Side by Side -->
 <div class="manual-options">
@@ -63,7 +63,7 @@
     WebViewer({
         path: '/content/pdf/core/lib',
         licenseKey: '5sWIr8PdBc1Y2NPyyFtk',
-        initialDoc: 'https://ukidney.com/content/manuals/uhn/UHN%20Nephrology%20Manual%202025.pdf',
+        initialDoc: 'https://ukidney.com/content/manuals/uhn/2025/UHN%20house%20staff%20April%202025-UKidney.pdf',
     }, document.getElementById('viewer'))
     .then((instance) => {
         const { documentViewer, annotationManager } = instance.Core;
@@ -93,7 +93,7 @@
     function openChatModal() {
         // On mobile: redirect to bot.ukidney.com (can use browser back button)
         if (isMobileDevice()) {
-            window.location.href = 'https://bot.ukidney.com/?method=rag&doc=uhn&embedding=local';
+            window.location.href = 'https://bot.ukidney.com/?method=rag&doc=uhn&embedding=openai';
             return;
         }
 
@@ -104,7 +104,7 @@
 
         // Load iframe src only when opening (performance optimization)
         if (!iframe.src || iframe.src === '' || iframe.src === window.location.href || iframe.src.endsWith('/')) {
-            iframe.src = 'https://bot.ukidney.com/?method=rag&doc=uhn&embedding=local';
+            iframe.src = 'https://bot.ukidney.com/?method=rag&doc=uhn&embedding=openai';
         }
 
         // Show modal with display flex first, then add active class for animation
