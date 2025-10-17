@@ -206,7 +206,7 @@ FORMATTING RULES:
 - **MANDATORY**: Provide numbered references at the end of EVERY response (do not skip this step)
 - Number footnotes sequentially starting from [1] for each response
 - Extract page numbers from [Page X] markers in the text for accurate citations
-- Example: "Drug X is indicated[1]. Dosage is 100mg[2].\n\n[1] Section 3.2, Page 15\n[2] Page 45"
+- Example: "Drug X is indicated[1]. Dosage is 100mg[2].\n\n**References**\n[1] Section 3.2, Page 15\n[2] Page 45"
 
 ${docName.toUpperCase()} CONTENT:
 ---
@@ -422,7 +422,7 @@ FORMATTING RULES:
 - **MANDATORY**: Provide numbered references at the end of EVERY response (do not skip this step)
 - Number footnotes sequentially starting from [1] for each response
 - Extract page numbers from [Page X] markers in the text for accurate citations
-- Example: "Drug X is indicated[1]. Dosage is 100mg[2].\n\n[1] Section 3.2, Page 15\n[2] Page 45"
+- Example: "Drug X is indicated[1]. Dosage is 100mg[2].\n\n**References**\n[1] Section 3.2, Page 15\n[2] Page 45"
 
 RELEVANT EXCERPTS FROM ${docName.toUpperCase()}:
 ---
