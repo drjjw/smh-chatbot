@@ -63,7 +63,7 @@ Navigate to: **http://localhost:3000**
 - Excellent at document analysis
 - Great for structured information
 
-### 🚀 Grok 4 (grok-2-1212)
+### 🚀 Grok 4 (grok-4-fast-non-reasoning)
 - xAI's powerful model
 - Strong reasoning capabilities
 - Different perspective on the same content

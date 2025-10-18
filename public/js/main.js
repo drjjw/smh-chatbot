@@ -15,8 +15,8 @@ marked.setOptions({
 const state = {
     conversationHistory: [],
     isLoading: false,
-    selectedModel: 'gemini',
-    ragMode: false, // Default to full document mode
+    selectedModel: 'grok',
+    ragMode: true, // Default to RAG mode
     sessionId: generateSessionId(),
     selectedDocument: 'smh', // Default to SMH
     isLocalEnv: false
@@ -30,6 +30,7 @@ const elements = {
     statusDiv: document.getElementById('status'),
     geminiBtn: document.getElementById('geminiBtn'),
     grokBtn: document.getElementById('grokBtn'),
+    grokReasoningBtn: document.getElementById('grokReasoningBtn'),
     fullDocBtn: document.getElementById('fullDocBtn'),
     ragBtn: document.getElementById('ragBtn'),
     headerToggle: document.getElementById('headerToggle'),
@@ -51,20 +52,39 @@ async function initializeDocument() {
     const modelParam = urlParams.get('model');
 
     // Set model from URL parameter
-    if (modelParam && (modelParam === 'gemini' || modelParam === 'grok')) {
+    if (modelParam && (modelParam === 'gemini' || modelParam === 'grok' || modelParam === 'grok-reasoning')) {
         state.selectedModel = modelParam;
         // Update button states
         if (modelParam === 'grok') {
             elements.grokBtn.classList.add('active');
             elements.geminiBtn.classList.remove('active');
+            elements.grokReasoningBtn.classList.remove('active');
+        } else if (modelParam === 'grok-reasoning') {
+            elements.grokReasoningBtn.classList.add('active');
+            elements.grokBtn.classList.remove('active');
+            elements.geminiBtn.classList.remove('active');
         } else {
             elements.geminiBtn.classList.add('active');
             elements.grokBtn.classList.remove('active');
+            elements.grokReasoningBtn.classList.remove('active');
         }
         // Update tooltip
         updateModelInTooltip(modelParam);
     } else {
-        // Default model - update tooltip
+        // Default model - update button states and tooltip
+        if (state.selectedModel === 'grok') {
+            elements.grokBtn.classList.add('active');
+            elements.geminiBtn.classList.remove('active');
+            elements.grokReasoningBtn.classList.remove('active');
+        } else if (state.selectedModel === 'grok-reasoning') {
+            elements.grokReasoningBtn.classList.add('active');
+            elements.grokBtn.classList.remove('active');
+            elements.geminiBtn.classList.remove('active');
+        } else {
+            elements.geminiBtn.classList.add('active');
+            elements.grokBtn.classList.remove('active');
+            elements.grokReasoningBtn.classList.remove('active');
+        }
         updateModelInTooltip(state.selectedModel);
     }
 
@@ -82,18 +102,36 @@ async function initializeDocument() {
     
     state.selectedDocument = selectedDoc;
 
+    // Determine search mode for logging
+    let searchMode;
+    if (methodParam === 'full') {
+        searchMode = 'Comprehensive (Full Doc)';
+    } else if (methodParam === 'rag') {
+        searchMode = 'Targeted (RAG)';
+    } else {
+        searchMode = 'Targeted (RAG) - default';
+    }
+
     // Log all URL parameters
     console.log('\n📋 URL Parameters Applied:');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log(`  Document:        ${docParam || 'smh (default)'}`);
     console.log(`  Validated as:    ${selectedDoc}`);
     console.log(`  Model:           ${state.selectedModel}`);
-    console.log(`  Search Mode:     ${methodParam === 'rag' ? 'Targeted (RAG)' : 'Comprehensive (Full Doc)'}`);
+    console.log(`  Search Mode:     ${searchMode}`);
     console.log(`  Embedding Type:  ${embeddingParam} ${embeddingParam === 'openai' ? '(1536D)' : '(384D)'}`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
-    // Set retrieval method from URL parameter
-    if (methodParam && methodParam === 'rag') {
+    // Set retrieval method from URL parameter or default to RAG
+    if (methodParam === 'full') {
+        // Only switch to full doc mode if explicitly requested
+        state.ragMode = false;
+        if (elements.fullDocBtn) {
+            elements.fullDocBtn.classList.add('active');
+            elements.ragBtn.classList.remove('active');
+        }
+    } else {
+        // Default to RAG mode (whether methodParam is 'rag' or not provided)
         state.ragMode = true;
         if (elements.ragBtn) {
             elements.ragBtn.classList.add('active');
@@ -110,7 +148,17 @@ async function initializeDocument() {
     if (state.isLocalEnv) {
         document.body.classList.add('local-env');
         console.log('🏠 Local environment detected - retrieval controls visible');
-        
+
+        // Update button text for local environment (detailed labels)
+        elements.geminiBtn.textContent = 'Gemini 2.5';
+        elements.grokBtn.textContent = 'Grok 4 Fast';
+        elements.grokReasoningBtn.textContent = 'Grok 4 Fast Reasoning';
+
+        // Show additional Grok model option in local environment
+        if (elements.grokReasoningBtn) {
+            elements.grokReasoningBtn.style.display = 'inline-block';
+        }
+
         // Show URL parameters info in welcome message
         const urlParamsInfo = document.getElementById('urlParamsInfo');
         if (urlParamsInfo) {
@@ -118,6 +166,14 @@ async function initializeDocument() {
         }
     } else {
         console.log('🌐 Production environment - retrieval controls hidden');
+
+        // In production, set default model to grok-4-fast-non-reasoning
+        state.selectedModel = 'grok';
+
+        // Update button text for production (simple labels)
+        elements.geminiBtn.textContent = 'Gemini';
+        elements.grokBtn.textContent = 'Grok';
+        elements.grokReasoningBtn.textContent = 'Grok';
     }
 
     // Update UI based on selected document (async)
@@ -136,7 +192,16 @@ elements.grokBtn.addEventListener('click', () => {
     state.selectedModel = 'grok';
     elements.grokBtn.classList.add('active');
     elements.geminiBtn.classList.remove('active');
+    elements.grokReasoningBtn.classList.remove('active');
     updateModelInTooltip('grok');
+});
+
+elements.grokReasoningBtn.addEventListener('click', () => {
+    state.selectedModel = 'grok-reasoning';
+    elements.grokReasoningBtn.classList.add('active');
+    elements.grokBtn.classList.remove('active');
+    elements.geminiBtn.classList.remove('active');
+    updateModelInTooltip('grok-reasoning');
 });
 
 // Retrieval method selector event listeners
@@ -206,10 +271,12 @@ function initializeHeaderToggle() {
 // Expose submitRating to window for rating button clicks
 window.submitRating = submitRating;
 
-// Initialize
-initializeDocument();
-initializeHeaderToggle();
-checkHealth(state.selectedDocument, elements.statusDiv);
-
-// Focus input
-elements.messageInput.focus();
+// Initialize (async to ensure document is loaded before health check)
+(async () => {
+    await initializeDocument();
+    initializeHeaderToggle();
+    checkHealth(state.selectedDocument, elements.statusDiv);
+    
+    // Focus input
+    elements.messageInput.focus();
+})();

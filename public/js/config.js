@@ -34,8 +34,8 @@ const fallbackDocConfig = {
         embeddingType: 'openai',
         active: true
     },
-    'CKD-dc-2025': {
-        slug: 'CKD-dc-2025',
+    'ckd-dc-2025': {
+        slug: 'ckd-dc-2025',
         title: 'CKD in Diabetes Guidelines',
         subtitle: 'Diabetes Canada Clinical Practice Guideline 2025 · Interactive search and consultation',
         backLink: 'https://ukidney.com/nephrology-publications/nephrology-manuals/ckd-diabetes-guidelines-2025',
@@ -148,8 +148,8 @@ export function getEmbeddingType() {
     const params = new URLSearchParams(window.location.search);
     const docParam = params.get('doc');
 
-    // CKD-dc-2025 uses local embeddings, others use OpenAI by default
-    if (docParam === 'CKD-dc-2025') {
+    // ckd-dc-2025 uses local embeddings, others use OpenAI by default
+    if (docParam === 'ckd-dc-2025') {
         return params.get('embedding') || 'local';
     }
 

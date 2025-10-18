@@ -106,7 +106,7 @@ Choose between two powerful AI models:
 - Excellent at structured information
 - Great for factual queries
 
-**🚀 Grok 4 (grok-2-1212)**
+**🚀 Grok 4 (grok-4-fast-non-reasoning)**
 - xAI's powerful model
 - Strong reasoning capabilities
 - Different analytical approach

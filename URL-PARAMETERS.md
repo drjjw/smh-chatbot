@@ -20,13 +20,13 @@ Selects which document to use for queries using the document's **slug** identifi
 **Current Documents** (as of initial migration):
 - `smh` - SMH Housestaff Manual 2023 (default)
 - `uhn` - UHN Nephrology Manual 2025
-- `CKD-dc-2025` - CKD in Diabetes Guidelines 2025
+- `ckd-dc-2025` - CKD in Diabetes Guidelines 2025
 
 **Examples:**
 ```
 http://localhost:3456?doc=smh
 http://localhost:3456?doc=uhn
-http://localhost:3456?doc=CKD-dc-2025
+http://localhost:3456?doc=ckd-dc-2025
 ```
 
 **Adding New Documents:**
@@ -59,7 +59,7 @@ You can combine parameters using `&`:
 ```
 http://localhost:3456?doc=uhn&method=rag
 http://localhost:3456?doc=smh&method=rag
-http://localhost:3456?doc=CKD-dc-2025&method=rag
+http://localhost:3456?doc=ckd-dc-2025&method=rag
 ```
 
 ## Production vs Local Behavior

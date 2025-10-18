@@ -44,6 +44,11 @@ export async function sendMessage(state, elements) {
         removeLoading();
 
         if (response.ok) {
+            // Log the actual model being used
+            if (data.actualModel) {
+                console.log(`🤖 Response generated using: ${data.actualModel}`);
+            }
+
             // Build response with metadata
             const responseText = buildResponseWithMetadata(data, state.ragMode, state.isLocalEnv);
 

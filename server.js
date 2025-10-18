@@ -51,6 +51,10 @@ const { generateLocalEmbedding, initializeModel: initLocalModel, getModelInfo } 
 
 // Initialize document registry
 const documentRegistry = require('./lib/document-registry');
+
+// Initialize embedding cache
+const { getEmbeddingWithCache, getCacheStats, clearCache, initializeCacheCleanup } = require('./lib/embedding-cache');
+
 let localEmbeddingsReady = false;
 
 // Lazy-load local embedding model
@@ -244,6 +248,7 @@ RESPONSE STYLE - STRICTLY FOLLOW:
 
 // Chat with Gemini
 async function chatWithGemini(message, history, documentType = 'smh') {
+    console.log(`🤖 Using Gemini model: gemini-2.5-flash`);
     const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash"
     });
@@ -279,9 +284,10 @@ async function chatWithGemini(message, history, documentType = 'smh') {
 }
 
 // Chat with Grok
-async function chatWithGrok(message, history, documentType = 'smh') {
+async function chatWithGrok(message, history, documentType = 'smh', modelName = 'grok-4-fast-non-reasoning') {
+    console.log(`🤖 Using Grok model: ${modelName}`);
     const systemMessage = getGrokPrompt(documentType);
-    
+
     const messages = [
         {
             role: 'system',
@@ -298,7 +304,7 @@ async function chatWithGrok(message, history, documentType = 'smh') {
     ];
 
     const completion = await xai.chat.completions.create({
-        model: 'grok-2-1212',
+        model: modelName,
         messages: messages,
         temperature: 0.7
     });
@@ -455,6 +461,7 @@ RESPONSE STYLE - STRICTLY FOLLOW:
  * Chat with RAG using Gemini
  */
 async function chatWithRAGGemini(message, history, documentType, chunks) {
+    console.log(`🤖 Using RAG Gemini model: gemini-2.5-flash`);
     const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash"
     });
@@ -492,7 +499,8 @@ async function chatWithRAGGemini(message, history, documentType, chunks) {
 /**
  * Chat with RAG using Grok
  */
-async function chatWithRAGGrok(message, history, documentType, chunks) {
+async function chatWithRAGGrok(message, history, documentType, chunks, modelName = 'grok-4-fast-non-reasoning') {
+    console.log(`🤖 Using RAG Grok model: ${modelName}`);
     const systemMessage = getRAGGrokPrompt(documentType, chunks);
     
     const messages = [
@@ -511,7 +519,7 @@ async function chatWithRAGGrok(message, history, documentType, chunks) {
     ];
 
     const completion = await xai.chat.completions.create({
-        model: 'grok-2-1212',
+        model: modelName,
         messages: messages,
         temperature: 0.7
     });
@@ -587,7 +595,11 @@ app.post('/api/chat', async (req, res) => {
 
         try {
             if (model === 'grok') {
-                responseText = await chatWithGrok(message, history, documentType);
+                const modelName = 'grok-4-fast-non-reasoning';
+                responseText = await chatWithGrok(message, history, documentType, modelName);
+            } else if (model === 'grok-reasoning') {
+                const modelName = 'grok-4-fast-reasoning';
+                responseText = await chatWithGrok(message, history, documentType, modelName);
             } else {
                 responseText = await chatWithGemini(message, history, documentType);
             }
@@ -627,9 +639,15 @@ app.post('/api/chat', async (req, res) => {
             res.locals.conversationId = loggedConversation?.id;
         }
 
+        // Determine actual API model name for response
+        const actualModelName = model === 'grok' ? 'grok-4-fast-non-reasoning' :
+                                model === 'grok-reasoning' ? 'grok-4-fast-reasoning' :
+                                'gemini-2.5-flash';
+
         res.json({
             response: responseText,
             model: model,
+            actualModel: actualModelName,
             sessionId: sessionId,
             conversationId: res.locals.conversationId,
             metadata: {
@@ -690,15 +708,29 @@ app.post('/api/chat-rag', async (req, res) => {
             
             let queryEmbedding;
             try {
+                console.log(`RAG: Starting embedding process for type: ${embeddingType}`);
                 if (embeddingType === 'local') {
-                    // Ensure local model is loaded
-                    await ensureLocalEmbeddings();
-                    queryEmbedding = await generateLocalEmbedding(message);
-                    console.log(`RAG: Query embedded successfully (local model, ${queryEmbedding.length}D)`);
+                    // Use cached local embeddings
+                    console.log(`RAG: Using cached local embeddings`);
+                    queryEmbedding = await getEmbeddingWithCache(
+                        message,
+                        async (text) => {
+                            console.log(`RAG: Generating local embedding for: "${text.substring(0, 30)}..."`);
+                            await ensureLocalEmbeddings();
+                            return await generateLocalEmbedding(text);
+                        },
+                        'local'
+                    );
+                    console.log(`RAG: Query embedded successfully (cached local, ${queryEmbedding.length}D)`);
                 } else {
-                    // Use OpenAI embeddings
-                    queryEmbedding = await embedQuery(message);
-                    console.log(`RAG: Query embedded successfully (OpenAI, 1536D)`);
+                    // Use cached OpenAI embeddings
+                    console.log(`RAG: Using cached OpenAI embeddings`);
+                    queryEmbedding = await getEmbeddingWithCache(
+                        message,
+                        embedQuery,
+                        'openai'
+                    );
+                    console.log(`RAG: Query embedded successfully (cached OpenAI, 1536D)`);
                 }
             } catch (embedError) {
                 console.error('RAG: Error embedding query:', embedError.message);
@@ -724,7 +756,11 @@ app.post('/api/chat-rag', async (req, res) => {
             try {
                 console.log(`RAG: Generating response using ${model}...`);
                 if (model === 'grok') {
-                    responseText = await chatWithRAGGrok(message, history, documentType, retrievedChunks);
+                    const modelName = 'grok-4-fast-non-reasoning';
+                    responseText = await chatWithRAGGrok(message, history, documentType, retrievedChunks, modelName);
+                } else if (model === 'grok-reasoning') {
+                    const modelName = 'grok-4-fast-reasoning';
+                    responseText = await chatWithRAGGrok(message, history, documentType, retrievedChunks, modelName);
                 } else {
                     responseText = await chatWithRAGGemini(message, history, documentType, retrievedChunks);
                 }
@@ -778,10 +814,16 @@ app.post('/api/chat-rag', async (req, res) => {
         const finalResponseTime = Date.now() - startTime;
         console.log(`RAG: Total response time: ${finalResponseTime}ms`);
         console.log(`=== RAG Request completed ===\n`);
-        
+
+        // Determine actual API model name for response
+        const actualModelName = model === 'grok' ? 'grok-4-fast-non-reasoning' :
+                                model === 'grok-reasoning' ? 'grok-4-fast-reasoning' :
+                                'gemini-2.5-flash';
+
         res.json({
             response: responseText,
             model: model,
+            actualModel: actualModelName,
             sessionId: sessionId,
             conversationId: res.locals.conversationId,
             metadata: {
@@ -970,6 +1012,34 @@ app.get('/api/analytics', async (req, res) => {
     }
 });
 
+// Embedding cache statistics endpoint
+app.get('/api/cache/stats', async (req, res) => {
+    try {
+        const stats = getCacheStats();
+        res.json({
+            success: true,
+            cache: stats
+        });
+    } catch (error) {
+        console.error('Error getting cache stats:', error);
+        res.status(500).json({ error: 'Failed to get cache statistics' });
+    }
+});
+
+// Clear embedding cache endpoint (for testing/debugging)
+app.post('/api/cache/clear', async (req, res) => {
+    try {
+        clearCache();
+        res.json({
+            success: true,
+            message: 'Embedding cache cleared'
+        });
+    } catch (error) {
+        console.error('Error clearing cache:', error);
+        res.status(500).json({ error: 'Failed to clear cache' });
+    }
+});
+
 // Documents registry API endpoint
 app.get('/api/documents', async (req, res) => {
     try {
@@ -1001,7 +1071,10 @@ async function start() {
         // Set default document
         const defaultDoc = activeDocs.includes('smh') ? 'smh' : activeDocs[0];
         setCurrentDocument(defaultDoc);
-        
+
+        // Initialize embedding cache cleanup
+        initializeCacheCleanup();
+
         app.listen(PORT, () => {
             console.log(`\n🚀 Server running at http://localhost:${PORT}`);
             console.log(`📚 Multi-document chatbot ready!`);
