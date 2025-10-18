@@ -70,6 +70,46 @@ export function updateModelInTooltip(selectedModel) {
     }
 }
 
+// Detect and wrap drug conversion calculations in content
+function wrapDrugConversionContent(contentDiv) {
+    // Look for patterns that indicate actual conversion calculations
+    // Pattern: "X mg × Y = Z mg" (the actual calculation)
+    const conversionCalculationPattern = /\d+\s*(mg|mcg|units|iu)\s*[×x]\s*[\d.]+\s*=\s*\d+/i;
+    
+    // Get all paragraphs
+    const paragraphs = contentDiv.querySelectorAll('p');
+    let conversionElements = [];
+    
+    paragraphs.forEach((p) => {
+        const text = p.textContent;
+        
+        // Only include paragraphs that contain the actual calculation pattern
+        if (conversionCalculationPattern.test(text)) {
+            conversionElements.push(p);
+        }
+    });
+    
+    // If we found conversion elements, wrap them
+    if (conversionElements.length > 0) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'drug-conversion-response';
+        
+        // Insert wrapper before the first conversion element
+        const firstElement = conversionElements[0];
+        firstElement.parentNode.insertBefore(wrapper, firstElement);
+        
+        // Move all conversion elements into the wrapper
+        conversionElements.forEach(el => {
+            wrapper.appendChild(el);
+        });
+        
+        console.log(`💊 Drug conversion detected: wrapped ${conversionElements.length} element(s)`);
+        return true;
+    }
+    
+    return false;
+}
+
 // Add a message to the chat
 export function addMessage(content, role, model = null, conversationId = null, chatContainer, userMessage = null, state = null, sendMessageCallback = null) {
     const messageDiv = document.createElement('div');
@@ -92,6 +132,9 @@ export function addMessage(content, role, model = null, conversationId = null, c
                 wrapper.appendChild(table);
             }
         });
+
+        // Detect and wrap drug conversion calculations (after tables but before references)
+        wrapDrugConversionContent(contentDiv);
 
         // Style references section
         styleReferences(contentDiv);
