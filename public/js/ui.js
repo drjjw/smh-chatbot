@@ -34,7 +34,25 @@ export async function updateDocumentUI(selectedDocument) {
 export function updateModelInTooltip(selectedModel) {
     const modelNameElement = document.getElementById('modelName');
     if (modelNameElement) {
-        const modelDisplayName = selectedModel === 'gemini' ? 'Gemini 2.5' : 'Grok 4';
+        // Check if we're in local environment
+        const isLocalEnv = window.location.hostname === 'localhost' ||
+                          window.location.hostname === '127.0.0.1' ||
+                          window.location.hostname === '';
+
+        let modelDisplayName;
+        if (isLocalEnv) {
+            // Detailed labels in local environment
+            modelDisplayName = selectedModel === 'gemini' ? 'Gemini 2.5' :
+                              selectedModel === 'grok' ? 'Grok 4 Fast' :
+                              selectedModel === 'grok-reasoning' ? 'Grok 4 Fast Reasoning' :
+                              'Unknown Model';
+        } else {
+            // Simple labels in production
+            modelDisplayName = selectedModel === 'gemini' ? 'Gemini' :
+                              (selectedModel === 'grok' || selectedModel === 'grok-reasoning') ? 'Grok' :
+                              'Unknown Model';
+        }
+
         modelNameElement.textContent = modelDisplayName;
     }
 }
@@ -315,11 +333,41 @@ function handleModelSwitch(userMessage, currentModel, state, chatContainer, send
 
 // Style references section in assistant messages
 function styleReferences(contentDiv) {
-    const paragraphs = contentDiv.querySelectorAll('p');
+    // First pass: wrap all inline citations [#] with styled spans in paragraphs AND list items
+    const allParagraphs = contentDiv.querySelectorAll('p');
+    const allListItems = contentDiv.querySelectorAll('li');
+    
+    // Process paragraphs
+    allParagraphs.forEach(p => {
+        // Only process paragraphs that aren't already marked as reference items
+        if (!p.classList.contains('reference-item')) {
+            const html = p.innerHTML;
+            // Replace [#] with styled span, but only if not already wrapped
+            const styledHtml = html.replace(/\[(\d+)\]/g, '<span class="reference-citation">[$1]</span>');
+            if (html !== styledHtml) {
+                p.innerHTML = styledHtml;
+            }
+        }
+    });
+    
+    // Process list items
+    allListItems.forEach(li => {
+        const html = li.innerHTML;
+        // Replace [#] with styled span, but only if not already wrapped
+        const styledHtml = html.replace(/\[(\d+)\]/g, '<span class="reference-citation">[$1]</span>');
+        if (html !== styledHtml) {
+            li.innerHTML = styledHtml;
+        }
+    });
 
+    // Second pass: organize the References section
+    // Re-query paragraphs after first pass modifications
+    const paragraphs = contentDiv.querySelectorAll('p');
+    
     // Create a references container if we find references
     let referencesContainer = null;
     let inReferencesSection = false;
+    let metadataParagraph = null;
 
     // Simply add classes to paragraphs that look like references
     paragraphs.forEach(p => {
@@ -329,6 +377,13 @@ function styleReferences(contentDiv) {
         const referenceMatches = text.match(/\[\d+\]/g) || [];
         const hasAnyReferences = referenceMatches.length >= 1;
 
+        // Check if this is a metadata paragraph (Response time, RAG Mode, Full Doc Mode)
+        if (text.includes('Response time:') || text.includes('🔍') || text.includes('📄')) {
+            metadataParagraph = p;
+            p.className = (p.className ? p.className + ' ' : '') + 'metadata-info';
+            return; // Skip further processing for this paragraph
+        }
+
         // Check if this paragraph contains "References" heading AND any references (needs splitting)
         if (hasReferencesHeading && hasAnyReferences) {
             inReferencesSection = true;
@@ -337,6 +392,11 @@ function styleReferences(contentDiv) {
                 referencesContainer = document.createElement('div');
                 referencesContainer.className = 'references-container';
                 p.parentNode.insertBefore(referencesContainer, p);
+                
+                // Move metadata paragraph above references container if it exists
+                if (metadataParagraph) {
+                    referencesContainer.parentNode.insertBefore(metadataParagraph, referencesContainer);
+                }
             }
             // Split references that are all in one paragraph
             splitMultipleReferences(p, referencesContainer);
@@ -351,6 +411,11 @@ function styleReferences(contentDiv) {
             referencesContainer.className = 'references-container';
             p.parentNode.insertBefore(referencesContainer, p);
             referencesContainer.appendChild(p);
+            
+            // Move metadata paragraph above references container if it exists
+            if (metadataParagraph) {
+                referencesContainer.parentNode.insertBefore(metadataParagraph, referencesContainer);
+            }
         }
         // Check if this is a reference item (starts with [number])
         else if (text.match(/^\[\d+\]/)) {
@@ -360,14 +425,8 @@ function styleReferences(contentDiv) {
             }
         }
         // If we're in the references section and this doesn't match above, add it to container
-        // BUT exclude metadata paragraphs (contain emojis like 🔍 or 📄)
-        else if (inReferencesSection && referencesContainer && !text.match(/^\d+\./) && text.length > 0 && 
-                 !text.includes('🔍') && !text.includes('📄')) {
+        else if (inReferencesSection && referencesContainer && !text.match(/^\d+\./) && text.length > 0) {
             referencesContainer.appendChild(p);
-        }
-        // If we encounter a metadata paragraph, stop adding to references
-        else if (inReferencesSection && (text.includes('🔍') || text.includes('📄'))) {
-            inReferencesSection = false;
         }
     });
 
@@ -379,6 +438,83 @@ function styleReferences(contentDiv) {
         if (nextElement && nextElement.classList && nextElement.classList.contains('references-container')) {
             hr.className = (hr.className ? hr.className + ' ' : '') + 'references-separator';
         }
+    });
+
+    // Make references collapsible (default collapsed)
+    makeReferencesCollapsible(contentDiv);
+}
+
+// Make references section collapsible
+function makeReferencesCollapsible(contentDiv) {
+    const referencesContainers = contentDiv.querySelectorAll('.references-container');
+    
+    referencesContainers.forEach(container => {
+        const heading = container.querySelector('.references-heading');
+        if (!heading) return;
+
+        // Create collapsible wrapper
+        const collapseToggle = document.createElement('button');
+        collapseToggle.className = 'references-toggle';
+        collapseToggle.innerHTML = `
+            <svg class="toggle-icon plus" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" fill="#008000" stroke="#008000" stroke-width="1.5"/>
+                <line x1="12" y1="7" x2="12" y2="17" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <line x1="7" y1="12" x2="17" y2="12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <svg class="toggle-icon minus" viewBox="0 0 24 24" fill="none" style="display: none;">
+                <circle cx="12" cy="12" r="10" fill="#cc0000" stroke="#cc0000" stroke-width="1.5"/>
+                <line x1="7" y1="12" x2="17" y2="12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        `;
+        collapseToggle.setAttribute('aria-expanded', 'false');
+        collapseToggle.setAttribute('aria-label', 'Toggle references');
+
+        // Create wrapper for heading and toggle
+        const headingWrapper = document.createElement('div');
+        headingWrapper.className = 'references-heading-wrapper';
+        
+        // Replace heading with wrapper
+        heading.parentNode.insertBefore(headingWrapper, heading);
+        headingWrapper.appendChild(collapseToggle);
+        headingWrapper.appendChild(heading);
+
+        // Create content wrapper for all reference items
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'references-content collapsed';
+        
+        // Move all reference items into the content wrapper
+        const referenceItems = container.querySelectorAll('.reference-item');
+        referenceItems.forEach(item => {
+            contentWrapper.appendChild(item);
+        });
+        
+        container.appendChild(contentWrapper);
+
+        // Toggle functionality
+        const toggleReferences = () => {
+            const isExpanded = collapseToggle.getAttribute('aria-expanded') === 'true';
+            const plusIcon = collapseToggle.querySelector('.plus');
+            const minusIcon = collapseToggle.querySelector('.minus');
+            
+            collapseToggle.setAttribute('aria-expanded', !isExpanded);
+            contentWrapper.classList.toggle('collapsed');
+            contentWrapper.classList.toggle('expanded');
+            
+            // Toggle icon visibility
+            if (isExpanded) {
+                // Closing: show green plus
+                plusIcon.style.display = '';
+                minusIcon.style.display = 'none';
+            } else {
+                // Opening: show red minus
+                plusIcon.style.display = 'none';
+                minusIcon.style.display = '';
+            }
+        };
+
+        // Make both heading and toggle clickable
+        headingWrapper.style.cursor = 'pointer';
+        headingWrapper.addEventListener('click', toggleReferences);
     });
 }
 

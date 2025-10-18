@@ -1,5 +1,5 @@
 // Rating submission functionality
-import { API_URL } from './config.d8a1ca03.js';
+import { API_URL } from './config.3f3300dc.js';
 
 // Submit rating for a conversation
 export async function submitRating(conversationId, rating, ratingContainer) {
