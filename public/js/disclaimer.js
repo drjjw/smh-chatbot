@@ -40,7 +40,7 @@ export function showDisclaimerIfNeeded() {
  */
 function showDisclaimer() {
     Swal.fire({
-        title: '<span style="color: #ffffff;"><i class="swal2-icon swal2-warning"></i> Important Disclaimer</span>',
+        title: '<i class="swal2-icon swal2-warning"></i> Important Disclaimer',
         html: `
             <div style="text-align: left;">
                 <p style="margin-bottom: 15px;">

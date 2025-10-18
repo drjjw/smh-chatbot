@@ -893,6 +893,38 @@ app.get('/api/health', async (req, res) => {
         const isValid = await documentRegistry.isValidSlug(requestedDoc);
         const docType = isValid ? requestedDoc : 'smh';
 
+        // Get document info from registry if not loaded
+        let currentDocInfo;
+        if (documents[docType]) {
+            // Document is loaded in memory
+            currentDocInfo = {
+                title: documents[docType].title,
+                pages: documents[docType].metadata.pages,
+                loaded: true
+            };
+        } else if (isValid) {
+            // Document exists in registry but not loaded yet
+            const docConfig = await documentRegistry.getDocumentBySlug(docType);
+            if (docConfig) {
+                // Try to load the PDF to get page count
+                try {
+                    await loadPDF(docType);
+                    currentDocInfo = {
+                        title: documents[docType].title,
+                        pages: documents[docType].metadata.pages,
+                        loaded: true
+                    };
+                } catch (loadError) {
+                    console.warn(`Could not load PDF for ${docType}:`, loadError.message);
+                    currentDocInfo = {
+                        title: docConfig.title,
+                        pages: 0,
+                        loaded: false
+                    };
+                }
+            }
+        }
+
         loadedDocs.forEach(doc => {
             docStatus[doc] = {
                 loaded: true,
@@ -907,10 +939,10 @@ app.get('/api/health', async (req, res) => {
 
         res.json({
             status: 'ok',
-            currentDocument: documents[docType]?.title || 'Unknown',
+            currentDocument: currentDocInfo?.title || 'Unknown',
             currentDocumentType: docType,
-            loadedDocuments: loadedDocs,
-            documentDetails: docStatus,
+            loadedDocuments: loadedDocs.length > 0 ? loadedDocs : [docType],
+            documentDetails: currentDocInfo ? { [docType]: currentDocInfo } : docStatus,
             requestedDoc: requestedDoc
         });
     } catch (error) {

@@ -198,8 +198,6 @@ const otherFiles = [
     { from: 'server.js', to: 'server.js' },
     { from: 'package.json', to: 'package.json' },
     { from: 'package-lock.json', to: 'package-lock.json' },
-    { from: 'embed-smh-manual.html', to: 'embed-smh-manual.html' },
-    { from: 'embed-uhn-manual.html', to: 'embed-uhn-manual.html' },
     { from: '.htaccess', to: '.htaccess', optional: true }
 ];
 

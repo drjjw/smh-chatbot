@@ -8,7 +8,7 @@ export async function checkHealth(selectedDocument, statusDiv) {
         const data = await response.json();
         if (data.status === 'ok' && data.loadedDocuments && data.loadedDocuments.length > 0) {
             const currentDoc = data.documentDetails[data.currentDocumentType];
-            statusDiv.textContent = `✓ Ready - ${currentDoc.pages} pages loaded (${data.currentDocumentType.toUpperCase()})`;
+            statusDiv.textContent = `✓ Ready - Trained on ${currentDoc.pages} pages`;
             statusDiv.className = 'status online';
         } else {
             statusDiv.textContent = '⚠ Documents not loaded';
