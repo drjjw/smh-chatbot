@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-fluid-management-in-adults-and-children-core-curr",
+      "title": "Fluid Management in Adults and Children Core Curr",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Fluid Management in Adults and Children Core Curr",
+      "pdfFilename": "Fluid-Management-in-Adults-and-Children--Core-Curr.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Fluid Management in Adults and Children Core Curr"
+      }
+    },
+    {
+      "slug": "ajkd-cc-general-medical-care-of-the-dialysis-patient-core",
+      "title": "General Medical Care of the Dialysis Patient Core",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: General Medical Care of the Dialysis Patient Core",
+      "pdfFilename": "General-Medical-Care-of-the-Dialysis-Patient--Core.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "General Medical Care of the Dialysis Patient Core"
+      }
+    },
+    {
+      "slug": "ajkd-cc-genetic-investigations-of-kidney-disease-core-cur",
+      "title": "Genetic Investigations of Kidney Disease Core Cur",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Genetic Investigations of Kidney Disease Core Cur",
+      "pdfFilename": "Genetic-Investigations-of-Kidney-Disease--Core-Cur.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Genetic Investigations of Kidney Disease Core Cur"
+      }
+    },
+    {
+      "slug": "ajkd-cc-genetics-of-nephrotic-syndrome-presenting-in-child",
+      "title": "Genetics of Nephrotic Syndrome Presenting in Child",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Genetics of Nephrotic Syndrome Presenting in Child",
+      "pdfFilename": "Genetics-of-Nephrotic-Syndrome-Presenting-in-Child.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Genetics of Nephrotic Syndrome Presenting in Child"
+      }
+    },
+    {
+      "slug": "ajkd-cc-glomerular-diseases-dependent-on-complement-activa",
+      "title": "Glomerular Diseases Dependent on Complement Activa",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Glomerular Diseases Dependent on Complement Activa",
+      "pdfFilename": "Glomerular-Diseases-Dependent-on-Complement-Activa.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Glomerular Diseases Dependent on Complement Activa"
+      }
+    }
+  ]
+}

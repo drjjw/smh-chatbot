@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-metabolic-alkalosis-pathogenesis-diagnosis-and-t",
+      "title": "Metabolic Alkalosis Pathogenesis, Diagnosis, and T",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Metabolic Alkalosis Pathogenesis, Diagnosis, and T",
+      "pdfFilename": "Metabolic-Alkalosis-Pathogenesis,-Diagnosis,-and-T.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Metabolic Alkalosis Pathogenesis, Diagnosis, and T"
+      }
+    },
+    {
+      "slug": "ajkd-cc-nutrition-in-kidney-disease",
+      "title": "Nutrition in Kidney Disease",
+      "subtitle": "Core Curriculum 2022",
+      "year": "2022",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Nutrition in Kidney Disease (2022)",
+      "pdfFilename": "Nutrition-in-Kidney-Disease--Core-Curriculum-2022_.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Nutrition in Kidney Disease"
+      }
+    },
+    {
+      "slug": "ajkd-cc-nutritional-considerations-in-kidney-disease-core",
+      "title": "Nutritional Considerations in Kidney Disease Core",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Nutritional Considerations in Kidney Disease Core",
+      "pdfFilename": "Nutritional-Considerations-in-Kidney-Disease--Core.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Nutritional Considerations in Kidney Disease Core"
+      }
+    },
+    {
+      "slug": "ajkd-cc-onco-nephrology",
+      "title": "Onco Nephrology",
+      "subtitle": "Core Curriculum 2015",
+      "year": "2015",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Onco Nephrology (2015)",
+      "pdfFilename": "Onco-Nephrology--Core-Curriculum-2015_2015_yajkd.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Onco Nephrology"
+      }
+    },
+    {
+      "slug": "ajkd-cc-onconephrology",
+      "title": "Onconephrology",
+      "subtitle": "Core Curriculum 2023",
+      "year": "2023",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Onconephrology (2023)",
+      "pdfFilename": "Onconephrology--Core-Curriculum-2023_2023_yajkd.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Onconephrology"
+      }
+    }
+  ]
+}

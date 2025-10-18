@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-physiology-and-pathophysiology-of-potassium-homeos",
+      "title": "Physiology and Pathophysiology of Potassium Homeos",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Physiology and Pathophysiology of Potassium Homeos",
+      "pdfFilename": "Physiology-and-Pathophysiology-of-Potassium-Homeos.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Physiology and Pathophysiology of Potassium Homeos"
+      }
+    },
+    {
+      "slug": "ajkd-cc-podocyte-disorders",
+      "title": "Podocyte Disorders",
+      "subtitle": "Core Curriculum 2011",
+      "year": "2011",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Podocyte Disorders (2011)",
+      "pdfFilename": "Podocyte-Disorders--Core-Curriculum-2011_2011_yajk.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Podocyte Disorders"
+      }
+    },
+    {
+      "slug": "ajkd-cc-principles-of-immunosuppression-in-the-management",
+      "title": "Principles of Immunosuppression in the Management",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Principles of Immunosuppression in the Management",
+      "pdfFilename": "Principles-of-Immunosuppression-in-the-Management-.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Principles of Immunosuppression in the Management"
+      }
+    },
+    {
+      "slug": "ajkd-cc-principles-of-kidney-pharmacotherapy-for-the-nephr",
+      "title": "Principles of Kidney Pharmacotherapy for the Nephr",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Principles of Kidney Pharmacotherapy for the Nephr",
+      "pdfFilename": "Principles-of-Kidney-Pharmacotherapy-for-the-Nephr.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Principles of Kidney Pharmacotherapy for the Nephr"
+      }
+    },
+    {
+      "slug": "ajkd-cc-reducing-kidney-function-decline-in-patients-with",
+      "title": "Reducing Kidney Function Decline in Patients With",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Reducing Kidney Function Decline in Patients With",
+      "pdfFilename": "Reducing-Kidney-Function-Decline-in-Patients-With-.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Reducing Kidney Function Decline in Patients With"
+      }
+    }
+  ]
+}

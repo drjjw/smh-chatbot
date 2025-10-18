@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-development-of-clinical-practice-guidelines-in-the",
+      "title": "Development of Clinical Practice Guidelines in the",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Development of Clinical Practice Guidelines in the",
+      "pdfFilename": "Development-of-Clinical-Practice-Guidelines-in-the.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Development of Clinical Practice Guidelines in the"
+      }
+    },
+    {
+      "slug": "ajkd-cc-diagnosis-and-management-of-disorders-of-body-toni",
+      "title": "Diagnosis and Management of Disorders of Body Toni",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Diagnosis and Management of Disorders of Body Toni",
+      "pdfFilename": "Diagnosis-and-Management-of-Disorders-of-Body-Toni.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Diagnosis and Management of Disorders of Body Toni"
+      }
+    },
+    {
+      "slug": "ajkd-cc-diagnosis-and-management-of-renal-cystic-disease-o",
+      "title": "Diagnosis and Management of Renal Cystic Disease o",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Diagnosis and Management of Renal Cystic Disease o",
+      "pdfFilename": "Diagnosis-and-Management-of-Renal-Cystic-Disease-o.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Diagnosis and Management of Renal Cystic Disease o"
+      }
+    },
+    {
+      "slug": "ajkd-cc-diuretics-in-states-of-volume-overload-core-curri",
+      "title": "Diuretics in States of Volume Overload Core Curri",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Diuretics in States of Volume Overload Core Curri",
+      "pdfFilename": "Diuretics-in-States-of-Volume-Overload--Core-Curri.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Diuretics in States of Volume Overload Core Curri"
+      }
+    },
+    {
+      "slug": "ajkd-cc-dysproteinemia-and-the-kidney",
+      "title": "Dysproteinemia and the Kidney",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Dysproteinemia and the Kidney",
+      "pdfFilename": "Dysproteinemia-and-the-Kidney--Core-Curriculum-201.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Dysproteinemia and the Kidney"
+      }
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-telenephrology-an-emerging-platform-for-deliverin",
+      "title": "Telenephrology An Emerging Platform for Deliverin",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Telenephrology An Emerging Platform for Deliverin",
+      "pdfFilename": "Telenephrology--An-Emerging-Platform-for-Deliverin.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Telenephrology An Emerging Platform for Deliverin"
+      }
+    },
+    {
+      "slug": "ajkd-cc-the-role-of-the-general-nephrologist-in-evaluating",
+      "title": "The Role of the General Nephrologist in Evaluating",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: The Role of the General Nephrologist in Evaluating",
+      "pdfFilename": "The-Role-of-the-General-Nephrologist-in-Evaluating.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "The Role of the General Nephrologist in Evaluating"
+      }
+    },
+    {
+      "slug": "ajkd-cc-the-role-of-the-kidney-in-disorders-of-volume-cor",
+      "title": "The Role of the Kidney in Disorders of Volume Cor",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: The Role of the Kidney in Disorders of Volume Cor",
+      "pdfFilename": "The-Role-of-the-Kidney-in-Disorders-of-Volume--Cor.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "The Role of the Kidney in Disorders of Volume Cor"
+      }
+    },
+    {
+      "slug": "ajkd-cc-the-role-of-the-nephrologist-in-management-of-pois",
+      "title": "The Role of the Nephrologist in Management of Pois",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: The Role of the Nephrologist in Management of Pois",
+      "pdfFilename": "The-Role-of-the-Nephrologist-in-Management-of-Pois.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "The Role of the Nephrologist in Management of Pois"
+      }
+    },
+    {
+      "slug": "ajkd-cc-therapeutic-plasma-exchange-2008",
+      "title": "Therapeutic Plasma Exchange",
+      "subtitle": "Core Curriculum 2008",
+      "year": "2008",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Therapeutic Plasma Exchange (2008)",
+      "pdfFilename": "Therapeutic-Plasma-Exchange--Core-Curriculum-2008_.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Therapeutic Plasma Exchange"
+      }
+    }
+  ]
+}

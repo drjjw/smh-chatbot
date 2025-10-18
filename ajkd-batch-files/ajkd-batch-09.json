@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-kidney-disease-in-the-setting-of-liver-failure-co",
+      "title": "Kidney Disease in the Setting of Liver Failure Co",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Kidney Disease in the Setting of Liver Failure Co",
+      "pdfFilename": "Kidney-Disease-in-the-Setting-of-Liver-Failure--Co.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Kidney Disease in the Setting of Liver Failure Co"
+      }
+    },
+    {
+      "slug": "ajkd-cc-kidney-dysfunction-in-the-setting-of-liver-failure",
+      "title": "Kidney Dysfunction in the Setting of Liver Failure",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Kidney Dysfunction in the Setting of Liver Failure",
+      "pdfFilename": "Kidney-Dysfunction-in-the-Setting-of-Liver-Failure.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Kidney Dysfunction in the Setting of Liver Failure"
+      }
+    },
+    {
+      "slug": "ajkd-cc-kidney-stone-pathophysiology-evaluation-and-manag",
+      "title": "Kidney Stone Pathophysiology, Evaluation and Manag",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Kidney Stone Pathophysiology, Evaluation and Manag",
+      "pdfFilename": "Kidney-Stone-Pathophysiology,-Evaluation-and-Manag.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Kidney Stone Pathophysiology, Evaluation and Manag"
+      }
+    },
+    {
+      "slug": "ajkd-cc-kidney-supportive-care",
+      "title": "Kidney Supportive Care",
+      "subtitle": "Core Curriculum 2020",
+      "year": "2020",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Kidney Supportive Care (2020)",
+      "pdfFilename": "Kidney-Supportive-Care--Core-Curriculum-2020_2020_.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Kidney Supportive Care"
+      }
+    },
+    {
+      "slug": "ajkd-cc-laboratory-anomalies-in-the-basic-metabolic-panel",
+      "title": "Laboratory Anomalies in the Basic Metabolic Panel",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Laboratory Anomalies in the Basic Metabolic Panel",
+      "pdfFilename": "Laboratory-Anomalies-in-the-Basic-Metabolic-Panel-.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Laboratory Anomalies in the Basic Metabolic Panel"
+      }
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-concomitant-lung-and-kidney-disorders-in-criticall",
+      "title": "Concomitant Lung and Kidney Disorders in Criticall",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Concomitant Lung and Kidney Disorders in Criticall",
+      "pdfFilename": "Concomitant-Lung-and-Kidney-Disorders-in-Criticall.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Concomitant Lung and Kidney Disorders in Criticall"
+      }
+    },
+    {
+      "slug": "ajkd-cc-continuous-dialysis-therapies",
+      "title": "Continuous Dialysis Therapies",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Continuous Dialysis Therapies",
+      "pdfFilename": "Continuous-Dialysis-Therapies--Core-Curriculum-201.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Continuous Dialysis Therapies"
+      }
+    },
+    {
+      "slug": "ajkd-cc-critical-care-nephrology-2009",
+      "title": "Critical Care Nephrology",
+      "subtitle": "Core Curriculum 2009",
+      "year": "2009",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Critical Care Nephrology (2009)",
+      "pdfFilename": "Critical-Care-Nephrology--Core-Curriculum-2009_200.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Critical Care Nephrology"
+      }
+    },
+    {
+      "slug": "ajkd-cc-critical-care-nephrology-2020",
+      "title": "Critical Care Nephrology",
+      "subtitle": "Core Curriculum 2020",
+      "year": "2020",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Critical Care Nephrology (2020)",
+      "pdfFilename": "Critical-Care-Nephrology--Core-Curriculum-2020_202.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Critical Care Nephrology"
+      }
+    },
+    {
+      "slug": "ajkd-cc-dermatological-disease-in-patients-with-ckd",
+      "title": "Dermatological Disease in Patients With CKD",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Dermatological Disease in Patients With CKD",
+      "pdfFilename": "Dermatological-Disease-in-Patients-With-CKD_yajkd.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Dermatological Disease in Patients With CKD"
+      }
+    }
+  ]
+}

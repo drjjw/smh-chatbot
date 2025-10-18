@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-urinary-tract-infections",
+      "title": "Urinary Tract Infections",
+      "subtitle": "Core Curriculum 2024",
+      "year": "2024",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Urinary Tract Infections (2024)",
+      "pdfFilename": "Urinary-Tract-Infections--Core-Curriculum-2024_202.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Urinary Tract Infections"
+      }
+    },
+    {
+      "slug": "ajkd-cc-urine-sediment-examination-in-the-diagnosis-and-ma",
+      "title": "Urine Sediment Examination in the Diagnosis and Ma",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Urine Sediment Examination in the Diagnosis and Ma",
+      "pdfFilename": "Urine-Sediment-Examination-in-the-Diagnosis-and-Ma.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Urine Sediment Examination in the Diagnosis and Ma"
+      }
+    },
+    {
+      "slug": "ajkd-cc-vascular-access",
+      "title": "Vascular Access",
+      "subtitle": "Core Curriculum 2008",
+      "year": "2008",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Vascular Access (2008)",
+      "pdfFilename": "Vascular-Access--Core-Curriculum-2008_2008_yajkd.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Vascular Access"
+      }
+    },
+    {
+      "slug": "ajkd-cc-viral-nephropathies-2008",
+      "title": "Viral Nephropathies",
+      "subtitle": "Core Curriculum 2008",
+      "year": "2008",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Viral Nephropathies (2008)",
+      "pdfFilename": "Viral-Nephropathies--Core-Curriculum-2008_yajkd.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Viral Nephropathies"
+      }
+    },
+    {
+      "slug": "ajkd-cc-viral-nephropathies-2024",
+      "title": "Viral Nephropathies",
+      "subtitle": "Core Curriculum 2024",
+      "year": "2024",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Viral Nephropathies (2024)",
+      "pdfFilename": "Viral-Nephropathies--Core-Curriculum-2024_2024_yaj.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Viral Nephropathies"
+      }
+    }
+  ]
+}

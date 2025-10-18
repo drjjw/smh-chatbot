@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-pathophysiology-of-renal-tubular-acidosis-core-cu",
+      "title": "Pathophysiology of Renal Tubular Acidosis Core Cu",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Pathophysiology of Renal Tubular Acidosis Core Cu",
+      "pdfFilename": "Pathophysiology-of-Renal-Tubular-Acidosis--Core-Cu.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Pathophysiology of Renal Tubular Acidosis Core Cu"
+      }
+    },
+    {
+      "slug": "ajkd-cc-patient-safety-issues-in-ckd",
+      "title": "Patient Safety Issues in CKD",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Patient Safety Issues in CKD",
+      "pdfFilename": "Patient-Safety-Issues-in-CKD--Core-Curriculum-2015.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Patient Safety Issues in CKD"
+      }
+    },
+    {
+      "slug": "ajkd-cc-performance-and-interpretation-of-sonography-in-th",
+      "title": "Performance and Interpretation of Sonography in th",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Performance and Interpretation of Sonography in th",
+      "pdfFilename": "Performance-and-Interpretation-of-Sonography-in-th.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Performance and Interpretation of Sonography in th"
+      }
+    },
+    {
+      "slug": "ajkd-cc-peritoneal-dialysis-prescription-and-adequacy-in-c",
+      "title": "Peritoneal Dialysis Prescription and Adequacy in C",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Peritoneal Dialysis Prescription and Adequacy in C",
+      "pdfFilename": "Peritoneal-Dialysis-Prescription-and-Adequacy-in-C.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Peritoneal Dialysis Prescription and Adequacy in C"
+      }
+    },
+    {
+      "slug": "ajkd-cc-person-centered-care-for-older-adults-with-kidney",
+      "title": "Person Centered Care for Older Adults With Kidney",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Person Centered Care for Older Adults With Kidney",
+      "pdfFilename": "Person-Centered-Care-for-Older-Adults-With-Kidney-.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Person Centered Care for Older Adults With Kidney"
+      }
+    }
+  ]
+}

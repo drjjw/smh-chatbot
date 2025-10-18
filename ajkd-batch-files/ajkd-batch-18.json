@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-unique-considerations-in-renal-replacement-therapy",
+      "title": "Unique Considerations in Renal Replacement Therapy",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Unique Considerations in Renal Replacement Therapy",
+      "pdfFilename": "Unique-Considerations-in-Renal-Replacement-Therapy.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Unique Considerations in Renal Replacement Therapy"
+      }
+    },
+    {
+      "slug": "ajkd-cc-update-on-anemia-in-esrd-and-earlier-stages-of-ckd",
+      "title": "Update on Anemia in ESRD and Earlier Stages of CKD",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Update on Anemia in ESRD and Earlier Stages of CKD",
+      "pdfFilename": "Update-on-Anemia-in-ESRD-and-Earlier-Stages-of-CKD.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Update on Anemia in ESRD and Earlier Stages of CKD"
+      }
+    },
+    {
+      "slug": "ajkd-cc-update-on-diabetic-nephropathy",
+      "title": "Update on Diabetic Nephropathy",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Update on Diabetic Nephropathy",
+      "pdfFilename": "Update-on-Diabetic-Nephropathy--Core-Curriculum-20.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Update on Diabetic Nephropathy"
+      }
+    },
+    {
+      "slug": "ajkd-cc-update-on-lupus-nephritis",
+      "title": "Update on Lupus Nephritis",
+      "subtitle": "Core Curriculum 2020",
+      "year": "2020",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Update on Lupus Nephritis (2020)",
+      "pdfFilename": "Update-on-Lupus-Nephritis--Core-Curriculum-2020_20.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Update on Lupus Nephritis"
+      }
+    },
+    {
+      "slug": "ajkd-cc-update-on-nephrolithiasis",
+      "title": "Update on Nephrolithiasis",
+      "subtitle": "Core Curriculum 2016",
+      "year": "2016",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Update on Nephrolithiasis (2016)",
+      "pdfFilename": "Update-on-Nephrolithiasis--Core-Curriculum-2016_20.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Update on Nephrolithiasis"
+      }
+    }
+  ]
+}

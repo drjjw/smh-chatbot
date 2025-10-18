@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-therapeutic-plasma-exchange-2023",
+      "title": "Therapeutic Plasma Exchange",
+      "subtitle": "Core Curriculum 2023",
+      "year": "2023",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Therapeutic Plasma Exchange (2023)",
+      "pdfFilename": "Therapeutic-Plasma-Exchange--Core-Curriculum-2023_.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Therapeutic Plasma Exchange"
+      }
+    },
+    {
+      "slug": "ajkd-cc-toxic-nephropathies",
+      "title": "Toxic Nephropathies",
+      "subtitle": "Core Curriculum 2010",
+      "year": "2010",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Toxic Nephropathies (2010)",
+      "pdfFilename": "Toxic-Nephropathies--Core-Curriculum-2010_2009_yaj.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Toxic Nephropathies"
+      }
+    },
+    {
+      "slug": "ajkd-cc-toxic-nephropathies-of-the-tubulointerstitium-cor",
+      "title": "Toxic Nephropathies of the Tubulointerstitium Cor",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Toxic Nephropathies of the Tubulointerstitium Cor",
+      "pdfFilename": "Toxic-Nephropathies-of-the-Tubulointerstitium--Cor.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Toxic Nephropathies of the Tubulointerstitium Cor"
+      }
+    },
+    {
+      "slug": "ajkd-cc-transplant-immunology-and-immunosuppression-core",
+      "title": "Transplant Immunology and Immunosuppression Core",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Transplant Immunology and Immunosuppression Core",
+      "pdfFilename": "Transplant-Immunology-and-Immunosuppression--Core-.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Transplant Immunology and Immunosuppression Core"
+      }
+    },
+    {
+      "slug": "ajkd-cc-tubular-transport",
+      "title": "Tubular Transport",
+      "subtitle": "Core Curriculum 2010",
+      "year": "2010",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Tubular Transport (2010)",
+      "pdfFilename": "Tubular-Transport--Core-Curriculum-2010_2010_yajkd.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Tubular Transport"
+      }
+    }
+  ]
+}

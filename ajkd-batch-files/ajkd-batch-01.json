@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-anca-associated-vasculitis",
+      "title": "ANCA Associated Vasculitis",
+      "subtitle": "Core Curriculum 2020",
+      "year": "2020",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: ANCA Associated Vasculitis (2020)",
+      "pdfFilename": "ANCA-Associated-Vasculitis--Core-Curriculum-2020_2.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "ANCA Associated Vasculitis"
+      }
+    },
+    {
+      "slug": "ajkd-cc-approach-to-diagnosis-and-management-of-primary-gl",
+      "title": "Approach to Diagnosis and Management of Primary Gl",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Approach to Diagnosis and Management of Primary Gl",
+      "pdfFilename": "Approach-to-Diagnosis-and-Management-of-Primary-Gl.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Approach to Diagnosis and Management of Primary Gl"
+      }
+    },
+    {
+      "slug": "ajkd-cc-approach-to-kidney-biopsy",
+      "title": "Approach to Kidney Biopsy",
+      "subtitle": "Core Curriculum 2022",
+      "year": "2022",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Approach to Kidney Biopsy (2022)",
+      "pdfFilename": "Approach-to-Kidney-Biopsy--Core-Curriculum-2022_20.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Approach to Kidney Biopsy"
+      }
+    },
+    {
+      "slug": "ajkd-cc-approach-to-patients-with-high-anion-gap-metabolic",
+      "title": "Approach to Patients With High Anion Gap Metabolic",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Approach to Patients With High Anion Gap Metabolic",
+      "pdfFilename": "Approach-to-Patients-With-High-Anion-Gap-Metabolic.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Approach to Patients With High Anion Gap Metabolic"
+      }
+    },
+    {
+      "slug": "ajkd-cc-autosomal-dominant-polycystic-kidney-disease-core",
+      "title": "Autosomal Dominant Polycystic Kidney Disease Core",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Autosomal Dominant Polycystic Kidney Disease Core",
+      "pdfFilename": "Autosomal-Dominant-Polycystic-Kidney-Disease--Core.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Autosomal Dominant Polycystic Kidney Disease Core"
+      }
+    }
+  ]
+}

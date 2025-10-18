@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-health-policy-and-kidney-care-in-the-united-states",
+      "title": "Health Policy and Kidney Care in the United States",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Health Policy and Kidney Care in the United States",
+      "pdfFilename": "Health-Policy-and-Kidney-Care-in-the-United-States.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Health Policy and Kidney Care in the United States"
+      }
+    },
+    {
+      "slug": "ajkd-cc-hemodialysis",
+      "title": "Hemodialysis",
+      "subtitle": "Core Curriculum 2014",
+      "year": "2014",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Hemodialysis (2014)",
+      "pdfFilename": "Hemodialysis--Core-Curriculum-2014_2013_yajkd.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Hemodialysis"
+      }
+    },
+    {
+      "slug": "ajkd-cc-hemodialysis-emergencies",
+      "title": "Hemodialysis Emergencies",
+      "subtitle": "Core Curriculum 2021",
+      "year": "2021",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Hemodialysis Emergencies (2021)",
+      "pdfFilename": "Hemodialysis-Emergencies--Core-Curriculum-2021_202.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Hemodialysis Emergencies"
+      }
+    },
+    {
+      "slug": "ajkd-cc-home-hemodialysis-daily-hemodialysis-and-nocturn",
+      "title": "Home Hemodialysis, Daily Hemodialysis, and Nocturn",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Home Hemodialysis, Daily Hemodialysis, and Nocturn",
+      "pdfFilename": "Home-Hemodialysis,-Daily-Hemodialysis,-and-Nocturn.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Home Hemodialysis, Daily Hemodialysis, and Nocturn"
+      }
+    },
+    {
+      "slug": "ajkd-cc-home-hemodialysis",
+      "title": "Home Hemodialysis",
+      "subtitle": "Core Curriculum 2021",
+      "year": "2021",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Home Hemodialysis (2021)",
+      "pdfFilename": "Home-Hemodialysis--Core-Curriculum-2021_2021_yajkd.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Home Hemodialysis"
+      }
+    }
+  ]
+}

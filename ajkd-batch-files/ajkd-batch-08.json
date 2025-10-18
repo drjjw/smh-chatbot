@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-hypertension-in-ckd",
+      "title": "Hypertension in CKD",
+      "subtitle": "Core Curriculum 2019",
+      "year": "2019",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Hypertension in CKD (2019)",
+      "pdfFilename": "Hypertension-in-CKD--Core-Curriculum-2019_2019_yaj.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Hypertension in CKD"
+      }
+    },
+    {
+      "slug": "ajkd-cc-iga-nephropathy",
+      "title": "IgA Nephropathy",
+      "subtitle": "Core Curriculum 2021",
+      "year": "2021",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: IgA Nephropathy (2021)",
+      "pdfFilename": "IgA-Nephropathy--Core-Curriculum-2021_2021_yajkd.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "IgA Nephropathy"
+      }
+    },
+    {
+      "slug": "ajkd-cc-infectious-disease-following-kidney-transplant-co",
+      "title": "Infectious Disease Following Kidney Transplant Co",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Infectious Disease Following Kidney Transplant Co",
+      "pdfFilename": "Infectious-Disease-Following-Kidney-Transplant--Co.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Infectious Disease Following Kidney Transplant Co"
+      }
+    },
+    {
+      "slug": "ajkd-cc-interventional-nephrology",
+      "title": "Interventional Nephrology",
+      "subtitle": "Core Curriculum 2009",
+      "year": "2009",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Interventional Nephrology (2009)",
+      "pdfFilename": "Interventional-Nephrology--Core-Curriculum-2009_20.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Interventional Nephrology"
+      }
+    },
+    {
+      "slug": "ajkd-cc-kidney-development",
+      "title": "Kidney Development",
+      "subtitle": "Core Curriculum 2011",
+      "year": "2011",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Kidney Development (2011)",
+      "pdfFilename": "Kidney-Development--Core-Curriculum-2011_2011_yajk.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Kidney Development"
+      }
+    }
+  ]
+}

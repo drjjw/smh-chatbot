@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-update-on-peritoneal-dialysis",
+      "title": "Update on Peritoneal Dialysis",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Update on Peritoneal Dialysis",
+      "pdfFilename": "Update-on-Peritoneal-Dialysis--Core-Curriculum-201.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Update on Peritoneal Dialysis"
+      }
+    },
+    {
+      "slug": "ajkd-cc-update-on-the-native-kidney-biopsy-core-curriculu",
+      "title": "Update on the Native Kidney Biopsy Core Curriculu",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Update on the Native Kidney Biopsy Core Curriculu",
+      "pdfFilename": "Update-on-the-Native-Kidney-Biopsy--Core-Curriculu.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Update on the Native Kidney Biopsy Core Curriculu"
+      }
+    },
+    {
+      "slug": "ajkd-cc-updates-on-infectious-and-other-complications-in-p",
+      "title": "Updates on Infectious and Other Complications in P",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Updates on Infectious and Other Complications in P",
+      "pdfFilename": "Updates-on-Infectious-and-Other-Complications-in-P.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Updates on Infectious and Other Complications in P"
+      }
+    },
+    {
+      "slug": "ajkd-cc-urinalysis",
+      "title": "Urinalysis",
+      "subtitle": "Core Curriculum 2008",
+      "year": "2008",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Urinalysis (2008)",
+      "pdfFilename": "Urinalysis--Core-Curriculum-2008_yajkd.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Urinalysis"
+      }
+    },
+    {
+      "slug": "ajkd-cc-urinary-diversion",
+      "title": "Urinary Diversion",
+      "subtitle": "Core Curriculum 2021",
+      "year": "2021",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Urinary Diversion (2021)",
+      "pdfFilename": "Urinary-Diversion--Core-Curriculum-2021_2021_yajkd.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Urinary Diversion"
+      }
+    }
+  ]
+}

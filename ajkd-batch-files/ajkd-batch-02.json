@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-biomarkers-in-nephrology",
+      "title": "Biomarkers in Nephrology",
+      "subtitle": "Core Curriculum 2013",
+      "year": "2013",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Biomarkers in Nephrology (2013)",
+      "pdfFilename": "Biomarkers-in-Nephrology--Core-Curriculum-2013_201.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Biomarkers in Nephrology"
+      }
+    },
+    {
+      "slug": "ajkd-cc-ckd-mineral-and-bone-disorder-core-curricu",
+      "title": "CKD–Mineral and Bone Disorder Core Curricu",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: CKD–Mineral and Bone Disorder Core Curricu",
+      "pdfFilename": "CKD&#x2013;Mineral-and-Bone-Disorder--Core-Curricu.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "CKD–Mineral and Bone Disorder Core Curricu"
+      }
+    },
+    {
+      "slug": "ajkd-cc-calcium-and-phosphate-disorders",
+      "title": "Calcium and Phosphate Disorders",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Calcium and Phosphate Disorders",
+      "pdfFilename": "Calcium-and-Phosphate-Disorders--Core-Curriculum-2.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Calcium and Phosphate Disorders"
+      }
+    },
+    {
+      "slug": "ajkd-cc-cardiovascular-disease-and-ckd",
+      "title": "Cardiovascular Disease and CKD",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Cardiovascular Disease and CKD",
+      "pdfFilename": "Cardiovascular-Disease-and-CKD--Core-Curriculum-20.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Cardiovascular Disease and CKD"
+      }
+    },
+    {
+      "slug": "ajkd-cc-clinical-genetic-testing-in-nephrology-core-curri",
+      "title": "Clinical Genetic Testing in Nephrology Core Curri",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Clinical Genetic Testing in Nephrology Core Curri",
+      "pdfFilename": "Clinical-Genetic-Testing-in-Nephrology--Core-Curri.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Clinical Genetic Testing in Nephrology Core Curri"
+      }
+    }
+  ]
+}

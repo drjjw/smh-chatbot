@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-management-of-poisonings",
+      "title": "Management of Poisonings",
+      "subtitle": "Core Curriculum 2010",
+      "year": "2010",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Management of Poisonings (2010)",
+      "pdfFilename": "Management-of-Poisonings--Core-Curriculum-2010_201.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Management of Poisonings"
+      }
+    },
+    {
+      "slug": "ajkd-cc-management-of-the-hemodialysis-unit-core-curricul",
+      "title": "Management of the Hemodialysis Unit Core Curricul",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Management of the Hemodialysis Unit Core Curricul",
+      "pdfFilename": "Management-of-the-Hemodialysis-Unit--Core-Curricul.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Management of the Hemodialysis Unit Core Curricul"
+      }
+    },
+    {
+      "slug": "ajkd-cc-measurement-and-estimation-of-gfr-for-use-in-clini",
+      "title": "Measurement and Estimation of GFR for Use in Clini",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Measurement and Estimation of GFR for Use in Clini",
+      "pdfFilename": "Measurement-and-Estimation-of-GFR-for-Use-in-Clini.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Measurement and Estimation of GFR for Use in Clini"
+      }
+    },
+    {
+      "slug": "ajkd-cc-membranous-nephropathy",
+      "title": "Membranous Nephropathy",
+      "subtitle": "Core Curriculum 2021",
+      "year": "2021",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Membranous Nephropathy (2021)",
+      "pdfFilename": "Membranous-Nephropathy--Core-Curriculum-2021_2021_.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Membranous Nephropathy"
+      }
+    },
+    {
+      "slug": "ajkd-cc-metabolic-acidosis-in-ckd",
+      "title": "Metabolic Acidosis in CKD",
+      "subtitle": "Core Curriculum 2019",
+      "year": "2019",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Metabolic Acidosis in CKD (2019)",
+      "pdfFilename": "Metabolic-Acidosis-in-CKD--Core-Curriculum-2019_20.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Metabolic Acidosis in CKD"
+      }
+    }
+  ]
+}

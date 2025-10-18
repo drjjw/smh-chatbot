@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-renal-disorders-in-pregnancy",
+      "title": "Renal Disorders in Pregnancy",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Renal Disorders in Pregnancy",
+      "pdfFilename": "Renal-Disorders-in-Pregnancy--Core-Curriculum-2019.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Renal Disorders in Pregnancy"
+      }
+    },
+    {
+      "slug": "ajkd-cc-renal-imaging",
+      "title": "Renal Imaging",
+      "subtitle": "Core Curriculum 2019",
+      "year": "2019",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Renal Imaging (2019)",
+      "pdfFilename": "Renal-Imaging--Core-Curriculum-2019_2019_yajkd.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Renal Imaging"
+      }
+    },
+    {
+      "slug": "ajkd-cc-resistant-hypertension",
+      "title": "Resistant Hypertension",
+      "subtitle": "Core Curriculum 2008",
+      "year": "2008",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Resistant Hypertension (2008)",
+      "pdfFilename": "Resistant-Hypertension--Core-Curriculum-2008_2008_.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Resistant Hypertension"
+      }
+    },
+    {
+      "slug": "ajkd-cc-respiratory-acidosis-and-respiratory-alkalosis-co",
+      "title": "Respiratory Acidosis and Respiratory Alkalosis Co",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Respiratory Acidosis and Respiratory Alkalosis Co",
+      "pdfFilename": "Respiratory-Acidosis-and-Respiratory-Alkalosis--Co.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Respiratory Acidosis and Respiratory Alkalosis Co"
+      }
+    },
+    {
+      "slug": "ajkd-cc-targeting-zero-infections-in-the-outpatient-dialys",
+      "title": "Targeting Zero Infections in the Outpatient Dialys",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Targeting Zero Infections in the Outpatient Dialys",
+      "pdfFilename": "Targeting-Zero-Infections-in-the-Outpatient-Dialys.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Targeting Zero Infections in the Outpatient Dialys"
+      }
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-magnesium-disorders",
+      "title": "Magnesium Disorders",
+      "subtitle": "Core Curriculum 2024",
+      "year": "2024",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Magnesium Disorders (2024)",
+      "pdfFilename": "Magnesium-Disorders--Core-Curriculum-2024_2024_yaj.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Magnesium Disorders"
+      }
+    },
+    {
+      "slug": "ajkd-cc-management-of-acute-kidney-injury",
+      "title": "Management of Acute Kidney Injury",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Management of Acute Kidney Injury",
+      "pdfFilename": "Management-of-Acute-Kidney-Injury--Core-Curriculum.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Management of Acute Kidney Injury"
+      }
+    },
+    {
+      "slug": "ajkd-cc-management-of-diabetes-mellitus-in-patients-with-c",
+      "title": "Management of Diabetes Mellitus in Patients With C",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Management of Diabetes Mellitus in Patients With C",
+      "pdfFilename": "Management-of-Diabetes-Mellitus-in-Patients-With-C.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Management of Diabetes Mellitus in Patients With C"
+      }
+    },
+    {
+      "slug": "ajkd-cc-management-of-heart-failure-in-advancing-ckd-core",
+      "title": "Management of Heart Failure in Advancing CKD Core",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Management of Heart Failure in Advancing CKD Core",
+      "pdfFilename": "Management-of-Heart-Failure-in-Advancing-CKD--Core.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Management of Heart Failure in Advancing CKD Core"
+      }
+    },
+    {
+      "slug": "ajkd-cc-management-of-kidney-transplant-recipients-by-gene",
+      "title": "Management of Kidney Transplant Recipients by Gene",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Management of Kidney Transplant Recipients by Gene",
+      "pdfFilename": "Management-of-Kidney-Transplant-Recipients-by-Gene.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Management of Kidney Transplant Recipients by Gene"
+      }
+    }
+  ]
+}

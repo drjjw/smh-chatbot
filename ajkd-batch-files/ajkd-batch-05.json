@@ -1,0 +1,84 @@
+{
+  "documents": [
+    {
+      "slug": "ajkd-cc-economic-factors-in-nephrology",
+      "title": "Economic Factors in Nephrology",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Economic Factors in Nephrology",
+      "pdfFilename": "Economic-Factors-in-Nephrology--Core-Curriculum-20.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Economic Factors in Nephrology"
+      }
+    },
+    {
+      "slug": "ajkd-cc-evaluation-and-management-of-resistant-hypertensio",
+      "title": "Evaluation and Management of Resistant Hypertensio",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Evaluation and Management of Resistant Hypertensio",
+      "pdfFilename": "Evaluation-and-Management-of-Resistant-Hypertensio.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Evaluation and Management of Resistant Hypertensio"
+      }
+    },
+    {
+      "slug": "ajkd-cc-evaluation-of-adult-kidney-transplant-candidates-y",
+      "title": "Evaluation of Adult Kidney Transplant Candidates_y",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Evaluation of Adult Kidney Transplant Candidates_y",
+      "pdfFilename": "Evaluation-of-Adult-Kidney-Transplant-Candidates_y.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Evaluation of Adult Kidney Transplant Candidates_y"
+      }
+    },
+    {
+      "slug": "ajkd-cc-evaluation-of-kidney-donors",
+      "title": "Evaluation of Kidney Donors",
+      "subtitle": "Core Curriculum 2018",
+      "year": "2018",
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Evaluation of Kidney Donors (2018)",
+      "pdfFilename": "Evaluation-of-Kidney-Donors--Core-Curriculum-2018_.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Evaluation of Kidney Donors"
+      }
+    },
+    {
+      "slug": "ajkd-cc-evaluation-of-the-potential-living-kidney-donor",
+      "title": "Evaluation of the Potential Living Kidney Donor",
+      "subtitle": "Core Curriculum",
+      "year": null,
+      "backLink": "https://www.ajkd.org/",
+      "welcomeMessage": "AJKD Core Curriculum: Evaluation of the Potential Living Kidney Donor",
+      "pdfFilename": "Evaluation-of-the-Potential-Living-Kidney-Donor_20.pdf",
+      "pdfSubdirectory": "ajkd-core-curriculum",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "AJKD",
+        "series": "Core Curriculum",
+        "topic": "Evaluation of the Potential Living Kidney Donor"
+      }
+    }
+  ]
+}
