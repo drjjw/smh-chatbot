@@ -278,9 +278,12 @@ async function main() {
     // Load document registry
     console.log('\n📚 Loading document registry from database...');
     const allDocs = await documentRegistry.loadDocuments();
+    // Note: Only filter for --all mode. Documents with primary type 'local'
+    // are processed automatically. Documents with primary type 'openai' can
+    // still be trained with local embeddings using --doc=slug
     const localDocs = allDocs.filter(doc => doc.embedding_type === 'local');
     
-    console.log(`✓ Found ${localDocs.length} documents using local embeddings`);
+    console.log(`✓ Found ${localDocs.length} documents with primary type 'local'`);
     
     let docsToProcess = [];
     
@@ -298,14 +301,13 @@ async function main() {
             process.exit(1);
         }
         
-        if (doc.embedding_type !== 'local') {
-            console.error(`❌ Document ${slug} uses ${doc.embedding_type} embeddings, not local`);
-            console.error(`   Use chunk-and-embed.js for OpenAI embeddings`);
-            process.exit(1);
-        }
+        // Note: We allow training local embeddings for any document
+        // The embedding_type field indicates the PRIMARY type, but documents
+        // can have chunks in both tables (document_chunks and document_chunks_local)
+        console.log(`📝 Processing single document: ${slug} (primary type: ${doc.embedding_type})`);
         
         docsToProcess = [doc];
-        console.log(`📝 Processing single document: ${slug}`);
+        console.log(`   Training local embeddings for document_chunks_local table`);
     } else {
         // Default: show usage
         console.log('\nUsage:');

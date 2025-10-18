@@ -1,0 +1,88 @@
+{
+  "documents": [
+    {
+      "slug": "kdigo-tx-recipient-2009",
+      "title": "KDIGO Clinical Practice Guideline for the Care of Kidney Transplant Recipients",
+      "subtitle": "2009",
+      "year": "2009",
+      "backLink": "https://kdigo.org/",
+      "welcomeMessage": "KDIGO Kidney Transplant Recipient Clinical Practice Guideline 2009",
+      "pdfFilename": "KDIGO-2009-Transplant-Recipient-Guideline-English.pdf",
+      "pdfSubdirectory": "guidelines",
+      "embeddingTypes": "both",
+      "pubmedId": "19845597",
+      "metadata": {
+        "source": "KDIGO",
+        "guideline_type": "Kidney Transplant Recipients",
+        "version": "2009"
+      }
+    },
+    {
+      "slug": "kdigo-tx-candidate-2020",
+      "title": "KDIGO Clinical Practice Guideline on the Evaluation and Management of Candidates for Kidney Transplantation",
+      "subtitle": "2020",
+      "year": "2020",
+      "backLink": "https://kdigo.org/",
+      "welcomeMessage": "KDIGO Kidney Transplant Candidate Clinical Practice Guideline 2020",
+      "pdfFilename": "KDIGO-Txp-Candidate-GL-FINAL.pdf",
+      "pdfSubdirectory": "guidelines",
+      "embeddingTypes": "both",
+      "pubmedId": "32591203",
+      "metadata": {
+        "source": "KDIGO",
+        "guideline_type": "Kidney Transplant Candidates",
+        "version": "2020"
+      }
+    },
+    {
+      "slug": "kdigo-nephrotic-children-2025",
+      "title": "KDIGO Clinical Practice Guideline for the Management of Nephrotic Syndrome in Children",
+      "subtitle": "2025",
+      "year": "2025",
+      "backLink": "https://kdigo.org/",
+      "welcomeMessage": "KDIGO Nephrotic Syndrome in Children Clinical Practice Guideline 2025",
+      "pdfFilename": "KDIGO-2025-Guideline-for-Nephrotic-Syndrome-in-Children.pdf",
+      "pdfSubdirectory": "guidelines",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "KDIGO",
+        "guideline_type": "Nephrotic Syndrome in Children",
+        "version": "2025"
+      }
+    },
+    {
+      "slug": "kdigo-living-donor-2017",
+      "title": "KDIGO Clinical Practice Guideline on the Evaluation and Care of Living Kidney Donors",
+      "subtitle": "2017",
+      "year": "2017",
+      "backLink": "https://kdigo.org/",
+      "welcomeMessage": "KDIGO Living Kidney Donor Clinical Practice Guideline 2017",
+      "pdfFilename": "2017-KDIGO-LD-GL.pdf",
+      "pdfSubdirectory": "guidelines",
+      "embeddingTypes": "both",
+      "pubmedId": "28209325",
+      "metadata": {
+        "source": "KDIGO",
+        "guideline_type": "Living Kidney Donors",
+        "version": "2017"
+      }
+    },
+    {
+      "slug": "kdigo-igan-2025",
+      "title": "KDIGO Clinical Practice Guideline for IgA Nephropathy and IgA Vasculitis",
+      "subtitle": "2025",
+      "year": "2025",
+      "backLink": "https://kdigo.org/",
+      "welcomeMessage": "KDIGO Clinical Practice Guideline for IgAN and IgAV 2025",
+      "pdfFilename": "KDIGO-2025-IgAN-IgAV-Guideline.pdf",
+      "pdfSubdirectory": "guidelines",
+      "embeddingTypes": "both",
+      "pubmedId": "40975525",
+      "metadata": {
+        "source": "KDIGO",
+        "guideline_type": "IgA Nephropathy and IgA Vasculitis",
+        "version": "2025"
+      }
+    }
+  ]
+}

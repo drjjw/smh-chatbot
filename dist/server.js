@@ -123,6 +123,11 @@ async function loadPDF(documentSlug = 'smh') {
         // Get full path to PDF using registry
         const pdfPath = documentRegistry.getDocumentPath(docConfig);
 
+        // Check if PDF file exists before trying to load it
+        if (!fs.existsSync(pdfPath)) {
+            throw new Error(`PDF file not found: ${pdfPath}`);
+        }
+
         // Load and parse PDF
         const dataBuffer = fs.readFileSync(pdfPath);
         const data = await pdf(dataBuffer);
@@ -586,8 +591,17 @@ app.post('/api/chat', async (req, res) => {
 
         // Ensure document is loaded
         if (!documents[documentType]) {
-            await loadPDF(documentType);
-            setCurrentDocument(documentType);
+            try {
+                await loadPDF(documentType);
+                setCurrentDocument(documentType);
+            } catch (error) {
+                console.error(`Failed to load document ${documentType}:`, error.message);
+                return res.status(500).json({
+                    error: 'Document Loading Error',
+                    message: `The requested document (${documentType}) could not be loaded. The PDF file may be missing or corrupted.`,
+                    details: error.message
+                });
+            }
         }
 
         let responseText;
@@ -1064,12 +1078,34 @@ async function start() {
         
         // Load all active documents from registry
         console.log('📄 Loading PDFs...');
+        const loadedDocs = [];
+        const failedDocs = [];
+        
         for (const slug of activeDocs) {
-            await loadPDF(slug);
+            try {
+                await loadPDF(slug);
+                loadedDocs.push(slug);
+            } catch (error) {
+                console.error(`⚠️  Failed to load ${slug}:`, error.message);
+                failedDocs.push({ slug, error: error.message });
+            }
         }
         
-        // Set default document
-        const defaultDoc = activeDocs.includes('smh') ? 'smh' : activeDocs[0];
+        // Check if at least one document loaded successfully
+        if (loadedDocs.length === 0) {
+            throw new Error('❌ No documents could be loaded. Server cannot start.');
+        }
+        
+        if (failedDocs.length > 0) {
+            console.warn(`\n⚠️  Warning: ${failedDocs.length} document(s) failed to load:`);
+            failedDocs.forEach(({ slug, error }) => {
+                console.warn(`   - ${slug}: ${error}`);
+            });
+            console.warn('   Server will continue with available documents.\n');
+        }
+        
+        // Set default document (prefer 'smh', fallback to first loaded doc)
+        const defaultDoc = loadedDocs.includes('smh') ? 'smh' : loadedDocs[0];
         setCurrentDocument(defaultDoc);
 
         // Initialize embedding cache cleanup
@@ -1079,10 +1115,13 @@ async function start() {
             console.log(`\n🚀 Server running at http://localhost:${PORT}`);
             console.log(`📚 Multi-document chatbot ready!`);
             console.log(`   - Loaded documents:`);
-            activeDocs.forEach(slug => {
+            loadedDocs.forEach(slug => {
                 const doc = documents[slug];
                 console.log(`     • ${slug}: ${doc.title} (${doc.year}, ${doc.embeddingType})`);
             });
+            if (failedDocs.length > 0) {
+                console.log(`   - Failed documents: ${failedDocs.map(d => d.slug).join(', ')}`);
+            }
             console.log(`   - Default document: ${defaultDoc}`);
             console.log(`   - Use ?doc=<slug> URL parameter to select document\n`);
         });

@@ -1,5 +1,5 @@
 // API communication and health checks
-import { API_URL, getEmbeddingType } from './config.3f3300dc.js';
+import { API_URL, getEmbeddingType } from './config.34b999bb.js';
 
 // Check server health on load
 export async function checkHealth(selectedDocument, statusDiv) {

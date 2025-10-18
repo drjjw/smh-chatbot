@@ -207,7 +207,17 @@ const pdfFiles = [
     { from: 'PDFs/manuals/smh-manual-2023.pdf', to: 'PDFs/manuals/smh-manual-2023.pdf' },
     { from: 'PDFs/manuals/uhn-manual-2025.pdf', to: 'PDFs/manuals/uhn-manual-2025.pdf' },
     { from: 'PDFs/manuals/Kidney-Transplant-Medications-Tip-Sheet-Aug-2024.pdf', to: 'PDFs/manuals/Kidney-Transplant-Medications-Tip-Sheet-Aug-2024.pdf' },
-    { from: 'PDFs/guidelines/PIIS1499267125000206.pdf', to: 'PDFs/guidelines/PIIS1499267125000206.pdf' }
+    { from: 'PDFs/guidelines/PIIS1499267125000206.pdf', to: 'PDFs/guidelines/PIIS1499267125000206.pdf' },
+    { from: 'PDFs/guidelines/KDIGO-2025-ADPKD-Guideline.pdf', to: 'PDFs/guidelines/KDIGO-2025-ADPKD-Guideline.pdf' },
+    { from: 'PDFs/guidelines/KDIGO-2021-BP-GL.pdf', to: 'PDFs/guidelines/KDIGO-2021-BP-GL.pdf' },
+    { from: 'PDFs/guidelines/KDIGO-2024-ANCA-Vasculitis-Guideline-Update.pdf', to: 'PDFs/guidelines/KDIGO-2024-ANCA-Vasculitis-Guideline-Update.pdf' },
+    { from: 'PDFs/guidelines/KDIGO-2024-CKD-Guideline.pdf', to: 'PDFs/guidelines/KDIGO-2024-CKD-Guideline.pdf' },
+    { from: 'PDFs/guidelines/KDIGO-2025-IgAN-IgAV-Guideline.pdf', to: 'PDFs/guidelines/KDIGO-2025-IgAN-IgAV-Guideline.pdf' },
+    { from: 'PDFs/guidelines/KDIGO-2021-Glomerular-Diseases-Guideline_English_2024-Chapter-Updates.pdf', to: 'PDFs/guidelines/KDIGO-2021-Glomerular-Diseases-Guideline_English_2024-Chapter-Updates.pdf' },
+    { from: 'PDFs/guidelines/KDIGO-2009-Transplant-Recipient-Guideline-English.pdf', to: 'PDFs/guidelines/KDIGO-2009-Transplant-Recipient-Guideline-English.pdf' },
+    { from: 'PDFs/guidelines/KDIGO-Txp-Candidate-GL-FINAL.pdf', to: 'PDFs/guidelines/KDIGO-Txp-Candidate-GL-FINAL.pdf' },
+    { from: 'PDFs/guidelines/KDIGO-2025-Guideline-for-Nephrotic-Syndrome-in-Children.pdf', to: 'PDFs/guidelines/KDIGO-2025-Guideline-for-Nephrotic-Syndrome-in-Children.pdf' },
+    { from: 'PDFs/guidelines/2017-KDIGO-LD-GL.pdf', to: 'PDFs/guidelines/2017-KDIGO-LD-GL.pdf' }
 ];
 
 // Copy lib directory (for local embeddings module)

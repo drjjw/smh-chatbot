@@ -23,7 +23,8 @@ const fallbackDocConfig = {
         backLink: 'https://ukidney.com/nephrology-publications/nephrology-manuals/st-michael-s-hospital-nephrology-manual',
         welcomeMessage: 'SMH Housestaff Manual',
         embeddingType: 'openai',
-        active: true
+        active: true,
+        metadata: {}
     },
     'uhn': {
         slug: 'uhn',
@@ -32,7 +33,8 @@ const fallbackDocConfig = {
         backLink: 'https://ukidney.com/nephrology-publications/nephrology-manuals/university-health-network-nephrology-manual',
         welcomeMessage: 'UHN Nephrology Manual',
         embeddingType: 'openai',
-        active: true
+        active: true,
+        metadata: {}
     },
     'ckd-dc-2025': {
         slug: 'ckd-dc-2025',
@@ -41,7 +43,8 @@ const fallbackDocConfig = {
         backLink: 'https://ukidney.com/nephrology-publications/nephrology-manuals/ckd-diabetes-guidelines-2025',
         welcomeMessage: 'CKD in Diabetes: Clinical Practice Guideline 2025',
         embeddingType: 'local',
-        active: true
+        active: true,
+        metadata: {}
     }
 };
 

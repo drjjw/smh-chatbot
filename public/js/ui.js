@@ -12,8 +12,21 @@ export async function updateDocumentUI(selectedDocument) {
     }
     
     document.getElementById('headerTitle').textContent = config.title;
-    document.getElementById('headerSubtitle').textContent = config.subtitle;
-    document.getElementById('welcomeTitle').textContent = `Welcome to the ${config.welcomeMessage} Assistant`;
+    
+    // Update subtitle with PMID link if available, otherwise show subtitle
+    const subtitleElement = document.getElementById('headerSubtitle');
+    const metadata = config.metadata || {};
+    const pmid = metadata.pubmed_id || metadata.PMID;
+    
+    if (pmid) {
+        // Show only PMID link
+        subtitleElement.innerHTML = `<a href="https://pubmed.ncbi.nlm.nih.gov/${pmid}/" target="_blank" rel="noopener noreferrer" class="pmid-link">PMID: ${pmid}</a>`;
+    } else {
+        // No PMID, show subtitle text
+        subtitleElement.textContent = config.subtitle;
+    }
+    
+    document.getElementById('welcomeTitle').textContent = config.welcomeMessage;
 
     // Update back link
     const backLink = document.querySelector('.back-link');

@@ -1,0 +1,54 @@
+{
+  "documents": [
+    {
+      "slug": "kdigo-ckd-2024",
+      "title": "KDIGO CKD Clinical Practice Guideline",
+      "subtitle": "2024",
+      "year": "2024",
+      "backLink": "https://kdigo.org/",
+      "welcomeMessage": "KDIGO CKD Clinical Practice Guideline 2024",
+      "pdfFilename": "KDIGO-2024-CKD-Guideline.pdf",
+      "pdfSubdirectory": "guidelines",
+      "embeddingTypes": "both",
+      "pubmedId": "12345678",
+      "metadata": {
+        "source": "KDIGO",
+        "guideline_type": "CKD",
+        "version": "2024"
+      }
+    },
+    {
+      "slug": "kdigo-anemia-2012",
+      "title": "KDIGO Anemia Clinical Practice Guideline",
+      "subtitle": "2012",
+      "year": "2012",
+      "backLink": "https://kdigo.org/",
+      "welcomeMessage": "KDIGO Anemia Clinical Practice Guideline 2012",
+      "pdfFilename": "KDIGO-2012-Anemia-Guideline.pdf",
+      "pdfSubdirectory": "guidelines",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "KDIGO",
+        "guideline_type": "Anemia",
+        "version": "2012"
+      }
+    },
+    {
+      "slug": "uhn-dialysis-manual",
+      "title": "UHN Dialysis Manual",
+      "subtitle": "2024",
+      "year": "2024",
+      "backLink": "https://www.uhn.ca/",
+      "welcomeMessage": "UHN Dialysis Manual 2024",
+      "pdfFilename": "uhn-dialysis-manual-2024.pdf",
+      "pdfSubdirectory": "manuals",
+      "embeddingTypes": "local",
+      "metadata": {
+        "source": "UHN",
+        "manual_type": "Dialysis"
+      }
+    }
+  ]
+}
+
+
