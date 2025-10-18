@@ -83,6 +83,23 @@
         "guideline_type": "IgA Nephropathy and IgA Vasculitis",
         "version": "2025"
       }
+    },
+    {
+      "slug": "smh-icu-epic",
+      "title": "EPIC in the ICU at SMH",
+      "subtitle": "Trainees Manual",
+      "year": "2023",
+      "backLink": "https://smh.ca/",
+      "welcomeMessage": "St. Michael's Hospital ICU EPIC Training Manual for Trainees",
+      "pdfFilename": "EPIC in the ICU at SMH_Trainees.pdf",
+      "pdfSubdirectory": "manuals",
+      "embeddingTypes": "both",
+      "metadata": {
+        "source": "St. Michael's Hospital",
+        "manual_type": "EPIC Training",
+        "department": "Intensive Care Unit",
+        "audience": "Trainees"
+      }
     }
   ]
 }

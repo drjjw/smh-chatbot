@@ -164,9 +164,33 @@ function updateBuildScript(pdfSubdirectory, pdfFilename) {
 }
 
 /**
+ * Check if a document already has embeddings of the specified type
+ */
+async function hasEmbeddings(slug, embeddingType) {
+    const table = embeddingType === 'local' ? 'document_chunks_local' : 'document_chunks';
+
+    try {
+        const { count, error } = await supabase
+            .from(table)
+            .select('*', { count: 'exact', head: true })
+            .eq('document_slug', slug);
+
+        if (error) {
+            console.warn(`  ⚠️  Could not check existing embeddings for ${slug}: ${error.message}`);
+            return false;
+        }
+
+        return count > 0;
+    } catch (error) {
+        console.warn(`  ⚠️  Error checking embeddings for ${slug}: ${error.message}`);
+        return false;
+    }
+}
+
+/**
  * Train document with embeddings
  */
-function trainDocument(slug, embeddingType, skipOpenai, skipLocal) {
+async function trainDocument(slug, embeddingType, skipOpenai, skipLocal, skipExisting) {
     const isLocal = embeddingType === 'local';
     
     if (isLocal && skipLocal) {
@@ -177,6 +201,15 @@ function trainDocument(slug, embeddingType, skipOpenai, skipLocal) {
     if (!isLocal && skipOpenai) {
         console.log(`  ⊘ Skipping OpenAI embeddings for ${slug} (--skip-openai flag)`);
         return { slug, embeddingType, status: 'skipped' };
+    }
+
+    // Check if embeddings already exist and skip if requested
+    if (skipExisting) {
+        const exists = await hasEmbeddings(slug, embeddingType);
+        if (exists) {
+            console.log(`  ⊘ Skipping ${slug} (${embeddingType}) - embeddings already exist (--skip-existing flag)`);
+            return { slug, embeddingType, status: 'skipped', reason: 'already_exists' };
+        }
     }
     
     const scriptName = isLocal ? 'chunk-and-embed-local.js' : 'chunk-and-embed.js';
@@ -264,6 +297,7 @@ async function main() {
     const configArg = args.find(arg => arg.startsWith('--config='));
     const skipOpenai = args.includes('--skip-openai');
     const skipLocal = args.includes('--skip-local');
+    const skipExisting = args.includes('--skip-existing');
     const dryRun = args.includes('--dry-run');
     
     if (!configArg) {
@@ -272,6 +306,7 @@ async function main() {
         console.log('  node batch-train-documents.js --config=documents.json');
         console.log('  node batch-train-documents.js --config=documents.json --skip-openai');
         console.log('  node batch-train-documents.js --config=documents.json --skip-local');
+        console.log('  node batch-train-documents.js --config=documents.json --skip-existing');
         console.log('  node batch-train-documents.js --config=documents.json --dry-run');
         process.exit(1);
     }
@@ -344,11 +379,12 @@ async function main() {
         console.log('\n3️⃣  Training embeddings...');
         for (const result of registryResults) {
             if (result.status === 'added' || result.status === 'exists') {
-                const trainingResult = trainDocument(
-                    result.slug, 
+                const trainingResult = await trainDocument(
+                    result.slug,
                     result.embeddingType,
                     skipOpenai,
-                    skipLocal
+                    skipLocal,
+                    skipExisting
                 );
                 results.training.push(trainingResult);
             }

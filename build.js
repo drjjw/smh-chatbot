@@ -198,6 +198,7 @@ const otherFiles = [
     { from: 'server.js', to: 'server.js' },
     { from: 'package.json', to: 'package.json' },
     { from: 'package-lock.json', to: 'package-lock.json' },
+    { from: 'ecosystem.config.js', to: 'ecosystem.config.js' },
     { from: '.htaccess', to: '.htaccess', optional: true }
 ];
 
@@ -207,6 +208,7 @@ const pdfFiles = [
     { from: 'PDFs/manuals/smh-manual-2023.pdf', to: 'PDFs/manuals/smh-manual-2023.pdf' },
     { from: 'PDFs/manuals/uhn-manual-2025.pdf', to: 'PDFs/manuals/uhn-manual-2025.pdf' },
     { from: 'PDFs/manuals/Kidney-Transplant-Medications-Tip-Sheet-Aug-2024.pdf', to: 'PDFs/manuals/Kidney-Transplant-Medications-Tip-Sheet-Aug-2024.pdf' },
+    { from: 'PDFs/manuals/EPIC in the ICU at SMH_Trainees.pdf', to: 'PDFs/manuals/EPIC in the ICU at SMH_Trainees.pdf' },
     { from: 'PDFs/guidelines/PIIS1499267125000206.pdf', to: 'PDFs/guidelines/PIIS1499267125000206.pdf' },
     { from: 'PDFs/guidelines/KDIGO-2025-ADPKD-Guideline.pdf', to: 'PDFs/guidelines/KDIGO-2025-ADPKD-Guideline.pdf' },
     { from: 'PDFs/guidelines/KDIGO-2021-BP-GL.pdf', to: 'PDFs/guidelines/KDIGO-2021-BP-GL.pdf' },
@@ -219,6 +221,7 @@ const pdfFiles = [
     { from: 'PDFs/guidelines/KDIGO-2025-Guideline-for-Nephrotic-Syndrome-in-Children.pdf', to: 'PDFs/guidelines/KDIGO-2025-Guideline-for-Nephrotic-Syndrome-in-Children.pdf' },
     { from: 'PDFs/guidelines/2017-KDIGO-LD-GL.pdf', to: 'PDFs/guidelines/2017-KDIGO-LD-GL.pdf' },
     { from: 'PDFs/books/Fluid-Electrolyte-and-Acid-Base-Physiology-Kamel-Halperin.pdf', to: 'PDFs/books/Fluid-Electrolyte-and-Acid-Base-Physiology-Kamel-Halperin.pdf' },
+    { from: 'PDFs/maker/FOH-TRAINING-GUIDE-MAY-2023.pdf', to: 'PDFs/maker/FOH-TRAINING-GUIDE-MAY-2023.pdf' },
     { from: 'PDFs/ajkd-core-curriculum/Magnesium-Disorders--Core-Curriculum-2024_2024_yaj.pdf', to: 'PDFs/ajkd-core-curriculum/Magnesium-Disorders--Core-Curriculum-2024_2024_yaj.pdf' },
     { from: 'PDFs/ajkd-core-curriculum/Management-of-Acute-Kidney-Injury--Core-Curriculum.pdf', to: 'PDFs/ajkd-core-curriculum/Management-of-Acute-Kidney-Injury--Core-Curriculum.pdf' },
     { from: 'PDFs/ajkd-core-curriculum/Management-of-Diabetes-Mellitus-in-Patients-With-C.pdf', to: 'PDFs/ajkd-core-curriculum/Management-of-Diabetes-Mellitus-in-Patients-With-C.pdf' },

@@ -12,6 +12,40 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Graceful shutdown handling
+let server;
+const gracefulShutdown = (signal) => {
+  console.log(`\n${signal} received. Starting graceful shutdown...`);
+
+  if (server) {
+    server.close((err) => {
+      if (err) {
+        console.error('Error during server close:', err);
+        process.exit(1);
+      }
+
+      console.log('✓ HTTP server closed gracefully');
+      console.log('✓ All connections drained');
+
+      // Close any database connections or cleanup here if needed
+      console.log('✓ Cleanup complete. Exiting...');
+      process.exit(0);
+    });
+
+    // Force shutdown after 30 seconds if graceful shutdown takes too long
+    setTimeout(() => {
+      console.error('⚠️  Forced shutdown after 30 seconds');
+      process.exit(1);
+    }, 30000);
+  } else {
+    process.exit(0);
+  }
+};
+
+// Handle shutdown signals
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
 // Middleware
 app.use(cors({
     origin: '*', // Allow embedding from any domain (or specify ukidney.com)
@@ -400,10 +434,18 @@ async function findRelevantChunksLocal(embedding, documentType, limit = 5, thres
 /**
  * Build RAG system prompt with retrieved chunks
  */
-const getRAGSystemPrompt = (documentType = 'smh', chunks = []) => {
-    // Get document name from registry
-    const doc = documents[documentType];
-    const docName = doc?.welcomeMessage || 'SMH Housestaff Manual';
+const getRAGSystemPrompt = async (documentType = 'smh', chunks = []) => {
+    // Get document info from registry (for RAG, PDF might not be loaded in memory)
+    let docName = 'SMH Housestaff Manual';
+    try {
+        const docConfig = await documentRegistry.getDocumentBySlug(documentType);
+        if (docConfig) {
+            // Use title for RAG prompt (cleaner), fall back to welcome_message or default
+            docName = docConfig.title || docConfig.welcome_message || docName;
+        }
+    } catch (error) {
+        console.warn(`Could not get document config for ${documentType}, using default name`);
+    }
     
     // Combine chunk content with page information
     const context = chunks.map(chunk => {
@@ -444,7 +486,9 @@ ${context}
 /**
  * Get model-specific RAG prompt
  */
-const getRAGGeminiPrompt = (documentType, chunks) => getRAGSystemPrompt(documentType, chunks) + `
+const getRAGGeminiPrompt = async (documentType, chunks) => {
+    const basePrompt = await getRAGSystemPrompt(documentType, chunks);
+    return basePrompt + `
 
 RESPONSE STYLE - STRICTLY FOLLOW:
 - Use markdown tables when presenting structured data
@@ -452,8 +496,11 @@ RESPONSE STYLE - STRICTLY FOLLOW:
 - Lead with the direct answer, then provide details
 - Use minimal explanatory text - let the structure speak
 - **MANDATORY**: Include footnotes [1], [2], etc. for EVERY claim with references at response end`;
+};
 
-const getRAGGrokPrompt = (documentType, chunks) => getRAGSystemPrompt(documentType, chunks) + `
+const getRAGGrokPrompt = async (documentType, chunks) => {
+    const basePrompt = await getRAGSystemPrompt(documentType, chunks);
+    return basePrompt + `
 
 RESPONSE STYLE - STRICTLY FOLLOW:
 - ALWAYS add a brief introductory sentence explaining the context
@@ -461,6 +508,7 @@ RESPONSE STYLE - STRICTLY FOLLOW:
 - Add a short concluding note with clinical significance when relevant
 - Use more descriptive language - explain, don't just list
 - **MANDATORY**: Include footnotes [1], [2], etc. for EVERY claim with references at response end`;
+};
 
 /**
  * Chat with RAG using Gemini
@@ -471,11 +519,11 @@ async function chatWithRAGGemini(message, history, documentType, chunks) {
         model: "gemini-2.5-flash"
     });
 
-    const systemMessage = getRAGGeminiPrompt(documentType, chunks);
+    const systemMessage = await getRAGGeminiPrompt(documentType, chunks);
     
-    // Get document name from registry
-    const doc = documents[documentType];
-    const docName = doc?.welcomeMessage || 'SMH Housestaff Manual';
+    // Get document name from registry (use title first for cleaner reference)
+    const docConfig = await documentRegistry.getDocumentBySlug(documentType);
+    const docName = docConfig?.title || docConfig?.welcome_message || 'SMH Housestaff Manual';
 
     const fullHistory = [
         {
@@ -506,7 +554,7 @@ async function chatWithRAGGemini(message, history, documentType, chunks) {
  */
 async function chatWithRAGGrok(message, history, documentType, chunks, modelName = 'grok-4-fast-non-reasoning') {
     console.log(`🤖 Using RAG Grok model: ${modelName}`);
-    const systemMessage = getRAGGrokPrompt(documentType, chunks);
+    const systemMessage = await getRAGGrokPrompt(documentType, chunks);
     
     const messages = [
         {
@@ -589,10 +637,10 @@ app.post('/api/chat', async (req, res) => {
         const isValid = await documentRegistry.isValidSlug(doc);
         const documentType = isValid ? doc : 'smh';
 
-        // Ensure document is loaded
+        // Ensure document is loaded (lazy loading)
         if (!documents[documentType]) {
             try {
-                await loadPDF(documentType);
+                await ensureDocumentLoaded(documentType);
                 setCurrentDocument(documentType);
             } catch (error) {
                 console.error(`Failed to load document ${documentType}:`, error.message);
@@ -709,6 +757,21 @@ app.post('/api/chat-rag', async (req, res) => {
         const isValid = await documentRegistry.isValidSlug(doc);
         const documentType = isValid ? doc : 'smh';
 
+        // Ensure document is loaded (lazy loading) - for RAG we need the document loaded
+        // to get document metadata, but the actual content is retrieved from database chunks
+        if (!documents[documentType]) {
+            try {
+                await ensureDocumentLoaded(documentType);
+            } catch (error) {
+                console.error(`Failed to load document ${documentType} for RAG:`, error.message);
+                return res.status(500).json({
+                    error: 'Document Loading Error',
+                    message: `The requested document (${documentType}) could not be loaded. The PDF file may be missing or corrupted.`,
+                    details: error.message
+                });
+            }
+        }
+
         let responseText;
         let retrievalTimeMs = 0;
         let chunksUsed = 0;
@@ -791,16 +854,22 @@ app.post('/api/chat-rag', async (req, res) => {
             const responseTime = Date.now() - startTime;
 
             // Log to Supabase with RAG metadata
+            // Get document info from registry for logging
+            const docConfig = await documentRegistry.getDocumentBySlug(documentType);
+            const docFileName = docConfig ? docConfig.pdf_filename : 'unknown.pdf';
+            const docPath = docConfig ? documentRegistry.getDocumentPath(docConfig) : '';
+            const docYear = docConfig ? docConfig.year : null;
+            
             const conversationData = {
                 session_id: sessionId,
                 question: message,
                 response: responseText || '',
                 model: model,
                 response_time_ms: responseTime,
-                document_name: documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf',
-                document_path: path.join(__dirname, documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf'),
-                document_version: documentType === 'smh' ? '2023' : '2025',
-                pdf_name: documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf',
+                document_name: docFileName,
+                document_path: docPath,
+                document_version: docYear,
+                pdf_name: docFileName,
                 pdf_pages: 0, // Not applicable for RAG
                 error: errorOccurred,
                 retrieval_method: 'rag',
@@ -834,6 +903,10 @@ app.post('/api/chat-rag', async (req, res) => {
                                 model === 'grok-reasoning' ? 'grok-4-fast-reasoning' :
                                 'gemini-2.5-flash';
 
+        // Get document info from registry for response metadata
+        const docConfigResponse = await documentRegistry.getDocumentBySlug(documentType);
+        const docFileNameResponse = docConfigResponse ? docConfigResponse.pdf_filename : 'unknown.pdf';
+        
         res.json({
             response: responseText,
             model: model,
@@ -841,8 +914,9 @@ app.post('/api/chat-rag', async (req, res) => {
             sessionId: sessionId,
             conversationId: res.locals.conversationId,
             metadata: {
-                document: documentType === 'smh' ? 'smh-manual-2023.pdf' : 'uhn-manual-2025.pdf',
+                document: docFileNameResponse,
                 documentType: documentType,
+                documentTitle: docConfigResponse ? docConfigResponse.title : 'Unknown',
                 responseTime: finalResponseTime,
                 retrievalMethod: 'rag',
                 chunksUsed: chunksUsed,
@@ -882,18 +956,63 @@ app.get('*.php', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Health check endpoint (now using registry)
+// Readiness check endpoint (for load balancers and PM2 health checks)
+app.get('/api/ready', async (req, res) => {
+    try {
+        // Ensure registry is loaded
+        if (!documentRegistryLoaded) {
+            return res.status(503).json({
+                status: 'not_ready',
+                message: 'Document registry not loaded yet'
+            });
+        }
+
+        // Check if default document is loaded
+        const defaultDoc = activeDocumentSlugs.includes('smh') ? 'smh' : activeDocumentSlugs[0];
+        if (!defaultDoc || !documents[defaultDoc]) {
+            return res.status(503).json({
+                status: 'not_ready',
+                message: 'Default document not loaded yet',
+                defaultDocument: defaultDoc
+            });
+        }
+
+        // Server is ready to serve requests
+        res.json({
+            status: 'ready',
+            message: 'Server is fully ready to serve requests',
+            defaultDocument: defaultDoc,
+            loadedDocuments: Object.keys(documents).length,
+            availableDocuments: activeDocumentSlugs.length
+        });
+    } catch (error) {
+        console.error('Readiness check error:', error);
+        res.status(503).json({
+            status: 'error',
+            message: 'Readiness check failed',
+            error: error.message
+        });
+    }
+});
+
+// Health check endpoint (with lazy loading awareness)
 app.get('/api/health', async (req, res) => {
     try {
         const loadedDocs = Object.keys(documents);
-        const docStatus = {};
         const requestedDoc = req.query.doc || 'smh';
-        
+
+        // Ensure registry is loaded for health check
+        if (!documentRegistryLoaded) {
+            await documentRegistry.loadDocuments();
+            activeDocumentSlugs = await documentRegistry.getActiveSlugs();
+            documentRegistryLoaded = true;
+        }
+
         // Validate using registry
         const isValid = await documentRegistry.isValidSlug(requestedDoc);
         const docType = isValid ? requestedDoc : 'smh';
 
-        // Get document info from registry if not loaded
+        // Get current document info
         let currentDocInfo;
         if (documents[docType]) {
             // Document is loaded in memory
@@ -903,28 +1022,17 @@ app.get('/api/health', async (req, res) => {
                 loaded: true
             };
         } else if (isValid) {
-            // Document exists in registry but not loaded yet
+            // Document exists in registry but not loaded yet (lazy loading)
             const docConfig = await documentRegistry.getDocumentBySlug(docType);
-            if (docConfig) {
-                // Try to load the PDF to get page count
-                try {
-                    await loadPDF(docType);
-                    currentDocInfo = {
-                        title: documents[docType].title,
-                        pages: documents[docType].metadata.pages,
-                        loaded: true
-                    };
-                } catch (loadError) {
-                    console.warn(`Could not load PDF for ${docType}:`, loadError.message);
-                    currentDocInfo = {
-                        title: docConfig.title,
-                        pages: 0,
-                        loaded: false
-                    };
-                }
-            }
+            currentDocInfo = {
+                title: docConfig.title,
+                pages: 'Not loaded (lazy loading)',
+                loaded: false
+            };
         }
 
+        // Build document status for all loaded documents
+        const docStatus = {};
         loadedDocs.forEach(doc => {
             docStatus[doc] = {
                 loaded: true,
@@ -939,11 +1047,15 @@ app.get('/api/health', async (req, res) => {
 
         res.json({
             status: 'ok',
+            lazyLoadingEnabled: true,
             currentDocument: currentDocInfo?.title || 'Unknown',
             currentDocumentType: docType,
-            loadedDocuments: loadedDocs.length > 0 ? loadedDocs : [docType],
-            documentDetails: currentDocInfo ? { [docType]: currentDocInfo } : docStatus,
-            requestedDoc: requestedDoc
+            currentDocumentLoaded: currentDocInfo?.loaded || false,
+            loadedDocuments: loadedDocs,
+            availableDocuments: activeDocumentSlugs,
+            totalAvailableDocuments: activeDocumentSlugs.length,
+            requestedDoc: requestedDoc,
+            documentDetails: docStatus
         });
     } catch (error) {
         console.error('Health check error:', error);
@@ -1097,68 +1209,157 @@ app.get('/api/documents', async (req, res) => {
     }
 });
 
-// Start server
-async function start() {
-    try {
+// Track lazy loading status
+let documentRegistryLoaded = false;
+let activeDocumentSlugs = [];
+
+// Lazy load document when first requested
+async function ensureDocumentLoaded(documentSlug) {
+    // Check if document is already loaded
+    if (documents[documentSlug]) {
+        return documents[documentSlug];
+    }
+
+    // Ensure registry is loaded
+    if (!documentRegistryLoaded) {
         console.log('🔄 Loading document registry from database...');
-        
-        // Load the document registry first
         await documentRegistry.loadDocuments();
-        const activeDocs = await documentRegistry.getActiveSlugs();
-        
-        console.log(`✓ Document registry loaded: ${activeDocs.length} active documents`);
-        
-        // Load all active documents from registry
-        console.log('📄 Loading PDFs...');
-        const loadedDocs = [];
-        const failedDocs = [];
-        
-        for (const slug of activeDocs) {
+        activeDocumentSlugs = await documentRegistry.getActiveSlugs();
+        documentRegistryLoaded = true;
+        console.log(`✓ Document registry loaded: ${activeDocumentSlugs.length} active documents`);
+    }
+
+    // Validate document exists in registry
+    if (!activeDocumentSlugs.includes(documentSlug)) {
+        throw new Error(`Document not found in registry: ${documentSlug}`);
+    }
+
+    // Load the document
+    console.log(`📄 Lazy loading document: ${documentSlug}`);
+    try {
+        const docInfo = await loadPDF(documentSlug);
+        console.log(`✓ Document ${documentSlug} loaded successfully`);
+        return docInfo;
+    } catch (error) {
+        console.error(`⚠️  Failed to lazy load ${documentSlug}:`, error.message);
+        throw error;
+    }
+}
+
+// Background preload other documents after server starts
+async function preloadDocumentsInBackground() {
+    try {
+        console.log('🔄 Starting background document preloading...');
+
+        // Ensure registry is loaded
+        if (!documentRegistryLoaded) {
+            await documentRegistry.loadDocuments();
+            activeDocumentSlugs = await documentRegistry.getActiveSlugs();
+            documentRegistryLoaded = true;
+        }
+
+        // Get documents that aren't already loaded
+        const unloadedDocs = activeDocumentSlugs.filter(slug => !documents[slug]);
+
+        if (unloadedDocs.length === 0) {
+            console.log('✓ All documents already loaded');
+            return;
+        }
+
+        console.log(`📄 Background loading ${unloadedDocs.length} additional documents...`);
+
+        // Load documents in background (non-blocking)
+        for (const slug of unloadedDocs) {
             try {
                 await loadPDF(slug);
-                loadedDocs.push(slug);
+                console.log(`✓ Background loaded: ${slug}`);
             } catch (error) {
-                console.error(`⚠️  Failed to load ${slug}:`, error.message);
-                failedDocs.push({ slug, error: error.message });
+                console.error(`⚠️  Background load failed for ${slug}:`, error.message);
             }
         }
-        
-        // Check if at least one document loaded successfully
-        if (loadedDocs.length === 0) {
-            throw new Error('❌ No documents could be loaded. Server cannot start.');
-        }
-        
-        if (failedDocs.length > 0) {
-            console.warn(`\n⚠️  Warning: ${failedDocs.length} document(s) failed to load:`);
-            failedDocs.forEach(({ slug, error }) => {
-                console.warn(`   - ${slug}: ${error}`);
-            });
-            console.warn('   Server will continue with available documents.\n');
-        }
-        
-        // Set default document (prefer 'smh', fallback to first loaded doc)
-        const defaultDoc = loadedDocs.includes('smh') ? 'smh' : loadedDocs[0];
-        setCurrentDocument(defaultDoc);
 
-        // Initialize embedding cache cleanup
+        console.log('✓ Background document preloading complete');
+    } catch (error) {
+        console.error('⚠️  Background preloading error:', error);
+    }
+}
+
+// Start server
+async function start() {
+    const startupStart = Date.now();
+    console.log('🔄 Starting server with lazy document loading...');
+
+    try {
+        // Phase 1: Load document registry
+        const phase1Start = Date.now();
+        console.log('📋 Phase 1: Loading document registry...');
+
+        await documentRegistry.loadDocuments();
+        activeDocumentSlugs = await documentRegistry.getActiveSlugs();
+        documentRegistryLoaded = true;
+
+        const phase1Time = Date.now() - phase1Start;
+        console.log(`✓ Document registry loaded (${phase1Time}ms): ${activeDocumentSlugs.length} active documents available`);
+
+        // Phase 2: Load default document
+        const phase2Start = Date.now();
+        const defaultDoc = activeDocumentSlugs.includes('smh') ? 'smh' : activeDocumentSlugs[0];
+
+        if (defaultDoc) {
+            console.log(`📄 Phase 2: Loading default document: ${defaultDoc}`);
+            try {
+                await loadPDF(defaultDoc);
+                setCurrentDocument(defaultDoc);
+                const phase2Time = Date.now() - phase2Start;
+                console.log(`✓ Default document loaded (${phase2Time}ms): ${documents[defaultDoc].title}`);
+            } catch (error) {
+                console.error(`⚠️  Failed to load default document ${defaultDoc}:`, error.message);
+                throw new Error(`Cannot start server: default document ${defaultDoc} failed to load`);
+            }
+        } else {
+            throw new Error('❌ No documents available in registry. Server cannot start.');
+        }
+
+        // Phase 3: Initialize services
+        const phase3Start = Date.now();
+        console.log('🔧 Phase 3: Initializing services...');
+
         initializeCacheCleanup();
 
-        app.listen(PORT, () => {
-            console.log(`\n🚀 Server running at http://localhost:${PORT}`);
-            console.log(`📚 Multi-document chatbot ready!`);
-            console.log(`   - Loaded documents:`);
-            loadedDocs.forEach(slug => {
-                const doc = documents[slug];
-                console.log(`     • ${slug}: ${doc.title} (${doc.year}, ${doc.embeddingType})`);
-            });
-            if (failedDocs.length > 0) {
-                console.log(`   - Failed documents: ${failedDocs.map(d => d.slug).join(', ')}`);
-            }
-            console.log(`   - Default document: ${defaultDoc}`);
+        const phase3Time = Date.now() - phase3Start;
+        console.log(`✓ Services initialized (${phase3Time}ms)`);
+
+        // Phase 4: Start HTTP server
+        const phase4Start = Date.now();
+        console.log('🌐 Phase 4: Starting HTTP server...');
+
+        const serverStart = Date.now();
+        server = app.listen(PORT, () => {
+            const serverTime = Date.now() - serverStart;
+            const totalStartupTime = Date.now() - startupStart;
+
+            console.log(`\n🚀 Server running at http://localhost:${PORT} (${serverTime}ms)`);
+            console.log(`📚 Multi-document chatbot ready (lazy loading enabled)!`);
+            console.log(`   - Total startup time: ${totalStartupTime}ms`);
+            console.log(`   - Default document: ${defaultDoc} (${documents[defaultDoc].title})`);
+            console.log(`   - Available documents: ${activeDocumentSlugs.length} total`);
+            console.log(`   - Documents will load on first request`);
             console.log(`   - Use ?doc=<slug> URL parameter to select document\n`);
+
+            // Signal to PM2 that the app is ready
+            if (process.send) {
+                process.send('ready');
+                console.log('✓ Sent ready signal to PM2');
+            }
+
+            // Start background preloading after server is ready
+            setTimeout(() => {
+                preloadDocumentsInBackground();
+            }, 1000); // Wait 1 second to ensure server is fully ready
         });
     } catch (error) {
-        console.error('❌ Failed to start server:', error);
+        const totalStartupTime = Date.now() - startupStart;
+        console.error(`❌ Failed to start server after ${totalStartupTime}ms:`, error);
         process.exit(1);
     }
 }

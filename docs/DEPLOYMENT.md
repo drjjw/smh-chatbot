@@ -102,8 +102,8 @@ Get your API keys from:
 # Install PM2 globally
 npm install -g pm2
 
-# Start the application
-pm2 start server.js --name "manual-bot"
+# Start the application with ecosystem config (includes graceful restart)
+pm2 start ecosystem.config.js --env production
 
 # Save PM2 configuration
 pm2 save
@@ -111,6 +111,12 @@ pm2 save
 # Set PM2 to start on boot
 pm2 startup
 ```
+
+**Note**: The `ecosystem.config.js` file provides:
+- **Graceful shutdown**: Waits for active requests to complete (5 second timeout)
+- **Health checks**: Automatic monitoring every 30 seconds
+- **Zero-downtime restarts**: New process starts before old one stops
+- **Automatic restart policies**: Smart restart logic with delays
 
 ### **Step 6: Configure Nginx Reverse Proxy**
 
@@ -383,13 +389,13 @@ https://supabase.com/dashboard/project/mlxctdgnojvkgfqldaob
 ```bash
 cd /home/ukidney/bot.ukidney.com/
 # Upload new PDF (keep same filename or update server.js)
-pm2 restart manual-bot
+pm2 reload manual-bot  # Graceful reload with zero downtime
 ```
 
 ### **Update Code:**
 ```bash
 git pull  # If using git
-pm2 restart manual-bot
+pm2 reload manual-bot  # Graceful reload with zero downtime
 ```
 
 ### **View Status:**
@@ -442,10 +448,10 @@ pm2 monit  # Real-time monitoring
 
 ## 📋 **Quick Deploy Checklist**
 
-- [ ] Upload files to `/var/www/ukidney.com/content/manuals/bot/`
+- [ ] Upload files to `/home/ukidney/bot.ukidney.com/`
 - [ ] Run `npm install --production`
 - [ ] Configure `.env` file
-- [ ] Start with PM2: `pm2 start server.js --name manual-bot`
+- [ ] Start with PM2: `pm2 start ecosystem.config.js --env production`
 - [ ] Configure Nginx reverse proxy
 - [ ] Test: `curl https://bot.ukidney.com/api/health`
 - [ ] Add modal code to ukidney.com page

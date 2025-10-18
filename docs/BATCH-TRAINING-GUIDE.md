@@ -1,6 +1,6 @@
 # Batch Document Training Guide
 
-**Purpose:** Efficiently train multiple documents at once with automated database registration, build script updates, and embedding generation.
+**Purpose:** Efficiently train multiple documents at once with automated database registration, build script updates, and embedding generation. Includes smart skipping of existing documents to save time and costs.
 
 ## Overview
 
@@ -9,9 +9,12 @@ The batch training system automates the entire document training workflow:
 1. ✅ Validates all documents and PDFs exist
 2. ✅ Adds documents to database registry
 3. ✅ Updates build.js with PDF paths
-4. ✅ Trains with OpenAI embeddings
-5. ✅ Trains with local embeddings
-6. ✅ Generates comprehensive summary report
+4. ✅ **Optionally skips existing documents** (`--skip-existing` flag)
+5. ✅ Trains with OpenAI embeddings
+6. ✅ Trains with local embeddings
+7. ✅ Generates comprehensive summary report
+
+**Key Feature:** Use `--skip-existing` to avoid retraining documents that are already in your database, saving time and API costs.
 
 ## Quick Start
 
@@ -67,6 +70,9 @@ node scripts/batch-train-documents.js --config=my-documents.json --skip-openai
 
 # Skip local embeddings (OpenAI only)
 node scripts/batch-train-documents.js --config=my-documents.json --skip-local
+
+# Skip existing documents (only train new ones)
+node scripts/batch-train-documents.js --config=my-documents.json --skip-existing
 ```
 
 ## Configuration Format
@@ -188,6 +194,13 @@ Skip local embedding generation (only train OpenAI embeddings).
 node scripts/batch-train-documents.js --config=my-documents.json --skip-local
 ```
 
+### `--skip-existing`
+Skip documents that already have embeddings in the database. Only trains new documents.
+
+```bash
+node scripts/batch-train-documents.js --config=my-documents.json --skip-existing
+```
+
 ## Workflow Details
 
 ### Step 1: Validation
@@ -257,17 +270,44 @@ node scripts/batch-train-documents.js --config=my-documents.json --skip-local
 ======================================================================
 
 📝 Registry Updates:
-   ✓ Added: 6 documents
+   ✓ Added: 2 documents
+   ⊘ Already existed: 4 documents
 
 🔢 Embedding Training:
-   ✓ Successfully trained: 6 documents
+   ✓ Successfully trained: 2 documents
+   ⊘ Skipped: 4 documents (already exist)
 
 ⏱️  Performance:
-   Total time: 425.8s
-   Average per document: 70.9s
+   Total time: 142.3s
+   Average per document: 71.2s
 
 📦 Build Script:
-   ✓ Updated: 3 PDFs added
+   ✓ Updated: 1 PDFs added
+
+======================================================================
+✅ All documents processed successfully!
+======================================================================
+
+### Example with --skip-existing flag:
+
+======================================================================
+📊 BATCH TRAINING SUMMARY
+======================================================================
+
+📝 Registry Updates:
+   ✓ Added: 1 documents
+   ⊘ Already existed: 5 documents
+
+🔢 Embedding Training:
+   ✓ Successfully trained: 1 documents
+   ⊘ Skipped: 2 documents (already exist, --skip-existing flag)
+
+⏱️  Performance:
+   Total time: 45.2s
+   Average per document: 45.2s
+
+📦 Build Script:
+   ✓ Updated: 1 PDFs added
 
 ======================================================================
 ✅ All documents processed successfully!
@@ -316,7 +356,21 @@ If some documents fail:
 1. Check the error message in the summary
 2. Fix the issue (missing PDF, invalid config, etc.)
 3. Re-run with only the failed documents
-4. The script will skip documents already in the database
+4. Use `--skip-existing` to avoid retraining documents already in the database
+
+### 7. Use --skip-existing for Efficiency
+When adding new documents to an existing library:
+```bash
+# Add new documents to your config file
+# Then run with --skip-existing to avoid wasteful retraining
+node scripts/batch-train-documents.js --config=my-documents.json --skip-existing
+```
+
+**Benefits:**
+- ⚡ **Faster processing** - Skips existing documents entirely
+- 💰 **Cost savings** - Avoids unnecessary OpenAI API calls
+- 🛡️ **Safer** - Prevents interruptions from damaging existing data
+- 📊 **Clearer output** - Summary shows only newly trained documents
 
 ## Troubleshooting
 
@@ -345,21 +399,27 @@ If some documents fail:
 
 ### For Large Batches (10+ documents)
 
-1. **Skip one embedding type initially:**
+1. **Use --skip-existing for incremental updates:**
    ```bash
-   # Train OpenAI first (slower)
-   node scripts/batch-train-documents.js --config=docs.json --skip-local
-   
-   # Then train local (faster)
-   node scripts/batch-train-documents.js --config=docs.json --skip-openai
+   # When adding to existing library, skip already trained documents
+   node scripts/batch-train-documents.js --config=docs.json --skip-existing
    ```
 
-2. **Process in smaller batches:**
+2. **Skip one embedding type initially:**
+   ```bash
+   # Train OpenAI first (slower)
+   node scripts/batch-train-documents.js --config=docs.json --skip-local --skip-existing
+
+   # Then train local (faster)
+   node scripts/batch-train-documents.js --config=docs.json --skip-openai --skip-existing
+   ```
+
+3. **Process in smaller batches:**
    - Split your config into multiple files
    - Process 3-5 documents at a time
    - Easier to recover from failures
 
-3. **Use local embeddings for testing:**
+4. **Use local embeddings for testing:**
    - Much faster (~6x)
    - Good for validating document structure
    - Switch to OpenAI for production
@@ -422,6 +482,7 @@ try {
 | Update build.js | Manual edit | Automatic |
 | Train OpenAI | Run script per doc | Automatic |
 | Train local | Run script per doc | Automatic |
+| Skip existing docs | N/A | `--skip-existing` flag |
 | Verify results | Manual checks | Summary report |
 | **Time for 5 docs** | ~30 minutes | ~5 minutes + training time |
 
