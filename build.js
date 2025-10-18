@@ -220,6 +220,7 @@ const pdfFiles = [
     { from: 'PDFs/guidelines/KDIGO-Txp-Candidate-GL-FINAL.pdf', to: 'PDFs/guidelines/KDIGO-Txp-Candidate-GL-FINAL.pdf' },
     { from: 'PDFs/guidelines/KDIGO-2025-Guideline-for-Nephrotic-Syndrome-in-Children.pdf', to: 'PDFs/guidelines/KDIGO-2025-Guideline-for-Nephrotic-Syndrome-in-Children.pdf' },
     { from: 'PDFs/guidelines/2017-KDIGO-LD-GL.pdf', to: 'PDFs/guidelines/2017-KDIGO-LD-GL.pdf' },
+    { from: 'PDFs/books/Fluid-Electrolyte-and-Acid-Base-Physiology-Kamel-Halperin.pdf', to: 'PDFs/books/Fluid-Electrolyte-and-Acid-Base-Physiology-Kamel-Halperin.pdf' },
     { from: 'PDFs/ajkd-core-curriculum/Magnesium-Disorders--Core-Curriculum-2024_2024_yaj.pdf', to: 'PDFs/ajkd-core-curriculum/Magnesium-Disorders--Core-Curriculum-2024_2024_yaj.pdf' },
     { from: 'PDFs/ajkd-core-curriculum/Management-of-Acute-Kidney-Injury--Core-Curriculum.pdf', to: 'PDFs/ajkd-core-curriculum/Management-of-Acute-Kidney-Injury--Core-Curriculum.pdf' },
     { from: 'PDFs/ajkd-core-curriculum/Management-of-Diabetes-Mellitus-in-Patients-With-C.pdf', to: 'PDFs/ajkd-core-curriculum/Management-of-Diabetes-Mellitus-in-Patients-With-C.pdf' },
