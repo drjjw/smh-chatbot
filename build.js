@@ -47,7 +47,8 @@ function copyWithHash(sourcePath, destDir, filename) {
 
 // Process CSS and JS files with hashing
 const cssFiles = {
-    'public/css/styles.css': 'css'
+    'public/css/styles.css': 'css',
+    'public/css/disclaimer.css': 'css'
 };
 
 const jsFiles = {
@@ -57,6 +58,7 @@ const jsFiles = {
     'public/js/ui.js': 'js',
     'public/js/chat.js': 'js',
     'public/js/rating.js': 'js',
+    'public/js/disclaimer.js': 'js',
     'public/js/main.js': 'js'
 };
 

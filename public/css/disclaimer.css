@@ -1,0 +1,164 @@
+/**
+ * Disclaimer Modal Styles
+ * 
+ * Custom styles for SweetAlert2 disclaimer modal.
+ * Separated from main styles for better maintainability.
+ */
+
+/* Button Styles */
+.swal2-confirm-button {
+    background-color: #2c5282;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.swal2-cancel-button {
+    background-color: #c53030;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+/* Button Hover Effects */
+.swal2-confirm-button:hover {
+    background-color: #1a365d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(44, 82, 130, 0.3);
+}
+
+.swal2-cancel-button:hover {
+    background-color: #9b2c2c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(197, 48, 48, 0.3);
+}
+
+/* Button Active State */
+.swal2-confirm-button:active,
+.swal2-cancel-button:active {
+    transform: translateY(0);
+}
+
+/* Content Styles */
+.swal2-html-container {
+    text-align: left;
+    padding: 20px;
+    font-size: 1.05em;
+    line-height: 1.6;
+    color: #2d3748;
+}
+
+.swal2-html-container p {
+    margin: 0;
+}
+
+/* Title Styles */
+.swal2-title {
+    font-size: 1.5em !important;
+    margin-bottom: 20px !important;
+    font-weight: 700 !important;
+}
+
+/* Popup Animation */
+.animated-popup {
+    transition: all 0.3s ease-in-out !important;
+}
+
+.swal2-backdrop-show {
+    animation: fadeIn 0.3s ease-in-out !important;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Modal Positioning */
+.swal2-container {
+    pointer-events: auto !important;
+}
+
+.swal2-popup {
+    position: relative;
+    z-index: 9999;
+    border-radius: 12px;
+    padding: 30px;
+}
+
+/* Actions Container */
+.swal2-actions {
+    margin-top: 25px !important;
+}
+
+.swal2-actions button {
+    font-size: 16px;
+}
+
+/* Icon Styling */
+.swal2-icon.swal2-warning {
+    border-color: #ed8936 !important;
+    color: #ed8936 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .swal2-popup {
+        padding: 20px;
+        font-size: 0.9em;
+    }
+    
+    .swal2-title {
+        font-size: 1.3em !important;
+    }
+    
+    .swal2-confirm-button,
+    .swal2-cancel-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+    
+    .swal2-html-container {
+        font-size: 1em;
+    }
+}
+
+/* Accessibility Improvements */
+.swal2-confirm-button:focus,
+.swal2-cancel-button:focus {
+    outline: 3px solid rgba(66, 153, 225, 0.5);
+    outline-offset: 2px;
+}
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+    .swal2-popup {
+        background-color: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .swal2-html-container {
+        color: #e2e8f0;
+    }
+    
+    .swal2-title {
+        color: #e2e8f0 !important;
+    }
+}
+

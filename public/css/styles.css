@@ -1077,3 +1077,12 @@ body:not(.local-env) .retrieval-selector {
 hr.references-separator {
     display: none;
 }
+
+
+
+.drug-conversion-response {
+    background: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}

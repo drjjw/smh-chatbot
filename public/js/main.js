@@ -4,6 +4,7 @@ import { checkHealth } from './api.js';
 import { updateDocumentUI, updateModelInTooltip } from './ui.js';
 import { sendMessage } from './chat.js';
 import { submitRating } from './rating.js';
+import { showDisclaimerIfNeeded } from './disclaimer.js';
 
 // Configure marked for better formatting
 marked.setOptions({
@@ -276,6 +277,9 @@ window.submitRating = submitRating;
     await initializeDocument();
     initializeHeaderToggle();
     checkHealth(state.selectedDocument, elements.statusDiv);
+    
+    // Show disclaimer if needed
+    showDisclaimerIfNeeded();
     
     // Focus input
     elements.messageInput.focus();
